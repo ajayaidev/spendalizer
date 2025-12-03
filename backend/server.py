@@ -350,12 +350,21 @@ def parse_hdfc_bank_csv(file_content: bytes) -> List[Dict[str, Any]]:
     
     for _, row in df.iterrows():
         try:
+            # Clean raw metadata to avoid NaN values
+            raw_dict = row.to_dict()
+            clean_metadata = {}
+            for k, v in raw_dict.items():
+                if pd.notna(v):
+                    clean_metadata[k] = v
+                else:
+                    clean_metadata[k] = None
+            
             txn = {
                 "date": pd.to_datetime(row["Date"], format="%d/%m/%y").strftime("%Y-%m-%d"),
                 "description": str(row["Narration"]).strip(),
                 "amount": 0.0,
                 "direction": "DEBIT",
-                "raw_metadata": row.to_dict()
+                "raw_metadata": clean_metadata
             }
             
             if pd.notna(row.get("Withdrawal Amt.")):
