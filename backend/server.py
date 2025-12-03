@@ -657,6 +657,16 @@ async def get_transactions(
         
         if 'updated_at' in txn and not isinstance(txn['updated_at'], str):
             txn['updated_at'] = txn['updated_at'].isoformat() if hasattr(txn['updated_at'], 'isoformat') else str(txn['updated_at'])
+        
+        # Clean raw_metadata if it exists
+        if 'raw_metadata' in txn and txn['raw_metadata']:
+            clean_metadata = {}
+            for k, v in txn['raw_metadata'].items():
+                if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                    clean_metadata[k] = None
+                else:
+                    clean_metadata[k] = v
+            txn['raw_metadata'] = clean_metadata
     
     return {"transactions": transactions, "total": total}
 
