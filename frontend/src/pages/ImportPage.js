@@ -1,0 +1,230 @@
+import React, { useState, useEffect } from 'react';
+import { getAccounts, getDataSources, importFile, getImportHistory } from '../lib/api';
+import { Button } from '../components/ui/button';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Upload, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+
+const ImportPage = () => {
+  const [accounts, setAccounts] = useState([]);
+  const [dataSources, setDataSources] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [selectedDataSource, setSelectedDataSource] = useState('');
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const [accountsRes, sourcesRes, historyRes] = await Promise.all([
+        getAccounts(),
+        getDataSources(),
+        getImportHistory()
+      ]);
+      setAccounts(accountsRes.data);
+      setDataSources(sourcesRes.data);
+      setHistory(historyRes.data);
+    } catch (error) {
+      toast.error('Failed to load import data');
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const ext = selectedFile.name.split('.').pop().toLowerCase();
+      if (['csv', 'xlsx', 'xls'].includes(ext)) {
+        setFile(selectedFile);
+      } else {
+        toast.error('Please select a CSV or XLSX file');
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file || !selectedAccount || !selectedDataSource) {
+      toast.error('Please fill all fields');
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('account_id', selectedAccount);
+    formData.append('data_source', selectedDataSource);
+
+    try {
+      const response = await importFile(formData);
+      toast.success(`Import successful! ${response.data.success_count} transactions imported.`);
+      setFile(null);
+      setSelectedAccount('');
+      setSelectedDataSource('');
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Import failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'SUCCESS':
+        return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case 'FAILED':
+        return <XCircle className="w-5 h-5 text-red-600" />;
+      case 'PENDING':
+        return <Clock className="w-5 h-5 text-yellow-600" />;
+      default:
+        return <Clock className="w-5 h-5 text-gray-600" />;
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="import-page">
+      <div className="mb-8">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Import Transactions</h1>
+        <p className="text-muted-foreground">Upload your bank statements to import transactions</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Import Form */}
+        <Card className="lg:col-span-2" data-testid="import-form-card">
+          <CardHeader>
+            <CardTitle>Upload Statement</CardTitle>
+            <CardDescription>Select your account, data source, and file to import</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="account">Account</Label>
+                <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                  <SelectTrigger data-testid="account-select">
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name} ({account.institution})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="data-source">Data Source</Label>
+                <Select value={selectedDataSource} onValueChange={setSelectedDataSource}>
+                  <SelectTrigger data-testid="data-source-select">
+                    <SelectValue placeholder="Select data source" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {dataSources.map((source) => (
+                      <SelectItem key={source.id} value={source.id}>
+                        {source.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="file">Statement File (CSV/XLSX)</Label>
+                <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
+                  <input
+                    id="file"
+                    type="file"
+                    accept=".csv,.xlsx,.xls"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    data-testid="file-input"
+                  />
+                  <label htmlFor="file" className="cursor-pointer">
+                    <Upload className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+                    {file ? (
+                      <div>
+                        <p className="font-medium">{file.name}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {(file.size / 1024).toFixed(2)} KB
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-medium">Click to upload or drag and drop</p>
+                        <p className="text-sm text-muted-foreground mt-1">CSV or XLSX files</p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={uploading || !file || !selectedAccount || !selectedDataSource}
+                data-testid="import-submit-button"
+              >
+                {uploading ? 'Importing...' : 'Import Transactions'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Import History */}
+        <Card data-testid="import-history-card">
+          <CardHeader>
+            <CardTitle>Recent Imports</CardTitle>
+            <CardDescription>Your import history</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {history.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">No imports yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {history.slice(0, 10).map((batch) => (
+                  <div
+                    key={batch.id}
+                    className="p-3 rounded-lg border bg-card"
+                    data-testid={`import-batch-${batch.id}`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{batch.original_file_name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(batch.imported_at), 'MMM dd, yyyy HH:mm')}
+                        </p>
+                      </div>
+                      {getStatusIcon(batch.status)}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="text-green-600">{batch.success_count} success</span>
+                      {batch.duplicate_count > 0 && (
+                        <span className="text-yellow-600">{batch.duplicate_count} duplicates</span>
+                      )}
+                      {batch.error_count > 0 && (
+                        <span className="text-red-600">{batch.error_count} errors</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default ImportPage;
