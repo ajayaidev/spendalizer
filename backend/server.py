@@ -624,6 +624,21 @@ async def get_transactions(
     transactions = await db.transactions.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
     total = await db.transactions.count_documents(query)
     
+    # Fix any invalid float values
+    for txn in transactions:
+        if 'amount' in txn:
+            amount = txn['amount']
+            if not isinstance(amount, (int, float)) or amount != amount or amount == float('inf') or amount == float('-inf'):
+                txn['amount'] = 0.0
+            else:
+                txn['amount'] = float(amount)
+        if 'confidence_score' in txn and txn['confidence_score'] is not None:
+            score = txn['confidence_score']
+            if not isinstance(score, (int, float)) or score != score or score == float('inf') or score == float('-inf'):
+                txn['confidence_score'] = None
+            else:
+                txn['confidence_score'] = float(score)
+    
     return {"transactions": transactions, "total": total}
 
 @api_router.patch("/transactions/{txn_id}/category")
