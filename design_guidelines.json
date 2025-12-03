@@ -1,0 +1,180 @@
+{
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "IBM Plex Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
+      "h3": "text-2xl font-semibold tracking-tight",
+      "h4": "text-xl font-medium tracking-normal",
+      "body_large": "text-lg leading-relaxed",
+      "body_default": "text-base leading-relaxed",
+      "caption": "text-sm text-muted-foreground tracking-wide uppercase"
+    },
+    "weights": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    }
+  },
+  "colors": {
+    "theme_name": "The Swiss Vault",
+    "light": {
+      "background": "210 40% 98%",
+      "foreground": "222 47% 11%",
+      "card": "0 0% 100%",
+      "card_foreground": "222 47% 11%",
+      "popover": "0 0% 100%",
+      "popover_foreground": "222 47% 11%",
+      "primary": "221 83% 53%",
+      "primary_foreground": "210 40% 98%",
+      "secondary": "210 40% 96.1%",
+      "secondary_foreground": "222 47% 11%",
+      "muted": "210 40% 96.1%",
+      "muted_foreground": "215.4 16.3% 46.9%",
+      "accent": "210 40% 96.1%",
+      "accent_foreground": "222 47% 11%",
+      "destructive": "0 84.2% 60.2%",
+      "destructive_foreground": "210 40% 98%",
+      "border": "214.3 31.8% 91.4%",
+      "input": "214.3 31.8% 91.4%",
+      "ring": "221 83% 53%",
+      "chart_1": "221 83% 53%",
+      "chart_2": "142 76% 36%",
+      "chart_3": "35 92% 55%",
+      "chart_4": "262 83% 58%",
+      "chart_5": "346 87% 43%"
+    },
+    "dark": {
+      "background": "222 47% 11%",
+      "foreground": "210 40% 98%",
+      "card": "222 47% 11%",
+      "card_foreground": "210 40% 98%",
+      "popover": "222 47% 11%",
+      "popover_foreground": "210 40% 98%",
+      "primary": "217 91% 60%",
+      "primary_foreground": "222 47% 11%",
+      "secondary": "217.2 32.6% 17.5%",
+      "secondary_foreground": "210 40% 98%",
+      "muted": "217.2 32.6% 17.5%",
+      "muted_foreground": "215 20.2% 65.1%",
+      "accent": "217.2 32.6% 17.5%",
+      "accent_foreground": "210 40% 98%",
+      "destructive": "0 62.8% 30.6%",
+      "destructive_foreground": "210 40% 98%",
+      "border": "217.2 32.6% 17.5%",
+      "input": "217.2 32.6% 17.5%",
+      "ring": "224.3 76.3% 48%",
+      "chart_1": "220 70% 50%",
+      "chart_2": "160 60% 45%",
+      "chart_3": "30 80% 55%",
+      "chart_4": "280 65% 60%",
+      "chart_5": "340 75% 55%"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-sm",
+    "tracing_beam": "relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-primary/20 before:to-transparent before:translate-x-[-100%] hover:before:animate-[shimmer_1.5s_infinite]",
+    "grid_borders": "border-r border-b border-border/40 last:border-r-0",
+    "noise_texture": "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none fixed inset-0 z-50"
+  },
+  "component_name": {
+    "card": "Shadcn Card (Customized)",
+    "button": "Shadcn Button (Pill or Sharp)",
+    "input": "Shadcn Input (Minimal)",
+    "table": "Shadcn Table (Dense)",
+    "chart": "Recharts (via Shadcn Charts)",
+    "toast": "Sonner"
+  },
+  "grids": {
+    "dashboard_layout": "grid grid-cols-1 md:grid-cols-4 gap-6 p-6 md:p-8",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[minmax(180px,auto)]",
+    "form_layout": "grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+  },
+  "layouts": {
+    "dashboard_shell": "flex h-screen overflow-hidden bg-background",
+    "sidebar": "w-64 border-r bg-card hidden md:block",
+    "main_content": "flex-1 overflow-y-auto relative",
+    "container_padded": "container mx-auto px-4 py-8 md:px-8 md:py-12"
+  },
+  "motion": {
+    "hover_lift": "transition-transform duration-200 ease-out hover:-translate-y-1",
+    "fade_in": "animate-in fade-in duration-500",
+    "slide_up": "animate-in slide-in-from-bottom-4 duration-500",
+    "stagger_list": "stagger-children-100"
+  },
+  "accessibility": {
+    "contrast_check": "Ensure text-to-background ratio is at least 4.5:1",
+    "focus_states": "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    "aria_labels": "Required for all icon-only buttons",
+    "reduced_motion": "motion-reduce:transition-none motion-reduce:animate-none"
+  },
+  "media": {
+    "image_style": "grayscale hover:grayscale-0 transition-all duration-500 rounded-md object-cover",
+    "icon_library": "lucide-react"
+  },
+  "3d_libraries": {
+    "library": "None",
+    "reason": "Professional Finance Dashboard requires clarity and performance over 3D immersion. Using 2D charts (Recharts) is more appropriate."
+  },
+  "image_urls": {
+    "bank_covers": [
+      {
+        "url": "https://images.unsplash.com/photo-1717136310248-52ec20332dab",
+        "description": "Abstract Blue 'S' (Use for SBI Card)",
+        "category": "bank_cover"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1569979230536-b3415317a681",
+        "description": "Stone Bank Building (Use for Federal Bank)",
+        "category": "bank_cover"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1652503698072-175651f77634",
+        "description": "Building Sign (Use for Standard Chartered)",
+        "category": "bank_cover"
+      },
+      {
+        "url": "https://images.pexels.com/photos/17243510/pexels-photo-17243510.jpeg",
+        "description": "Abstract Texture (Use for HDFC/Generic)",
+        "category": "bank_cover"
+      }
+    ],
+    "placeholders": [
+      {
+        "url": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c",
+        "description": "Generic Finance/Office",
+        "category": "placeholder"
+      }
+    ]
+  },
+  "component_path": {
+    "ui": "/app/frontend/src/components/ui",
+    "layout": "/app/frontend/src/components/layout",
+    "features": "/app/frontend/src/components/features"
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'lucide-react', 'recharts', 'clsx', 'tailwind-merge' if not present.",
+    "2. THEME: Update 'src/index.css' with the provided CSS variables for Light/Dark modes. Do NOT use default Shadcn colors.",
+    "3. FONTS: Add 'Manrope' and 'IBM Plex Sans' via Google Fonts in 'public/index.html' or CSS import.",
+    "4. LAYOUT: Build a 'DashboardLayout' component with a sidebar and top header. Use the 'Control Room' grid strategy for the dashboard home.",
+    "5. COMPONENTS: Customize Shadcn components. Remove default rounded-md if aiming for a sharper look (optional, but recommended for 'Swiss' style).",
+    "6. CHARTS: Use Recharts for the Analytics page. Style them to match the theme (minimal axes, custom tooltips).",
+    "7. PRIVACY: Ensure all data handling logic stays client-side or local backend. No external API calls for data.",
+    "8. DATA-TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, cards)."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Avoid 'AI Slop': Do not use generic gradients or centered layouts.",
+    "Spacing: Use p-6 or p-8 for containers. Don't cram content.",
+    "Micro-interactions: Add hover states to everything. Buttons should lift or glow.",
+    "Dark Mode: Ensure it's not just 'black', but a rich slate/navy.",
+    "No Emojis: Use Lucide icons instead of emojis for UI elements.",
+    "Toast: Use 'sonner' for notifications.",
+    "Export: Named exports for components, Default exports for pages."
+  ]
+}
