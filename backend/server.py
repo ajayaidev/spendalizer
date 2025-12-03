@@ -624,20 +624,30 @@ async def get_transactions(
     transactions = await db.transactions.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
     total = await db.transactions.count_documents(query)
     
-    # Fix any invalid float values
+    # Fix any invalid values for JSON serialization
+    import math
     for txn in transactions:
+        # Fix float values
         if 'amount' in txn:
             amount = txn['amount']
-            if not isinstance(amount, (int, float)) or amount != amount or amount == float('inf') or amount == float('-inf'):
+            if not isinstance(amount, (int, float)) or math.isnan(amount) or math.isinf(amount):
                 txn['amount'] = 0.0
             else:
                 txn['amount'] = float(amount)
+        
         if 'confidence_score' in txn and txn['confidence_score'] is not None:
             score = txn['confidence_score']
-            if not isinstance(score, (int, float)) or score != score or score == float('inf') or score == float('-inf'):
+            if not isinstance(score, (int, float)) or math.isnan(score) or math.isinf(score):
                 txn['confidence_score'] = None
             else:
                 txn['confidence_score'] = float(score)
+        
+        # Ensure datetime fields are strings
+        if 'created_at' in txn and not isinstance(txn['created_at'], str):
+            txn['created_at'] = txn['created_at'].isoformat() if hasattr(txn['created_at'], 'isoformat') else str(txn['created_at'])
+        
+        if 'updated_at' in txn and not isinstance(txn['updated_at'], str):
+            txn['updated_at'] = txn['updated_at'].isoformat() if hasattr(txn['updated_at'], 'isoformat') else str(txn['updated_at'])
     
     return {"transactions": transactions, "total": total}
 
