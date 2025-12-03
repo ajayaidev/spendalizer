@@ -15,8 +15,8 @@ const TransactionsPage = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAccount, setSelectedAccount] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState('_all');
+  const [selectedCategory, setSelectedCategory] = useState('_all');
   const [editingTxn, setEditingTxn] = useState(null);
   const [newCategory, setNewCategory] = useState('');
 
