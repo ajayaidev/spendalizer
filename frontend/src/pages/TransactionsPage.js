@@ -129,8 +129,8 @@ const TransactionsPage = () => {
               variant="outline"
               onClick={() => {
                 setSearchTerm('');
-                setSelectedAccount('');
-                setSelectedCategory('');
+                setSelectedAccount('_all');
+                setSelectedCategory('_all');
               }}
               data-testid="clear-filters-button"
             >
