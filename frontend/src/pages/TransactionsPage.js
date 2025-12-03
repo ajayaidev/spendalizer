@@ -27,8 +27,8 @@ const TransactionsPage = () => {
   const loadData = async () => {
     try {
       const params = {};
-      if (selectedAccount) params.account_id = selectedAccount;
-      if (selectedCategory) params.category_id = selectedCategory;
+      if (selectedAccount && selectedAccount !== '_all') params.account_id = selectedAccount;
+      if (selectedCategory && selectedCategory !== '_all') params.category_id = selectedCategory;
       
       const [txnRes, catRes, accRes] = await Promise.all([
         getTransactions(params),
