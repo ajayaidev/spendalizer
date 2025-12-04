@@ -112,6 +112,9 @@ echo ""
 # Step 6: Start Servers
 echo "🚀 Step 6/6: Starting servers..."
 
+# Create logs directory if it doesn't exist
+mkdir -p logs
+
 # Start Backend in background
 echo "   Starting backend..."
 cd backend
