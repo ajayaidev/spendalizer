@@ -109,8 +109,15 @@ class Category(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     type: str  # INCOME, EXPENSE, TRANSFER
+    parent_category_id: Optional[str] = None  # For sub-categories
     is_system: bool = True
     user_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CategoryCreate(BaseModel):
+    name: str
+    type: str
+    parent_category_id: Optional[str] = None
 
 class Transaction(BaseModel):
     model_config = ConfigDict(extra="ignore")
