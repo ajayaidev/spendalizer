@@ -344,6 +344,134 @@ async def categorize_transaction(txn: Transaction) -> Dict[str, Any]:
     }
 
 # Import Engine Helpers
+def parse_hdfc_bank_excel(file_content: bytes) -> List[Dict[str, Any]]:
+    """Parse HDFC Bank Excel file"""
+    try:
+        df = pd.read_excel(io.BytesIO(file_content))
+        logging.info(f"Successfully parsed Excel file with {len(df)} rows")
+    except Exception as e:
+        logging.error(f"Failed to parse Excel file: {e}")
+        raise ValueError(f"Could not parse Excel file: {str(e)}")
+    
+    transactions = []
+    
+    for _, row in df.iterrows():
+        try:
+            # Clean raw metadata to avoid NaN values
+            raw_dict = row.to_dict()
+            clean_metadata = {}
+            for k, v in raw_dict.items():
+                if pd.notna(v):
+                    clean_metadata[k] = v
+                else:
+                    clean_metadata[k] = None
+            
+            # Parse date - try multiple formats
+            date_str = str(row["Date"]).strip()
+            try:
+                txn_date = pd.to_datetime(date_str, format="%d/%m/%y").strftime("%Y-%m-%d")
+            except:
+                try:
+                    txn_date = pd.to_datetime(date_str).strftime("%Y-%m-%d")
+                except:
+                    logging.warning(f"Could not parse date: {date_str}")
+                    continue
+            
+            txn = {
+                "date": txn_date,
+                "description": str(row["Narration"]).strip(),
+                "amount": 0.0,
+                "direction": "DEBIT",
+                "raw_metadata": clean_metadata
+            }
+            
+            if pd.notna(row.get("Withdrawal Amt.")):
+                amount_str = str(row["Withdrawal Amt."]).replace(",", "").replace("INR", "").strip()
+                txn["amount"] = abs(float(amount_str))
+                txn["direction"] = "DEBIT"
+            elif pd.notna(row.get("Deposit Amt.")):
+                amount_str = str(row["Deposit Amt."]).replace(",", "").replace("INR", "").strip()
+                txn["amount"] = abs(float(amount_str))
+                txn["direction"] = "CREDIT"
+            
+            if txn["amount"] > 0:
+                transactions.append(txn)
+        except Exception as e:
+            logging.error(f"Error parsing Excel row: {e}")
+            continue
+    
+    return transactions
+
+def parse_generic_excel(file_content: bytes, data_source: str) -> List[Dict[str, Any]]:
+    """Parse generic Excel file"""
+    try:
+        df = pd.read_excel(io.BytesIO(file_content))
+        logging.info(f"Successfully parsed Excel file with {len(df)} rows")
+    except Exception as e:
+        logging.error(f"Failed to parse Excel file: {e}")
+        raise ValueError(f"Could not parse Excel file: {str(e)}")
+    
+    transactions = []
+    
+    # Try to identify date column
+    date_col = None
+    for col in df.columns:
+        if any(word in col.lower() for word in ["date", "txn", "transaction"]):
+            date_col = col
+            break
+    
+    # Try to identify description column
+    desc_col = None
+    for col in df.columns:
+        if any(word in col.lower() for word in ["narration", "description", "particulars", "details"]):
+            desc_col = col
+            break
+    
+    if not date_col or not desc_col:
+        logging.warning(f"Could not identify required columns. Columns found: {df.columns.tolist()}")
+        return transactions
+    
+    for _, row in df.iterrows():
+        try:
+            # Clean raw metadata to avoid NaN values
+            raw_dict = row.to_dict()
+            clean_metadata = {}
+            for k, v in raw_dict.items():
+                if pd.notna(v):
+                    clean_metadata[k] = v
+                else:
+                    clean_metadata[k] = None
+            
+            txn = {
+                "date": pd.to_datetime(row[date_col]).strftime("%Y-%m-%d"),
+                "description": str(row[desc_col]).strip(),
+                "amount": 0.0,
+                "direction": "DEBIT",
+                "raw_metadata": clean_metadata
+            }
+            
+            # Try to find amount columns
+            for col in df.columns:
+                col_lower = col.lower()
+                if "withdrawal" in col_lower or "debit" in col_lower:
+                    if pd.notna(row[col]):
+                        amount_str = str(row[col]).replace(",", "").replace("INR", "").strip()
+                        txn["amount"] = abs(float(amount_str))
+                        txn["direction"] = "DEBIT"
+                elif "deposit" in col_lower or "credit" in col_lower:
+                    if pd.notna(row[col]):
+                        amount_str = str(row[col]).replace(",", "").replace("INR", "").strip()
+                        txn["amount"] = abs(float(amount_str))
+                        txn["direction"] = "CREDIT"
+            
+            if txn["amount"] > 0:
+                transactions.append(txn)
+        except Exception as e:
+            logging.error(f"Error parsing Excel row: {e}")
+            continue
+    
+    return transactions
+
 def parse_hdfc_bank_csv(file_content: bytes) -> List[Dict[str, Any]]:
     # Try different encodings to handle various file formats
     encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'iso-8859-1', 'cp1252', 'windows-1252']
