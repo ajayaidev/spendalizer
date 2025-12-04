@@ -195,7 +195,10 @@ const AnalyticsPage = () => {
                     dataKey="value"
                   >
                     {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.name === 'Uncategorized' ? UNCATEGORIZED_COLOR : COLORS[index % COLORS.length]} 
+                      />
                     ))}
                   </Pie>
                   <Tooltip
