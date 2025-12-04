@@ -570,11 +570,21 @@ async def import_transactions(
         # Read file
         file_content = await file.read()
         
-        # Parse based on data source
+        # Detect file type from extension
+        file_ext = file.filename.lower().split('.')[-1]
+        is_excel = file_ext in ['xls', 'xlsx']
+        
+        # Parse based on data source and file type
         if data_source == "HDFC_BANK":
-            parsed_txns = parse_hdfc_bank_csv(file_content)
+            if is_excel:
+                parsed_txns = parse_hdfc_bank_excel(file_content)
+            else:
+                parsed_txns = parse_hdfc_bank_csv(file_content)
         else:
-            parsed_txns = parse_generic_csv(file_content, data_source)
+            if is_excel:
+                parsed_txns = parse_generic_excel(file_content, data_source)
+            else:
+                parsed_txns = parse_generic_csv(file_content, data_source)
         
         batch.total_rows = len(parsed_txns)
         
