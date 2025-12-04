@@ -6,6 +6,7 @@ import {
   Wallet, 
   Upload, 
   Receipt, 
+  Tag,
   Sparkles, 
   BarChart3, 
   LogOut 
