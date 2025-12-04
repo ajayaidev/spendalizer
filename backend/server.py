@@ -1045,6 +1045,9 @@ async def get_analytics_summary(
     
     # Category breakdown
     category_breakdown = {}
+    uncategorized_total = 0
+    uncategorized_count = 0
+    
     for txn in transactions:
         if txn.get("category_id"):
             cat_id = txn["category_id"]
@@ -1052,6 +1055,10 @@ async def get_analytics_summary(
                 category_breakdown[cat_id] = {"total": 0, "count": 0}
             category_breakdown[cat_id]["total"] += txn["amount"]
             category_breakdown[cat_id]["count"] += 1
+        else:
+            # Count uncategorized transactions
+            uncategorized_total += txn["amount"]
+            uncategorized_count += 1
     
     # Enrich with category names
     enriched_breakdown = []
@@ -1065,6 +1072,16 @@ async def get_analytics_summary(
                 "total": data["total"],
                 "count": data["count"]
             })
+    
+    # Add uncategorized if any
+    if uncategorized_count > 0:
+        enriched_breakdown.append({
+            "category_id": None,
+            "category_name": "Uncategorized",
+            "category_type": "UNCATEGORIZED",
+            "total": uncategorized_total,
+            "count": uncategorized_count
+        })
     
     return {
         "total_income": round(total_income, 2),
