@@ -38,11 +38,22 @@ const AnalyticsPage = () => {
     (cat) => cat.category_type === 'INCOME'
   ) || [];
 
-  const topExpenses = expenseCategories.slice(0, 5);
-  const pieData = topExpenses.map((cat) => ({
-    name: cat.category_name,
-    value: cat.total
-  }));
+  const uncategorizedData = summary?.category_breakdown?.find(
+    (cat) => cat.category_type === 'UNCATEGORIZED'
+  );
+
+  // Include uncategorized in top expenses if it exists
+  const topExpenses = expenseCategories.slice(0, uncategorizedData ? 4 : 5);
+  const pieData = [
+    ...topExpenses.map((cat) => ({
+      name: cat.category_name,
+      value: cat.total
+    })),
+    ...(uncategorizedData ? [{
+      name: 'Uncategorized',
+      value: uncategorizedData.total
+    }] : [])
+  ];
 
   const overviewData = [
     { name: 'Income', value: summary?.total_income || 0, color: 'hsl(142, 76%, 36%)' },
