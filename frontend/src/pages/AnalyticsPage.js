@@ -6,6 +6,7 @@ import { TrendingUp, TrendingDown, PieChart as PieChartIcon } from 'lucide-react
 import { toast } from 'sonner';
 
 const COLORS = ['hsl(221, 83%, 53%)', 'hsl(142, 76%, 36%)', 'hsl(35, 92%, 55%)', 'hsl(262, 83%, 58%)', 'hsl(346, 87%, 43%)'];
+const UNCATEGORIZED_COLOR = 'hsl(0, 0%, 60%)'; // Gray for uncategorized
 
 const AnalyticsPage = () => {
   const [summary, setSummary] = useState(null);
