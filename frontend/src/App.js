@@ -65,6 +65,7 @@ function App() {
             <Route path="accounts" element={<AccountsPage />} />
             <Route path="import" element={<ImportPage />} />
             <Route path="transactions" element={<TransactionsPage />} />
+            <Route path="categories" element={<CategoriesPage />} />
             <Route path="rules" element={<RulesPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
