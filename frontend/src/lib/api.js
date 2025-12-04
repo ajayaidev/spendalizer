@@ -26,6 +26,9 @@ export const createAccount = (data) => api.post('/accounts', data);
 
 // Categories
 export const getCategories = () => api.get('/categories');
+export const createCategory = (data) => api.post('/categories', data);
+export const updateCategory = (categoryId, data) => api.put(`/categories/${categoryId}`, data);
+export const deleteCategory = (categoryId) => api.delete(`/categories/${categoryId}`);
 
 // Data Sources
 export const getDataSources = () => api.get('/data-sources');
