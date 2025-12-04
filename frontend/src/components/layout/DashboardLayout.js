@@ -21,6 +21,7 @@ const DashboardLayout = () => {
     { to: '/accounts', label: 'Accounts', icon: Wallet },
     { to: '/import', label: 'Import', icon: Upload },
     { to: '/transactions', label: 'Transactions', icon: Receipt },
+    { to: '/categories', label: 'Categories', icon: Tag },
     { to: '/rules', label: 'Rules', icon: Sparkles },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 },
   ];
