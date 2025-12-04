@@ -382,20 +382,36 @@ def parse_hdfc_bank_excel(file_content: bytes) -> List[Dict[str, Any]]:
                 else:
                     clean_metadata[k] = None
             
+            # Find the date column (case-insensitive)
+            date_col = None
+            for col in df.columns:
+                if 'date' in str(col).lower():
+                    date_col = col
+                    break
+            
+            # Find the narration/description column
+            narration_col = None
+            for col in df.columns:
+                if any(word in str(col).lower() for word in ['narration', 'description', 'particulars']):
+                    narration_col = col
+                    break
+            
+            if not date_col or not narration_col:
+                logging.debug(f"Skipping row - missing required columns")
+                continue
+            
             # Parse date - try multiple formats
-            date_str = str(row["Date"]).strip()
+            date_str = str(row[date_col]).strip()
             try:
-                txn_date = pd.to_datetime(date_str, format="%d/%m/%y").strftime("%Y-%m-%d")
+                # Try common date formats
+                txn_date = pd.to_datetime(date_str, dayfirst=True).strftime("%Y-%m-%d")
             except:
-                try:
-                    txn_date = pd.to_datetime(date_str).strftime("%Y-%m-%d")
-                except:
-                    logging.warning(f"Could not parse date: {date_str}")
-                    continue
+                logging.warning(f"Could not parse date: {date_str}")
+                continue
             
             txn = {
                 "date": txn_date,
-                "description": str(row["Narration"]).strip(),
+                "description": str(row[narration_col]).strip(),
                 "amount": 0.0,
                 "direction": "DEBIT",
                 "raw_metadata": clean_metadata
