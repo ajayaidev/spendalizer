@@ -561,14 +561,33 @@ def parse_hdfc_bank_csv(file_content: bytes) -> List[Dict[str, Any]]:
                 "raw_metadata": clean_metadata
             }
             
-            if pd.notna(row.get("Withdrawal Amt.")):
-                amount_str = str(row["Withdrawal Amt."]).replace(",", "").replace("INR", "").strip()
-                txn["amount"] = abs(float(amount_str))
-                txn["direction"] = "DEBIT"
-            elif pd.notna(row.get("Deposit Amt.")):
-                amount_str = str(row["Deposit Amt."]).replace(",", "").replace("INR", "").strip()
-                txn["amount"] = abs(float(amount_str))
-                txn["direction"] = "CREDIT"
+            # Find withdrawal/deposit columns (case-insensitive)
+            withdrawal_col = None
+            deposit_col = None
+            
+            for col in df.columns:
+                col_lower = str(col).lower()
+                if 'withdrawal' in col_lower or 'debit' in col_lower:
+                    withdrawal_col = col
+                elif 'deposit' in col_lower or 'credit' in col_lower:
+                    deposit_col = col
+            
+            # Parse amounts
+            if withdrawal_col and pd.notna(row.get(withdrawal_col)):
+                amount_str = str(row[withdrawal_col]).replace(",", "").replace("INR", "").strip()
+                try:
+                    txn["amount"] = abs(float(amount_str))
+                    txn["direction"] = "DEBIT"
+                except ValueError:
+                    pass
+            
+            if deposit_col and pd.notna(row.get(deposit_col)):
+                amount_str = str(row[deposit_col]).replace(",", "").replace("INR", "").strip()
+                try:
+                    txn["amount"] = abs(float(amount_str))
+                    txn["direction"] = "CREDIT"
+                except ValueError:
+                    pass
             
             if txn["amount"] > 0:
                 transactions.append(txn)
