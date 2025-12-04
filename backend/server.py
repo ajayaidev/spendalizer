@@ -347,8 +347,24 @@ async def categorize_transaction(txn: Transaction) -> Dict[str, Any]:
 def parse_hdfc_bank_excel(file_content: bytes) -> List[Dict[str, Any]]:
     """Parse HDFC Bank Excel file"""
     try:
-        df = pd.read_excel(io.BytesIO(file_content))
-        logging.info(f"Successfully parsed Excel file with {len(df)} rows")
+        # HDFC Bank Excel files often have headers at row 20 (0-indexed)
+        # Try reading with skiprows to find the correct header
+        df = None
+        for skip in [20, 0, 10, 15]:  # Try common header positions
+            try:
+                temp_df = pd.read_excel(io.BytesIO(file_content), skiprows=skip)
+                # Check if this looks like transaction data
+                if any(col for col in temp_df.columns if 'date' in str(col).lower()):
+                    df = temp_df
+                    logging.info(f"Found headers at row {skip}, loaded {len(df)} rows")
+                    break
+            except:
+                continue
+        
+        if df is None:
+            # Fallback to reading without skipping
+            df = pd.read_excel(io.BytesIO(file_content))
+            logging.info(f"Successfully parsed Excel file with {len(df)} rows")
     except Exception as e:
         logging.error(f"Failed to parse Excel file: {e}")
         raise ValueError(f"Could not parse Excel file: {str(e)}")
