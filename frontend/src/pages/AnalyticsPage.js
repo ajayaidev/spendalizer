@@ -68,6 +68,34 @@ const AnalyticsPage = () => {
         <p className="text-muted-foreground">Insights into your spending and saving patterns</p>
       </div>
 
+      {/* Uncategorized Alert */}
+      {uncategorizedData && uncategorizedData.count > 0 && (
+        <Card className="mb-6 border-yellow-200 bg-yellow-50" data-testid="uncategorized-alert">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                <PieChartIcon className="w-6 h-6 text-yellow-700" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-yellow-900 mb-1">
+                  {uncategorizedData.count} Uncategorized Transaction{uncategorizedData.count !== 1 ? 's' : ''}
+                </h3>
+                <p className="text-sm text-yellow-800 mb-3">
+                  You have ₹{uncategorizedData.total.toLocaleString()} in uncategorized transactions. 
+                  Categorizing them will improve your spending insights and analytics.
+                </p>
+                <a 
+                  href="/transactions" 
+                  className="text-sm font-medium text-yellow-900 hover:text-yellow-700 underline"
+                >
+                  Review and categorize →
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card data-testid="total-income-card">
