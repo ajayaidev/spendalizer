@@ -223,14 +223,39 @@ const AnalyticsPage = () => {
           <CardDescription>Detailed spending by category</CardDescription>
         </CardHeader>
         <CardContent>
-          {expenseCategories.length === 0 ? (
+          {expenseCategories.length === 0 && !uncategorizedData ? (
             <div className="text-center py-8 text-muted-foreground">
               <p>No expense data available</p>
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Show uncategorized first if it exists */}
+              {uncategorizedData && (
+                <div 
+                  className="flex items-center justify-between p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50" 
+                  data-testid="category-uncategorized"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-yellow-900">Uncategorized</p>
+                      <span className="px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-800 text-xs font-medium">
+                        Needs Review
+                      </span>
+                    </div>
+                    <p className="text-sm text-yellow-700">{uncategorizedData.count} transactions</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-semibold text-yellow-900">₹{uncategorizedData.total.toLocaleString()}</p>
+                    <p className="text-xs text-yellow-700">
+                      {((uncategorizedData.total / summary.total_expense) * 100).toFixed(1)}% of total
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Regular expense categories */}
               {expenseCategories.map((cat, index) => (
-                <div key={index} className="flex items-center justify-between" data-testid={`category-${cat.category_id}`}>
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-secondary transition-colors" data-testid={`category-${cat.category_id}`}>
                   <div className="flex-1">
                     <p className="font-medium">{cat.category_name}</p>
                     <p className="text-sm text-muted-foreground">{cat.count} transactions</p>
