@@ -11,6 +11,7 @@ import ImportPage from './pages/ImportPage';
 import TransactionsPage from './pages/TransactionsPage';
 import RulesPage from './pages/RulesPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import CategoriesPage from './pages/CategoriesPage';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
