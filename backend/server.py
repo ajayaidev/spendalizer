@@ -400,8 +400,22 @@ def parse_hdfc_bank_csv(file_content: bytes) -> List[Dict[str, Any]]:
     return transactions
 
 def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, Any]]:
-    # For now, use a generic parser that tries to identify common columns
-    df = pd.read_csv(io.BytesIO(file_content))
+    # Try different encodings to handle various file formats
+    encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'iso-8859-1', 'cp1252', 'windows-1252']
+    df = None
+    
+    for encoding in encodings:
+        try:
+            df = pd.read_csv(io.BytesIO(file_content), encoding=encoding)
+            logging.info(f"Successfully decoded CSV with {encoding} encoding")
+            break
+        except (UnicodeDecodeError, Exception) as e:
+            logging.debug(f"Failed to decode with {encoding}: {e}")
+            continue
+    
+    if df is None:
+        raise ValueError("Could not decode file. Please ensure it's a valid CSV file.")
+    
     transactions = []
     
     # Try to identify date column
@@ -423,12 +437,21 @@ def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, A
     
     for _, row in df.iterrows():
         try:
+            # Clean raw metadata to avoid NaN values
+            raw_dict = row.to_dict()
+            clean_metadata = {}
+            for k, v in raw_dict.items():
+                if pd.notna(v):
+                    clean_metadata[k] = v
+                else:
+                    clean_metadata[k] = None
+            
             txn = {
                 "date": pd.to_datetime(row[date_col]).strftime("%Y-%m-%d"),
                 "description": str(row[desc_col]).strip(),
                 "amount": 0.0,
                 "direction": "DEBIT",
-                "raw_metadata": row.to_dict()
+                "raw_metadata": clean_metadata
             }
             
             # Try to find amount columns
@@ -436,11 +459,13 @@ def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, A
                 col_lower = col.lower()
                 if "withdrawal" in col_lower or "debit" in col_lower:
                     if pd.notna(row[col]):
-                        txn["amount"] = abs(float(str(row[col]).replace(",", "").replace("INR", "").strip()))
+                        amount_str = str(row[col]).replace(",", "").replace("INR", "").strip()
+                        txn["amount"] = abs(float(amount_str))
                         txn["direction"] = "DEBIT"
                 elif "deposit" in col_lower or "credit" in col_lower:
                     if pd.notna(row[col]):
-                        txn["amount"] = abs(float(str(row[col]).replace(",", "").replace("INR", "").strip()))
+                        amount_str = str(row[col]).replace(",", "").replace("INR", "").strip()
+                        txn["amount"] = abs(float(amount_str))
                         txn["direction"] = "CREDIT"
             
             if txn["amount"] > 0:
