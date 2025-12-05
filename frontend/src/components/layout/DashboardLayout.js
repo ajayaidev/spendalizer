@@ -25,6 +25,7 @@ const DashboardLayout = () => {
     { to: '/categories', label: 'Categories', icon: Tag },
     { to: '/rules', label: 'Rules', icon: Sparkles },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+    { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
