@@ -1240,7 +1240,7 @@ async def delete_all_transactions(
     request: DeleteAllTransactionsRequest,
     user_id: str = Depends(get_current_user)
 ):
-    # Verify confirmation text
+    # Verify confirmation text FIRST - regardless of transaction count
     if request.confirmation_text.strip().upper() != "DELETE ALL":
         raise HTTPException(status_code=400, detail="Confirmation text does not match. Please type 'DELETE ALL'")
     
