@@ -604,6 +604,7 @@ def main():
     test_results.append(("Forgot Password - Valid Email", tester.test_forgot_password_valid_email()))
     test_results.append(("Forgot Password - Non-existent Email", tester.test_forgot_password_nonexistent_email()))
     test_results.append(("Reset Password - Invalid Token", tester.test_reset_password_invalid_token()))
+    test_results.append(("Password Reset Flow", tester.test_password_reset_flow()))
     
     # Delete All Transactions Tests
     print("\n📋 DELETE ALL TRANSACTIONS TESTS")
