@@ -1,0 +1,219 @@
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { deleteAllTransactions } from '../lib/api';
+import { AuthContext } from '../App';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { AlertTriangle, Trash2, User } from 'lucide-react';
+import { toast } from 'sonner';
+
+const SettingsPage = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [confirmationText, setConfirmationText] = useState('');
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const handleDeleteAll = async () => {
+    if (confirmationText.trim().toUpperCase() !== 'DELETE ALL') {
+      toast.error('Please type DELETE ALL exactly');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await deleteAllTransactions({ confirmation_text: confirmationText });
+      toast.success(`Successfully deleted ${response.data.deleted_count} transactions`);
+      setDeleteDialogOpen(false);
+      setConfirmationText('');
+      setStep(1);
+      
+      // Redirect to dashboard after deletion
+      setTimeout(() => navigate('/'), 1500);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete transactions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="settings-page">
+      <div className="mb-8">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Settings</h1>
+        <p className="text-muted-foreground">Manage your account and preferences</p>
+      </div>
+
+      {/* Profile Section */}
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <CardTitle>Profile Information</CardTitle>
+              <CardDescription>Your account details</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="text-muted-foreground">Name</Label>
+            <p className="font-medium">{user?.name}</p>
+          </div>
+          <div>
+            <Label className="text-muted-foreground">Email</Label>
+            <p className="font-medium">{user?.email}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card className="border-destructive">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-destructive" />
+            </div>
+            <div>
+              <CardTitle className="text-destructive">Danger Zone</CardTitle>
+              <CardDescription>Irreversible and destructive actions</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="p-4 rounded-lg border-2 border-destructive/20 bg-destructive/5">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="font-semibold text-destructive mb-1">Delete All Transactions</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Permanently delete all your transactions, import history, and related data. 
+                  This action cannot be undone.
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1 mb-4">
+                  <li>• All transactions will be deleted</li>
+                  <li>• Import history will be removed</li>
+                  <li>• Analytics data will be cleared</li>
+                  <li>• Categories and rules will be preserved</li>
+                </ul>
+              </div>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setDeleteDialogOpen(true);
+                setStep(1);
+                setConfirmationText('');
+              }}
+              data-testid="delete-all-button"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete All Transactions
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          setDeleteDialogOpen(false);
+          setStep(1);
+          setConfirmationText('');
+        }
+      }}>
+        <DialogContent data-testid="delete-confirmation-dialog">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="w-5 h-5" />
+              {step === 1 ? 'Confirm Deletion' : 'Final Confirmation'}
+            </DialogTitle>
+            <DialogDescription>
+              {step === 1 
+                ? 'This action cannot be undone. Are you absolutely sure?'
+                : 'Type DELETE ALL to confirm this permanent action'
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {step === 1 ? (
+              <>
+                <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <p className="text-sm font-medium text-destructive mb-2">⚠️ Warning:</p>
+                  <ul className="text-sm space-y-1">
+                    <li>• All your transactions will be permanently deleted</li>
+                    <li>• Import history will be removed</li>
+                    <li>• This cannot be undone</li>
+                    <li>• Analytics will be reset to zero</li>
+                  </ul>
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteDialogOpen(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setStep(2)}
+                    className="flex-1"
+                    data-testid="proceed-button"
+                  >
+                    I Understand, Proceed
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmation">
+                    Type <code className="px-2 py-1 rounded bg-muted font-mono text-sm">DELETE ALL</code> to confirm
+                  </Label>
+                  <Input
+                    id="confirmation"
+                    value={confirmationText}
+                    onChange={(e) => setConfirmationText(e.target.value)}
+                    placeholder="Type DELETE ALL"
+                    data-testid="confirmation-input"
+                    className="font-mono"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setStep(1);
+                      setConfirmationText('');
+                    }}
+                    className="flex-1"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteAll}
+                    disabled={confirmationText.trim().toUpperCase() !== 'DELETE ALL' || loading}
+                    className="flex-1"
+                    data-testid="final-delete-button"
+                  >
+                    {loading ? 'Deleting...' : 'Delete All Transactions'}
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default SettingsPage;
