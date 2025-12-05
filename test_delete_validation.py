@@ -9,8 +9,10 @@ def test_delete_validation():
     base_url = "https://spend-tracker-140.preview.emergentagent.com"
     
     # First register a user
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%H%M%S")
     register_data = {
-        "email": "validation_test@example.com",
+        "email": f"validation_test_{timestamp}@example.com",
         "name": "Validation Test User",
         "password": "TestPass123!"
     }
