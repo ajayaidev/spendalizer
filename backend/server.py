@@ -776,7 +776,7 @@ async def login(credentials: UserLogin):
     return {"token": token, "user": {"id": user_doc["id"], "email": user_doc["email"], "name": user_doc["name"]}}
 
 @api_router.post("/auth/forgot-password")
-async def forgot_password(request: ForgotPasswordRequest):
+async def forgot_password(request: ForgotPasswordRequest, req: Request):
     # Find user by email
     user_doc = await db.users.find_one({"email": request.email})
     
@@ -798,8 +798,15 @@ async def forgot_password(request: ForgotPasswordRequest):
         }}
     )
     
+    # Determine frontend URL from request origin or fallback to env variable
+    origin = req.headers.get("origin") or req.headers.get("referer", "").rstrip("/")
+    if origin and origin.startswith("http"):
+        frontend_url = origin
+    else:
+        frontend_url = FRONTEND_URL
+    
     # Send email
-    reset_link = f"{FRONTEND_URL}/reset-password?token={reset_token}"
+    reset_link = f"{frontend_url}/reset-password?token={reset_token}"
     email_body = f"""
     <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
