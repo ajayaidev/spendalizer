@@ -406,7 +406,7 @@ class SpendAlizerAPITester:
     def test_delete_all_transactions_wrong_confirmation(self):
         """Test delete all transactions with wrong confirmation text"""
         delete_data = {
-            "confirmation_text": "delete all"  # Wrong case
+            "confirmation_text": "delete everything"  # Actually wrong text
         }
         
         success, response = self.run_test(
