@@ -62,6 +62,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
+          <Route path="/forgot-password" element={!user ? <ForgotPasswordPage /> : <Navigate to="/" />} />
+          <Route path="/reset-password" element={!user ? <ResetPasswordPage /> : <Navigate to="/" />} />
           
           <Route path="/" element={user ? <DashboardLayout /> : <Navigate to="/auth" />}>
             <Route index element={<DashboardPage />} />
@@ -71,6 +73,7 @@ function App() {
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="rules" element={<RulesPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
