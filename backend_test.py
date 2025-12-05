@@ -551,7 +551,8 @@ def main():
     
     # Delete All Transactions Tests
     print("\n📋 DELETE ALL TRANSACTIONS TESTS")
-    tester.create_test_transactions()  # Create some test data
+    test_results.append(("Create Test Transactions", tester.create_test_transactions()))  # Create some test data
+    test_results.append(("Verify Test Transactions Created", tester.test_get_transactions()))
     test_results.append(("Delete All - Wrong Confirmation", tester.test_delete_all_transactions_wrong_confirmation()))
     test_results.append(("Delete All - Correct Confirmation", tester.test_delete_all_transactions_correct_confirmation()))
     test_results.append(("Verify Transactions Deleted", tester.verify_transactions_deleted()))
