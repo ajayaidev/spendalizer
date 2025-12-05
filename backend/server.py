@@ -37,11 +37,11 @@ JWT_ALGORITHM = 'HS256'
 JWT_EXPIRATION_HOURS = 24 * 7
 
 # Email configuration
-SMTP_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
-SMTP_PORT = int(os.environ.get('SMTP_PORT', '587'))
-SMTP_USER = os.environ.get('SMTP_USER', '')
-SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
-FROM_EMAIL = os.environ.get('FROM_EMAIL', SMTP_USER)
+SMTP_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+SMTP_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+SMTP_USER = os.environ.get('EMAIL_USER', '')
+SMTP_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')
+FROM_EMAIL = os.environ.get('EMAIL_FROM', SMTP_USER)
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
 # Ollama configuration
