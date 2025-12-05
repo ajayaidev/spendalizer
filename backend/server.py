@@ -774,6 +774,86 @@ async def login(credentials: UserLogin):
     token = create_token(user_doc["id"])
     return {"token": token, "user": {"id": user_doc["id"], "email": user_doc["email"], "name": user_doc["name"]}}
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    # Find user by email
+    user_doc = await db.users.find_one({"email": request.email})
+    
+    # Always return success to prevent email enumeration
+    if not user_doc:
+        logging.info(f"Password reset requested for non-existent email: {request.email}")
+        return {"message": "If the email exists, a reset link has been sent"}
+    
+    # Generate reset token
+    reset_token = generate_reset_token()
+    expiration = datetime.now(timezone.utc) + timedelta(hours=1)
+    
+    # Store reset token in database
+    await db.users.update_one(
+        {"id": user_doc["id"]},
+        {"$set": {
+            "reset_token": reset_token,
+            "reset_token_expiration": expiration.isoformat()
+        }}
+    )
+    
+    # Send email
+    reset_link = f"{FRONTEND_URL}/reset-password?token={reset_token}"
+    email_body = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Reset Your SpendAlizer Password</h2>
+            <p>Hi {user_doc['name']},</p>
+            <p>You requested to reset your password. Click the button below to reset it:</p>
+            <p style="margin: 30px 0;">
+                <a href="{reset_link}" 
+                   style="background-color: #4169E1; color: white; padding: 12px 24px; 
+                          text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Reset Password
+                </a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="color: #666; word-break: break-all;">{reset_link}</p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you didn't request this, please ignore this email.</p>
+            <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+            <p style="color: #999; font-size: 12px;">SpendAlizer - Personal Finance Management</p>
+        </body>
+    </html>
+    """
+    
+    await send_email(request.email, "Reset Your Password - SpendAlizer", email_body)
+    
+    return {"message": "If the email exists, a reset link has been sent"}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    # Find user with valid reset token
+    user_doc = await db.users.find_one({"reset_token": request.token})
+    
+    if not user_doc:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    # Check if token is expired
+    expiration = datetime.fromisoformat(user_doc.get("reset_token_expiration", ""))
+    if datetime.now(timezone.utc) > expiration:
+        raise HTTPException(status_code=400, detail="Reset token has expired")
+    
+    # Update password and clear reset token
+    new_password_hash = hash_password(request.new_password)
+    await db.users.update_one(
+        {"id": user_doc["id"]},
+        {"$set": {
+            "password_hash": new_password_hash
+        },
+        "$unset": {
+            "reset_token": "",
+            "reset_token_expiration": ""
+        }}
+    )
+    
+    return {"message": "Password reset successful"}
+
 # Account Routes
 @api_router.get("/accounts", response_model=List[Account])
 async def get_accounts(user_id: str = Depends(get_current_user)):
