@@ -554,6 +554,9 @@ def main():
     test_results.append(("Create Test Transactions", tester.create_test_transactions()))  # Create some test data
     test_results.append(("Verify Test Transactions Created", tester.test_get_transactions()))
     test_results.append(("Delete All - Wrong Confirmation", tester.test_delete_all_transactions_wrong_confirmation()))
+    
+    # Create transactions again for the correct confirmation test
+    test_results.append(("Create Test Transactions Again", tester.create_test_transactions()))
     test_results.append(("Delete All - Correct Confirmation", tester.test_delete_all_transactions_correct_confirmation()))
     test_results.append(("Verify Transactions Deleted", tester.verify_transactions_deleted()))
     test_results.append(("Verify Categories Preserved", tester.verify_categories_preserved()))
