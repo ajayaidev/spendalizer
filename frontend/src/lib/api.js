@@ -54,4 +54,7 @@ export const deleteRule = (ruleId) => api.delete(`/rules/${ruleId}`);
 // Analytics
 export const getAnalyticsSummary = (params) => api.get('/analytics/summary', { params });
 
+// Danger Zone
+export const deleteAllTransactions = (data) => api.post('/transactions/delete-all', data);
+
 export default api;
