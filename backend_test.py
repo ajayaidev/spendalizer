@@ -352,51 +352,56 @@ class SpendAlizerAPITester:
         return False
 
     def create_test_transactions(self):
-        """Create test transactions for delete all test"""
-        if not self.test_account_id or not self.test_category_id:
-            print("❌ Cannot create test transactions - missing account or category")
+        """Create test transactions for delete all test using CSV import"""
+        if not self.test_account_id:
+            print("❌ Cannot create test transactions - missing account")
             return False
         
-        # Create 3 test transactions
-        test_transactions = [
-            {
-                "user_id": self.user_id,
-                "account_id": self.test_account_id,
-                "date": "2024-01-15",
-                "description": "Test Transaction 1 - Coffee Shop",
-                "amount": 150.0,
-                "direction": "DEBIT",
-                "transaction_type": "BANK",
-                "category_id": self.test_category_id,
-                "categorisation_source": "MANUAL"
-            },
-            {
-                "user_id": self.user_id,
-                "account_id": self.test_account_id,
-                "date": "2024-01-16",
-                "description": "Test Transaction 2 - Grocery Store",
-                "amount": 2500.0,
-                "direction": "DEBIT",
-                "transaction_type": "BANK",
-                "category_id": self.test_category_id,
-                "categorisation_source": "MANUAL"
-            },
-            {
-                "user_id": self.user_id,
-                "account_id": self.test_account_id,
-                "date": "2024-01-17",
-                "description": "Test Transaction 3 - Salary Credit",
-                "amount": 50000.0,
-                "direction": "CREDIT",
-                "transaction_type": "BANK",
-                "category_id": self.test_category_id,
-                "categorisation_source": "MANUAL"
-            }
-        ]
+        # Create a simple CSV content for testing
+        csv_content = """Date,Narration,Withdrawal Amt.,Deposit Amt.
+15/01/24,Test Transaction 1 - Coffee Shop,150.00,
+16/01/24,Test Transaction 2 - Grocery Store,2500.00,
+17/01/24,Test Transaction 3 - Salary Credit,,50000.00"""
         
-        # Insert transactions directly via MongoDB (simulating import)
-        print("   Creating 3 test transactions...")
-        return True
+        # Write CSV to a temporary file
+        import tempfile
+        import os
+        
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+                f.write(csv_content)
+                temp_csv_path = f.name
+            
+            # Import the CSV file
+            with open(temp_csv_path, 'rb') as f:
+                files = {'file': ('test_transactions.csv', f, 'text/csv')}
+                data = {
+                    'account_id': self.test_account_id,
+                    'data_source': 'HDFC_BANK'
+                }
+                
+                success, response = self.run_test(
+                    "Create Test Transactions via Import",
+                    "POST",
+                    "import",
+                    200,
+                    data=data,
+                    files=files
+                )
+                
+                # Clean up temp file
+                os.unlink(temp_csv_path)
+                
+                if success and response.get('success_count', 0) > 0:
+                    print(f"   ✅ Created {response['success_count']} test transactions")
+                    return True
+                else:
+                    print(f"   ❌ Failed to create test transactions: {response}")
+                    return False
+                    
+        except Exception as e:
+            print(f"   ❌ Error creating test transactions: {e}")
+            return False
 
     def test_delete_all_transactions_wrong_confirmation(self):
         """Test delete all transactions with wrong confirmation text"""
