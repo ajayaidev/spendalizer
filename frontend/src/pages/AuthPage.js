@@ -85,6 +85,11 @@ const AuthPage = () => {
                 <Button type="submit" className="w-full" disabled={loading} data-testid="login-submit-button">
                   {loading ? 'Logging in...' : 'Login'}
                 </Button>
+                <div className="text-center mt-4">
+                  <a href="/forgot-password" className="text-sm text-primary hover:underline">
+                    Forgot password?
+                  </a>
+                </div>
               </form>
             </TabsContent>
             
