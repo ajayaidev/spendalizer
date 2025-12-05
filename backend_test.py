@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 
 class SpendAlizerAPITester:
-    def __init__(self, base_url="https://budgetpal-270.preview.emergentagent.com"):
+    def __init__(self, base_url="https://spend-tracker-140.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
