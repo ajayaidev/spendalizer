@@ -222,6 +222,7 @@ async def send_email(to_email: str, subject: str, body: str):
         return False
     
     try:
+        logging.info(f"Attempting to send email using {SMTP_HOST}:{SMTP_PORT} with user {SMTP_USER}")
         message = MIMEMultipart()
         message["From"] = FROM_EMAIL
         message["To"] = to_email
@@ -236,7 +237,7 @@ async def send_email(to_email: str, subject: str, body: str):
             username=SMTP_USER,
             password=SMTP_PASSWORD,
         )
-        logging.info(f"Email sent to {to_email}")
+        logging.info(f"Email sent successfully to {to_email}")
         return True
     except Exception as e:
         logging.error(f"Failed to send email: {e}")
