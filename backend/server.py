@@ -758,9 +758,9 @@ async def register(user_data: UserRegister):
         password_hash=hash_password(user_data.password)
     )
     
-    doc = user.model_dump(exclude_unset=True)
+    doc = user.model_dump()
     doc['password_hash'] = user.password_hash  # Explicitly include password_hash
-    doc['created_at'] = doc['created_at'].isoformat()
+    doc['created_at'] = user.created_at.isoformat()
     await db.users.insert_one(doc)
     
     token = create_token(user.id)
