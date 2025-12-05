@@ -422,6 +422,25 @@ class SpendAlizerAPITester:
             return True
         return False
 
+    def test_delete_all_transactions_case_insensitive(self):
+        """Test delete all transactions with case-insensitive confirmation"""
+        delete_data = {
+            "confirmation_text": "delete all"  # lowercase should work (case-insensitive)
+        }
+        
+        success, response = self.run_test(
+            "Delete All Transactions - Case Insensitive",
+            "POST",
+            "transactions/delete-all",
+            200,
+            data=delete_data
+        )
+        
+        if success and "deleted_count" in response:
+            print(f"   Deleted {response['deleted_count']} transactions")
+            return True
+        return False
+
     def test_delete_all_transactions_correct_confirmation(self):
         """Test delete all transactions with correct confirmation text"""
         delete_data = {
