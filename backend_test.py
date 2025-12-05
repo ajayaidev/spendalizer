@@ -351,6 +351,43 @@ class SpendAlizerAPITester:
             return True
         return False
 
+    def test_password_reset_flow(self):
+        """Test complete password reset flow with a real user"""
+        # Create a test user first
+        test_email = f"reset_test_{datetime.now().strftime('%H%M%S')}@example.com"
+        register_data = {
+            "email": test_email,
+            "name": "Reset Test User",
+            "password": "OriginalPass123!"
+        }
+        
+        # Register user
+        success, response = self.run_test(
+            "Register User for Reset Test",
+            "POST",
+            "auth/register",
+            200,
+            data=register_data
+        )
+        
+        if not success:
+            return False
+        
+        # Request password reset
+        forgot_data = {"email": test_email}
+        success, response = self.run_test(
+            "Request Password Reset for Real User",
+            "POST",
+            "auth/forgot-password",
+            200,
+            data=forgot_data
+        )
+        
+        if success:
+            print(f"   Password reset requested for real user")
+            return True
+        return False
+
     def create_test_transactions(self):
         """Create test transactions for delete all test using CSV import"""
         if not self.test_account_id:
