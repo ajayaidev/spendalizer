@@ -214,6 +214,38 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except:
         raise HTTPException(status_code=401, detail="Invalid authentication")
 
+# Email helper
+async def send_email(to_email: str, subject: str, body: str):
+    """Send email using SMTP"""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        logging.warning("Email not configured. Skipping email send.")
+        return False
+    
+    try:
+        message = MIMEMultipart()
+        message["From"] = FROM_EMAIL
+        message["To"] = to_email
+        message["Subject"] = subject
+        message.attach(MIMEText(body, "html"))
+        
+        await aiosmtplib.send(
+            message,
+            hostname=SMTP_HOST,
+            port=SMTP_PORT,
+            start_tls=True,
+            username=SMTP_USER,
+            password=SMTP_PASSWORD,
+        )
+        logging.info(f"Email sent to {to_email}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send email: {e}")
+        return False
+
+def generate_reset_token() -> str:
+    """Generate secure random token"""
+    return secrets.token_urlsafe(32)
+
 # Initialize default categories
 async def init_default_categories():
     default_categories = [
