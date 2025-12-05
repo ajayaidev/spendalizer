@@ -538,6 +538,21 @@ def main():
     print("\n📋 ANALYTICS TESTS")
     test_results.append(("Analytics Summary", tester.test_analytics_summary()))
     
+    # Forgot Password Tests
+    print("\n📋 FORGOT PASSWORD TESTS")
+    test_results.append(("Forgot Password - Valid Email", tester.test_forgot_password_valid_email()))
+    test_results.append(("Forgot Password - Non-existent Email", tester.test_forgot_password_nonexistent_email()))
+    test_results.append(("Reset Password - Invalid Token", tester.test_reset_password_invalid_token()))
+    
+    # Delete All Transactions Tests
+    print("\n📋 DELETE ALL TRANSACTIONS TESTS")
+    tester.create_test_transactions()  # Create some test data
+    test_results.append(("Delete All - Wrong Confirmation", tester.test_delete_all_transactions_wrong_confirmation()))
+    test_results.append(("Delete All - Correct Confirmation", tester.test_delete_all_transactions_correct_confirmation()))
+    test_results.append(("Verify Transactions Deleted", tester.verify_transactions_deleted()))
+    test_results.append(("Verify Categories Preserved", tester.verify_categories_preserved()))
+    test_results.append(("Verify Rules Preserved", tester.verify_rules_preserved()))
+    
     # Cleanup
     print("\n📋 CLEANUP")
     tester.cleanup_test_data()
