@@ -9,6 +9,7 @@ import {
   Tag,
   Sparkles, 
   BarChart3, 
+  Settings,
   LogOut 
 } from 'lucide-react';
 import { Button } from '../ui/button';
