@@ -1234,6 +1234,35 @@ async def get_import_history(user_id: str = Depends(get_current_user)):
     ).sort("imported_at", -1).limit(50).to_list(50)
     return batches
 
+# Delete All Transactions (Danger Zone)
+@api_router.post("/transactions/delete-all")
+async def delete_all_transactions(
+    request: DeleteAllTransactionsRequest,
+    user_id: str = Depends(get_current_user)
+):
+    # Verify confirmation text
+    if request.confirmation_text.strip().upper() != "DELETE ALL":
+        raise HTTPException(status_code=400, detail="Confirmation text does not match. Please type 'DELETE ALL'")
+    
+    # Count transactions before deletion
+    count = await db.transactions.count_documents({"user_id": user_id})
+    
+    if count == 0:
+        return {"message": "No transactions to delete", "deleted_count": 0}
+    
+    # Delete all transactions for this user
+    result = await db.transactions.delete_many({"user_id": user_id})
+    
+    # Also delete import batches
+    await db.import_batches.delete_many({"user_id": user_id})
+    
+    logging.warning(f"User {user_id} deleted all {result.deleted_count} transactions")
+    
+    return {
+        "message": f"Successfully deleted all transactions",
+        "deleted_count": result.deleted_count
+    }
+
 # Include router
 app.include_router(api_router)
 
