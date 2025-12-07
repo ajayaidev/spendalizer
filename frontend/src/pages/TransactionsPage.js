@@ -118,20 +118,33 @@ const TransactionsPage = () => {
       
       if (bulkMethod === 'manual') {
         response = await bulkCategorizeTransactions(selectedTransactions, bulkCategory);
+        toast.success(`Successfully categorized ${response.data.updated_count} transactions!`);
       } else if (bulkMethod === 'rules') {
         response = await bulkCategorizeByRules(selectedTransactions);
+        const data = response.data;
+        if (data.updated_count === 0) {
+          toast.warning(data.message || `No transactions matched your rules. ${data.rules_available || 0} rules available.`);
+        } else {
+          toast.success(`Successfully categorized ${data.updated_count} of ${selectedTransactions.length} transactions using rules!`);
+        }
       } else if (bulkMethod === 'ai') {
         response = await bulkCategorizeByAI(selectedTransactions);
+        const data = response.data;
+        if (data.updated_count === 0) {
+          toast.warning('No transactions were categorized by AI. Ensure Ollama is running locally.');
+        } else {
+          toast.success(`AI categorized ${data.updated_count} of ${selectedTransactions.length} transactions!`);
+        }
       }
       
-      toast.success(`Successfully categorized ${response.data.updated_count} of ${selectedTransactions.length} transactions!`);
       setShowBulkDialog(false);
       setBulkCategory('');
       setBulkMethod('manual');
       setSelectedTransactions([]);
       loadData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to bulk categorize transactions');
+      const errorMsg = error.response?.data?.detail || error.message || 'Failed to bulk categorize transactions';
+      toast.error(errorMsg);
     } finally {
       setBulkLoading(false);
     }
