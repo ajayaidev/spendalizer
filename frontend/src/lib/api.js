@@ -47,6 +47,10 @@ export const updateTransactionCategory = (txnId, categoryId) =>
   api.patch(`/transactions/${txnId}/category`, { category_id: categoryId });
 export const bulkCategorizeTransactions = (transactionIds, categoryId) =>
   api.post('/transactions/bulk-categorize', { transaction_ids: transactionIds, category_id: categoryId });
+export const bulkCategorizeByRules = (transactionIds) =>
+  api.post('/transactions/bulk-categorize-by-rules', { transaction_ids: transactionIds });
+export const bulkCategorizeByAI = (transactionIds) =>
+  api.post('/transactions/bulk-categorize-by-ai', { transaction_ids: transactionIds });
 
 // Rules
 export const getRules = () => api.get('/rules');
