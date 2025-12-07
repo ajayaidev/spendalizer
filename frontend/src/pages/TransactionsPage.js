@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTransactions, getCategories, getAccounts, updateTransactionCategory, createCategory } from '../lib/api';
+import { getTransactions, getCategories, getAccounts, updateTransactionCategory, createCategory, bulkCategorizeTransactions } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Calendar } from '../components/ui/calendar';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../components/ui/command';
-import { Search, Filter, Calendar as CalendarIcon, Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Checkbox } from '../components/ui/checkbox';
+import { Search, Filter, Calendar as CalendarIcon, Check, ChevronsUpDown, Plus, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { cn } from '../lib/utils';
@@ -29,6 +30,13 @@ const TransactionsPage = () => {
   const [categoryComboOpen, setCategoryComboOpen] = useState(false);
   const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false);
   const [newCategoryForm, setNewCategoryForm] = useState({ name: '', type: 'EXPENSE' });
+  
+  // Bulk categorization states
+  const [selectedTransactions, setSelectedTransactions] = useState([]);
+  const [showBulkDialog, setShowBulkDialog] = useState(false);
+  const [bulkCategory, setBulkCategory] = useState('');
+  const [bulkCategorySearch, setBulkCategorySearch] = useState('');
+  const [bulkComboOpen, setBulkComboOpen] = useState(false);
 
   useEffect(() => {
     loadData();
