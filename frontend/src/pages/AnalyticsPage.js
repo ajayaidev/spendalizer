@@ -417,7 +417,8 @@ const AnalyticsPage = () => {
                       <p className="text-sm">No expense categories</p>
                     </div>
                   )}
-                </div>
+                  </CardContent>
+                </Card>
 
                 {/* Transfer Categories */}
                 <div>
