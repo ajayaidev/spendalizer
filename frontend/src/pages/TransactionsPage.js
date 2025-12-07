@@ -292,7 +292,15 @@ const TransactionsPage = () => {
       {/* Transactions Table */}
       <Card data-testid="transactions-table-card">
         <CardHeader>
-          <CardTitle>All Transactions ({filteredTransactions.length})</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>All Transactions ({filteredTransactions.length})</CardTitle>
+            {selectedTransactions.length > 0 && (
+              <Button onClick={() => setShowBulkDialog(true)} size="sm">
+                <Tag className="w-4 h-4 mr-2" />
+                Categorize Selected ({selectedTransactions.length})
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
@@ -300,16 +308,34 @@ const TransactionsPage = () => {
               <p>No transactions found</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {filteredTransactions.map((txn) => (
-                <div
-                  key={txn.id}
-                  className="flex items-center justify-between p-4 rounded-lg border hover:bg-secondary transition-colors"
-                  data-testid={`transaction-row-${txn.id}`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-1">
-                      <p className="font-medium truncate">{txn.description}</p>
+            <>
+              {filteredTransactions.length > 0 && (
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b">
+                  <Checkbox
+                    checked={selectedTransactions.length === filteredTransactions.length}
+                    onCheckedChange={selectAllTransactions}
+                    id="select-all"
+                  />
+                  <Label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
+                    Select All ({filteredTransactions.length})
+                  </Label>
+                </div>
+              )}
+              <div className="space-y-3">
+                {filteredTransactions.map((txn) => (
+                  <div
+                    key={txn.id}
+                    className="flex items-center gap-3 p-4 rounded-lg border hover:bg-secondary transition-colors"
+                    data-testid={`transaction-row-${txn.id}`}
+                  >
+                    <Checkbox
+                      checked={selectedTransactions.includes(txn.id)}
+                      onCheckedChange={() => toggleTransactionSelection(txn.id)}
+                      id={`txn-${txn.id}`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <p className="font-medium truncate">{txn.description}</p>
                       <span
                         className="px-2 py-1 rounded-full text-xs font-medium bg-secondary cursor-pointer hover:bg-primary/10"
                         onClick={() => {
