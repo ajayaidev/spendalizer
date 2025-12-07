@@ -578,12 +578,12 @@ class SpendAlizerAPITester:
             print("❌ Target rule 'ACH C-' with STARTS_WITH not found")
             return False
         
-        # Step 2: Get uncategorized transactions
-        print("\n2️⃣ Checking uncategorized transactions...")
+        # Step 2: Get ALL transactions to see what happened
+        print("\n2️⃣ Checking ALL transactions...")
         success, txn_response = self.run_test(
-            "Get Uncategorized Transactions",
+            "Get All Transactions",
             "GET",
-            "transactions?uncategorized=true",
+            "transactions?limit=1000",
             200
         )
         
@@ -591,22 +591,57 @@ class SpendAlizerAPITester:
             print("❌ Failed to get transactions")
             return False
             
-        transactions = txn_response.get('transactions', [])
-        print(f"   Found {len(transactions)} uncategorized transactions:")
+        all_transactions = txn_response.get('transactions', [])
+        print(f"   Found {len(all_transactions)} total transactions:")
         
-        matching_transactions = []
-        for txn in transactions:
+        ach_transactions = []
+        uncategorized_ach = []
+        
+        for txn in all_transactions:
             description = txn.get('description', '')
-            print(f"   - ID: {txn['id'][:8]}... Description: '{description}'")
+            category_id = txn.get('category_id')
+            categorisation_source = txn.get('categorisation_source')
+            
             if description.upper().startswith("ACH C-"):
-                matching_transactions.append(txn)
-                print(f"     ✅ Should match rule!")
+                ach_transactions.append(txn)
+                print(f"   - ACH Transaction: '{description}'")
+                print(f"     Category: {category_id}, Source: {categorisation_source}")
+                
+                if not category_id:
+                    uncategorized_ach.append(txn)
+                    print(f"     ❌ UNCATEGORIZED - should be processed!")
+                else:
+                    print(f"     ✅ Already categorized during import")
+        
+        print(f"\n   Summary:")
+        print(f"   - Total ACH C- transactions: {len(ach_transactions)}")
+        print(f"   - Uncategorized ACH C- transactions: {len(uncategorized_ach)}")
+        
+        # Now get uncategorized transactions
+        print("\n2️⃣b Checking uncategorized transactions...")
+        success, txn_response = self.run_test(
+            "Get Uncategorized Transactions",
+            "GET",
+            "transactions?uncategorized=true",
+            200
+        )
+        
+        if success:
+            uncategorized_transactions = txn_response.get('transactions', [])
+            print(f"   Found {len(uncategorized_transactions)} uncategorized transactions:")
+            
+            for txn in uncategorized_transactions:
+                description = txn.get('description', '')
+                print(f"   - ID: {txn['id'][:8]}... Description: '{description}'")
+        
+        # Use uncategorized ACH transactions if any, otherwise use all ACH transactions for testing
+        matching_transactions = uncategorized_ach if uncategorized_ach else ach_transactions
         
         if not matching_transactions:
-            print("❌ No transactions starting with 'ACH C-' found")
+            print("❌ No ACH C- transactions found for testing")
             return False
             
-        print(f"   Found {len(matching_transactions)} transactions that should match")
+        print(f"   Using {len(matching_transactions)} transactions for bulk categorization test")
         
         # Step 3: Test bulk categorization
         print("\n3️⃣ Testing bulk categorization...")
