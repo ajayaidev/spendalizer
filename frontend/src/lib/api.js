@@ -45,6 +45,8 @@ export const getImportHistory = () => api.get('/imports');
 export const getTransactions = (params) => api.get('/transactions', { params });
 export const updateTransactionCategory = (txnId, categoryId) => 
   api.patch(`/transactions/${txnId}/category`, { category_id: categoryId });
+export const bulkCategorizeTransactions = (transactionIds, categoryId) =>
+  api.post('/transactions/bulk-categorize', { transaction_ids: transactionIds, category_id: categoryId });
 
 // Rules
 export const getRules = () => api.get('/rules');
