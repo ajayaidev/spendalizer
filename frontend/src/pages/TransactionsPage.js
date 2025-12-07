@@ -364,7 +364,8 @@ const TransactionsPage = () => {
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
