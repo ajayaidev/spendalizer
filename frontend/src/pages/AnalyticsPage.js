@@ -260,7 +260,6 @@ const AnalyticsPage = () => {
               {/* Three Column Layout for Desktop */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Income Categories */}
-                {incomeCategories.length > 0 && (
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide">Income</h3>
