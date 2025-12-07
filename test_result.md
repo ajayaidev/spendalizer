@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the new 'Bulk Categorize' feature on the Transactions page of SpendAlizer app"
+user_problem_statement: "Test the updated Analytics Category Breakdown with three sections on SpendAlizer"
 
 backend:
   - task: "Forgot Password API Endpoint"
