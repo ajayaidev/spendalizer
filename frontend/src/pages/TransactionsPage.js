@@ -38,6 +38,8 @@ const TransactionsPage = () => {
   const [bulkCategory, setBulkCategory] = useState('');
   const [bulkCategorySearch, setBulkCategorySearch] = useState('');
   const [bulkComboOpen, setBulkComboOpen] = useState(false);
+  const [bulkMethod, setBulkMethod] = useState('manual');
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   useEffect(() => {
     loadData();
