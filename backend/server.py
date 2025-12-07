@@ -759,7 +759,7 @@ async def register(user_data: UserRegister):
         password_hash=hash_password(user_data.password)
     )
     
-    doc = user.model_dump()
+    doc = user.model_dump(exclude={'password_hash'})  # Exclude password_hash from model_dump
     doc['password_hash'] = user.password_hash  # Explicitly include password_hash
     doc['created_at'] = user.created_at.isoformat()
     await db.users.insert_one(doc)
