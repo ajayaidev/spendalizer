@@ -46,7 +46,11 @@ const TransactionsPage = () => {
     try {
       const params = {};
       if (selectedAccount && selectedAccount !== '_all') params.account_id = selectedAccount;
-      if (selectedCategory && selectedCategory !== '_all') params.category_id = selectedCategory;
+      if (selectedCategory && selectedCategory === '_uncategorized') {
+        params.uncategorized = 'true';
+      } else if (selectedCategory && selectedCategory !== '_all') {
+        params.category_id = selectedCategory;
+      }
       if (dateRange.from) params.start_date = format(dateRange.from, 'yyyy-MM-dd');
       if (dateRange.to) params.end_date = format(dateRange.to, 'yyyy-MM-dd');
       
