@@ -217,6 +217,7 @@ const TransactionsPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="_all">All Categories</SelectItem>
+                <SelectItem value="_uncategorized">Uncategorized</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
