@@ -195,9 +195,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Forgot Password API Endpoint"
-    - "Reset Password API Endpoint"
-    - "Delete All Transactions API Endpoint"
+    - "Bulk Categorize Transactions Feature"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
