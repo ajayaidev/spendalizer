@@ -356,21 +356,73 @@ const AnalyticsPage = () => {
                     )}
                   </div>
                   {expenseCategories.length > 0 ? (
-                    <div className="space-y-2">
-                      {expenseCategories.map((cat, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-red-100 bg-red-50/50 hover:bg-red-50 transition-colors" data-testid={`category-expense-${cat.category_id}`}>
-                          <div className="flex-1">
-                            <p className="font-medium text-red-900">{cat.category_name}</p>
-                            <p className="text-sm text-red-700">{cat.count} transactions</p>
+                    <div className="space-y-4">
+                      {/* Expense Pie Chart */}
+                      <div className="flex justify-center">
+                        <ResponsiveContainer width="100%" height={200}>
+                          <PieChart>
+                            <Pie
+                              data={(() => {
+                                const topExpense = expenseCategories.slice(0, 5);
+                                const othersExpense = expenseCategories.slice(5);
+                                const pieData = topExpense.map(cat => ({
+                                  name: cat.category_name,
+                                  value: cat.total
+                                }));
+                                if (othersExpense.length > 0) {
+                                  pieData.push({
+                                    name: 'All Others',
+                                    value: othersExpense.reduce((sum, cat) => sum + cat.total, 0)
+                                  });
+                                }
+                                return pieData;
+                              })()}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={80}
+                              paddingAngle={2}
+                              dataKey="value"
+                            >
+                              {expenseCategories.slice(0, 5).map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={`hsl(${0 + index * 20}, 70%, ${50 + index * 8}%)`} />
+                              ))}
+                              {expenseCategories.length > 5 && (
+                                <Cell fill="hsl(0, 30%, 70%)" />
+                              )}
+                            </Pie>
+                            <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      
+                      {/* Top 5 Expense Categories */}
+                      <div className="space-y-2">
+                        {expenseCategories.slice(0, 5).map((cat, index) => (
+                          <div key={index} className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${0 + index * 20}, 70%, ${50 + index * 8}%)` }}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-red-900 text-sm truncate">{cat.category_name}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-red-900 text-sm">₹{cat.total.toLocaleString()}</p>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-lg font-semibold text-red-900">₹{cat.total.toLocaleString()}</p>
-                            <p className="text-xs text-red-700">
-                              {((cat.total / summary.total_expense) * 100).toFixed(1)}% of expenses
-                            </p>
+                        ))}
+                        {expenseCategories.length > 5 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(0, 30%, 70%)' }}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-red-700 text-sm">All Others</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-red-900 text-sm">
+                                ₹{expenseCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
