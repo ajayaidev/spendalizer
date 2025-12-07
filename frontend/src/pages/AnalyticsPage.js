@@ -505,12 +505,9 @@ const AnalyticsPage = () => {
                       <p className="text-sm">No transfer categories</p>
                     </div>
                   )}
-                </div>
+                  </CardContent>
+                </Card>
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };
