@@ -1217,7 +1217,7 @@ async def bulk_categorize_by_rules(
             pattern = rule["pattern"].strip().lower()
             match_type = rule["match_type"]
             
-            logging.info(f"Checking rule - Pattern: '{pattern}', Type: {match_type}")
+            logging.debug(f"Checking rule - Pattern: '{pattern}', Type: {match_type}")
             
             matched = False
             if match_type == "CONTAINS" and pattern in description:
@@ -1229,10 +1229,8 @@ async def bulk_categorize_by_rules(
             elif match_type == "EXACT" and description == pattern:
                 matched = True
             
-            logging.info(f"Match result: {matched}")
-            
             if matched:
-                logging.info(f"Matched rule: {rule['pattern']} -> category_id: {rule['category_id']}")
+                logging.info(f"✓ Matched! Pattern: '{pattern}' ({match_type}) -> Category: {rule['category_id']}")
                 await db.transactions.update_one(
                     {"id": txn_id},
                     {
