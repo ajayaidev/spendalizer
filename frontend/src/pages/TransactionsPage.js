@@ -102,20 +102,38 @@ const TransactionsPage = () => {
   };
 
   const handleBulkCategorize = async () => {
-    if (!bulkCategory || selectedTransactions.length === 0) {
-      toast.error('Please select transactions and a category');
+    if (selectedTransactions.length === 0) {
+      toast.error('Please select transactions');
       return;
     }
 
+    if (bulkMethod === 'manual' && !bulkCategory) {
+      toast.error('Please select a category');
+      return;
+    }
+
+    setBulkLoading(true);
     try {
-      const response = await bulkCategorizeTransactions(selectedTransactions, bulkCategory);
-      toast.success(`Successfully categorized ${response.data.updated_count} transactions!`);
+      let response;
+      
+      if (bulkMethod === 'manual') {
+        response = await bulkCategorizeTransactions(selectedTransactions, bulkCategory);
+      } else if (bulkMethod === 'rules') {
+        response = await bulkCategorizeByRules(selectedTransactions);
+      } else if (bulkMethod === 'ai') {
+        response = await bulkCategorizeByAI(selectedTransactions);
+      }
+      
+      toast.success(`Successfully categorized ${response.data.updated_count} of ${selectedTransactions.length} transactions!`);
       setShowBulkDialog(false);
       setBulkCategory('');
+      setBulkMethod('manual');
       setSelectedTransactions([]);
       loadData();
     } catch (error) {
-      toast.error('Failed to bulk categorize transactions');
+      toast.error(error.response?.data?.detail || 'Failed to bulk categorize transactions');
+    } finally {
+      setBulkLoading(false);
     }
   };
 
