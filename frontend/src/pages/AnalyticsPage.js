@@ -224,54 +224,119 @@ const AnalyticsPage = () => {
       <Card className="mt-6" data-testid="category-breakdown-table">
         <CardHeader>
           <CardTitle>Category Breakdown</CardTitle>
-          <CardDescription>Detailed spending by category</CardDescription>
+          <CardDescription>Detailed breakdown by Income, Expense, and Transfers</CardDescription>
         </CardHeader>
         <CardContent>
-          {expenseCategories.length === 0 && !uncategorizedData ? (
+          {expenseCategories.length === 0 && incomeCategories.length === 0 && transferCategories.length === 0 && !uncategorizedData ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p>No expense data available</p>
+              <p>No transaction data available</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Show uncategorized first if it exists */}
               {uncategorizedData && (
-                <div 
-                  className="flex items-center justify-between p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50" 
-                  data-testid="category-uncategorized"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-yellow-900">Uncategorized</p>
-                      <span className="px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-800 text-xs font-medium">
-                        Needs Review
-                      </span>
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Uncategorized</h3>
+                  <div 
+                    className="flex items-center justify-between p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50" 
+                    data-testid="category-uncategorized"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-yellow-900">Uncategorized</p>
+                        <span className="px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-800 text-xs font-medium">
+                          Needs Review
+                        </span>
+                      </div>
+                      <p className="text-sm text-yellow-700">{uncategorizedData.count} transactions</p>
                     </div>
-                    <p className="text-sm text-yellow-700">{uncategorizedData.count} transactions</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold text-yellow-900">₹{uncategorizedData.total.toLocaleString()}</p>
-                    <p className="text-xs text-yellow-700">
-                      {((uncategorizedData.total / summary.total_expense) * 100).toFixed(1)}% of total
-                    </p>
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-yellow-900">₹{uncategorizedData.total.toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
               )}
               
-              {/* Regular expense categories */}
-              {expenseCategories.map((cat, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-secondary transition-colors" data-testid={`category-${cat.category_id}`}>
-                  <div className="flex-1">
-                    <p className="font-medium">{cat.category_name}</p>
-                    <p className="text-sm text-muted-foreground">{cat.count} transactions</p>
+              {/* Income Categories */}
+              {incomeCategories.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide">Income</h3>
+                    <span className="text-sm text-muted-foreground">
+                      ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                    </span>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-semibold">₹{cat.total.toLocaleString()}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {((cat.total / summary.total_expense) * 100).toFixed(1)}% of total
-                    </p>
+                  <div className="space-y-2">
+                    {incomeCategories.map((cat, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-green-100 bg-green-50/50 hover:bg-green-50 transition-colors" data-testid={`category-income-${cat.category_id}`}>
+                        <div className="flex-1">
+                          <p className="font-medium text-green-900">{cat.category_name}</p>
+                          <p className="text-sm text-green-700">{cat.count} transactions</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-green-900">₹{cat.total.toLocaleString()}</p>
+                          <p className="text-xs text-green-700">
+                            {((cat.total / summary.total_income) * 100).toFixed(1)}% of income
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Expense Categories */}
+              {expenseCategories.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-red-700 uppercase tracking-wide">Expenses</h3>
+                    <span className="text-sm text-muted-foreground">
+                      ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {expenseCategories.map((cat, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-red-100 bg-red-50/50 hover:bg-red-50 transition-colors" data-testid={`category-expense-${cat.category_id}`}>
+                        <div className="flex-1">
+                          <p className="font-medium text-red-900">{cat.category_name}</p>
+                          <p className="text-sm text-red-700">{cat.count} transactions</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-red-900">₹{cat.total.toLocaleString()}</p>
+                          <p className="text-xs text-red-700">
+                            {((cat.total / summary.total_expense) * 100).toFixed(1)}% of expenses
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Transfer Categories */}
+              {transferCategories.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Transfers</h3>
+                    <span className="text-sm text-muted-foreground">
+                      ₹{transferCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {transferCategories.map((cat, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-blue-100 bg-blue-50/50 hover:bg-blue-50 transition-colors" data-testid={`category-transfer-${cat.category_id}`}>
+                        <div className="flex-1">
+                          <p className="font-medium text-blue-900">{cat.category_name}</p>
+                          <p className="text-sm text-blue-700">{cat.count} transactions</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-blue-900">₹{cat.total.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
