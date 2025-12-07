@@ -39,8 +39,12 @@ const AnalyticsPage = () => {
     (cat) => cat.category_type === 'INCOME'
   ) || [];
 
-  const transferCategories = summary?.category_breakdown?.filter(
-    (cat) => cat.category_type === 'TRANSFER'
+  const transferInCategories = summary?.category_breakdown?.filter(
+    (cat) => cat.category_type === 'TRANSFER_IN'
+  ) || [];
+
+  const transferOutCategories = summary?.category_breakdown?.filter(
+    (cat) => cat.category_type === 'TRANSFER_OUT'
   ) || [];
 
   const uncategorizedData = summary?.category_breakdown?.find(
