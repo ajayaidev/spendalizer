@@ -831,6 +831,11 @@ def main():
     test_results.append(("Reset Password - Invalid Token", tester.test_reset_password_invalid_token()))
     test_results.append(("Password Reset Flow", tester.test_password_reset_flow()))
     
+    # Bulk Categorization by Rules Tests
+    print("\n📋 BULK CATEGORIZATION BY RULES TESTS")
+    test_results.append(("Create Test Rule and Transactions", tester.create_test_rule_and_transactions()))
+    test_results.append(("Debug Bulk Categorization by Rules", tester.test_bulk_categorization_by_rules_debug()))
+    
     # Delete All Transactions Tests
     print("\n📋 DELETE ALL TRANSACTIONS TESTS")
     test_results.append(("Create Test Transactions", tester.create_test_transactions()))  # Create some test data
