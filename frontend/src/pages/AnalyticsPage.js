@@ -220,45 +220,30 @@ const AnalyticsPage = () => {
         </Card>
       </div>
 
-      {/* Category Breakdown Table */}
-      <Card className="mt-6" data-testid="category-breakdown-table">
-        <CardHeader>
-          <CardTitle>Category Breakdown</CardTitle>
-          <CardDescription>Detailed breakdown by Income, Expense, and Transfers</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {expenseCategories.length === 0 && incomeCategories.length === 0 && transferCategories.length === 0 && !uncategorizedData ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <p>No transaction data available</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Show uncategorized first if it exists */}
-              {uncategorizedData && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Uncategorized</h3>
-                  <div 
-                    className="flex items-center justify-between p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50" 
-                    data-testid="category-uncategorized"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-yellow-900">Uncategorized</p>
-                        <span className="px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-800 text-xs font-medium">
-                          Needs Review
-                        </span>
-                      </div>
-                      <p className="text-sm text-yellow-700">{uncategorizedData.count} transactions</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-yellow-900">₹{uncategorizedData.total.toLocaleString()}</p>
-                    </div>
-                  </div>
+      {/* Uncategorized Alert */}
+      {uncategorizedData && uncategorizedData.count > 0 && (
+        <Card className="mt-6 border-yellow-200 bg-yellow-50" data-testid="category-uncategorized">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-yellow-900">Uncategorized</p>
+                  <span className="px-2 py-0.5 rounded-full bg-yellow-200 text-yellow-800 text-xs font-medium">
+                    Needs Review
+                  </span>
                 </div>
-              )}
-              
-              {/* Three Column Layout for Desktop */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <p className="text-sm text-yellow-700 mt-1">{uncategorizedData.count} transactions</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-yellow-900">₹{uncategorizedData.total.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Three Cards Layout for Desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {/* Income Categories */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
