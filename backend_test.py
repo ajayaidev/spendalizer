@@ -546,6 +546,231 @@ class SpendAlizerAPITester:
             return True
         return False
 
+    def test_bulk_categorization_by_rules_debug(self):
+        """Debug bulk categorization by rules feature"""
+        print("\n🔍 DEBUGGING BULK CATEGORIZATION BY RULES")
+        print("=" * 60)
+        
+        # Step 1: Get all rules
+        print("\n1️⃣ Checking existing rules...")
+        success, rules_response = self.run_test(
+            "Get All Rules",
+            "GET",
+            "rules",
+            200
+        )
+        
+        if not success:
+            print("❌ Failed to get rules")
+            return False
+            
+        rules = rules_response
+        print(f"   Found {len(rules)} rules:")
+        
+        dividends_rule = None
+        for rule in rules:
+            print(f"   - Pattern: '{rule['pattern']}', Type: {rule['match_type']}, Category: {rule['category_id']}")
+            if rule['pattern'].upper() == "ACH C-" and rule['match_type'] == "STARTS_WITH":
+                dividends_rule = rule
+                print(f"     ✅ Found target rule: {rule['id']}")
+        
+        if not dividends_rule:
+            print("❌ Target rule 'ACH C-' with STARTS_WITH not found")
+            return False
+        
+        # Step 2: Get uncategorized transactions
+        print("\n2️⃣ Checking uncategorized transactions...")
+        success, txn_response = self.run_test(
+            "Get Uncategorized Transactions",
+            "GET",
+            "transactions?uncategorized=true",
+            200
+        )
+        
+        if not success:
+            print("❌ Failed to get transactions")
+            return False
+            
+        transactions = txn_response.get('transactions', [])
+        print(f"   Found {len(transactions)} uncategorized transactions:")
+        
+        matching_transactions = []
+        for txn in transactions:
+            description = txn.get('description', '')
+            print(f"   - ID: {txn['id'][:8]}... Description: '{description}'")
+            if description.upper().startswith("ACH C-"):
+                matching_transactions.append(txn)
+                print(f"     ✅ Should match rule!")
+        
+        if not matching_transactions:
+            print("❌ No transactions starting with 'ACH C-' found")
+            return False
+            
+        print(f"   Found {len(matching_transactions)} transactions that should match")
+        
+        # Step 3: Test bulk categorization
+        print("\n3️⃣ Testing bulk categorization...")
+        transaction_ids = [txn['id'] for txn in matching_transactions]
+        
+        bulk_data = {
+            "transaction_ids": transaction_ids
+        }
+        
+        success, bulk_response = self.run_test(
+            "Bulk Categorize by Rules",
+            "POST",
+            "transactions/bulk-categorize-by-rules",
+            200,
+            data=bulk_data
+        )
+        
+        if not success:
+            print("❌ Bulk categorization failed")
+            return False
+            
+        print(f"   Response: {bulk_response}")
+        updated_count = bulk_response.get('updated_count', 0)
+        rules_available = bulk_response.get('rules_available', 0)
+        
+        print(f"   Rules available: {rules_available}")
+        print(f"   Transactions updated: {updated_count}")
+        
+        # Step 4: Verify results
+        print("\n4️⃣ Verifying results...")
+        for txn_id in transaction_ids:
+            success, txn_response = self.run_test(
+                f"Get Transaction {txn_id[:8]}",
+                "GET",
+                f"transactions?limit=1000",
+                200
+            )
+            
+            if success:
+                transactions = txn_response.get('transactions', [])
+                updated_txn = next((t for t in transactions if t['id'] == txn_id), None)
+                if updated_txn:
+                    category_id = updated_txn.get('category_id')
+                    categorisation_source = updated_txn.get('categorisation_source')
+                    print(f"   Transaction {txn_id[:8]}: Category={category_id}, Source={categorisation_source}")
+                    
+                    if category_id == dividends_rule['category_id'] and categorisation_source == "RULE":
+                        print(f"     ✅ Correctly categorized!")
+                    else:
+                        print(f"     ❌ Not categorized correctly")
+                else:
+                    print(f"   ❌ Transaction {txn_id[:8]} not found")
+        
+        # Check backend logs for debugging
+        print("\n5️⃣ Checking backend logs...")
+        try:
+            import subprocess
+            result = subprocess.run(['tail', '-n', '20', '/var/log/supervisor/backend.err.log'], 
+                                  capture_output=True, text=True)
+            if result.stdout:
+                print("   Recent backend errors:")
+                print(result.stdout)
+        except:
+            print("   Could not read backend logs")
+        
+        return updated_count > 0
+
+    def create_test_rule_and_transactions(self):
+        """Create a test rule and matching transactions for debugging"""
+        print("\n🔧 Creating test rule and transactions...")
+        
+        # Get Dividends category
+        success, categories_response = self.run_test(
+            "Get Categories for Rule Creation",
+            "GET",
+            "categories",
+            200
+        )
+        
+        if not success:
+            return False
+            
+        categories = categories_response
+        dividends_category = None
+        for cat in categories:
+            if cat['name'].upper() == 'DIVIDENDS':
+                dividends_category = cat
+                break
+        
+        if not dividends_category:
+            print("❌ Dividends category not found")
+            return False
+            
+        print(f"   Found Dividends category: {dividends_category['id']}")
+        
+        # Create the rule
+        rule_data = {
+            "pattern": "ACH C-",
+            "match_type": "STARTS_WITH",
+            "category_id": dividends_category['id'],
+            "priority": 10
+        }
+        
+        success, rule_response = self.run_test(
+            "Create ACH C- Rule",
+            "POST",
+            "rules",
+            200,
+            data=rule_data
+        )
+        
+        if not success:
+            return False
+            
+        print(f"   Created rule: {rule_response['id']}")
+        
+        # Create test transactions via CSV import
+        if not self.test_account_id:
+            print("❌ No test account available")
+            return False
+            
+        csv_content = """Date,Narration,Withdrawal Amt.,Deposit Amt.
+15/01/24,ACH C- CAMS 2ND INTDIV25 26-425884,,1500.00
+16/01/24,ACH C- MUTUAL FUND DIVIDEND,,2500.00
+17/01/24,Regular Transfer,500.00,
+18/01/24,ACH C- STOCK DIVIDEND PAYMENT,,750.00"""
+        
+        import tempfile
+        import os
+        
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+                f.write(csv_content)
+                temp_csv_path = f.name
+            
+            with open(temp_csv_path, 'rb') as f:
+                files = {'file': ('test_ach_transactions.csv', f, 'text/csv')}
+                data = {
+                    'account_id': self.test_account_id,
+                    'data_source': 'HDFC_BANK'
+                }
+                
+                success, response = self.run_test(
+                    "Import ACH Test Transactions",
+                    "POST",
+                    "import",
+                    200,
+                    data=data,
+                    files=files
+                )
+                
+                os.unlink(temp_csv_path)
+                
+                if success and response.get('success_count', 0) > 0:
+                    print(f"   ✅ Created {response['success_count']} test transactions")
+                    return True
+                else:
+                    print(f"   ❌ Failed to create test transactions: {response}")
+                    return False
+                    
+        except Exception as e:
+            print(f"   ❌ Error creating test transactions: {e}")
+            return False
+
     def cleanup_test_data(self):
         """Clean up test data"""
         if self.test_rule_id:
