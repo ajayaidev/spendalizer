@@ -1251,8 +1251,17 @@ async def bulk_categorize_by_ai(
         if not txn:
             continue
         
-        # Use existing categorize_with_llm function
-        result = await categorize_with_llm(txn.get("description", ""), categories)
+        # Get account info for transaction type
+        account = await db.accounts.find_one({"id": txn.get("account_id")})
+        transaction_type = account.get("type", "SAVINGS") if account else "SAVINGS"
+        
+        # Use existing categorize_with_llm function with all required parameters
+        result = await categorize_with_llm(
+            txn.get("description", ""),
+            txn.get("amount", 0.0),
+            txn.get("direction", "DEBIT"),
+            transaction_type
+        )
         
         if result and result.get("category_id"):
             await db.transactions.update_one(
@@ -1261,7 +1270,7 @@ async def bulk_categorize_by_ai(
                     "$set": {
                         "category_id": result["category_id"],
                         "categorisation_source": "AI",
-                        "confidence_score": result.get("confidence", 0.0),
+                        "confidence_score": result.get("confidence_score", 0.0),
                         "updated_at": datetime.now(timezone.utc).isoformat()
                     }
                 }
