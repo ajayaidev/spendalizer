@@ -1209,13 +1209,15 @@ async def bulk_categorize_by_rules(
             logging.warning(f"Transaction {txn_id} not found")
             continue
             
-        description = txn.get("description", "").lower()
-        logging.info(f"Processing transaction: {description}")
+        description = txn.get("description", "").strip().lower()
+        logging.info(f"Processing transaction: '{description}'")
         
         # Match against rules
         for rule in rules:
-            pattern = rule["pattern"].lower()
+            pattern = rule["pattern"].strip().lower()
             match_type = rule["match_type"]
+            
+            logging.info(f"Checking rule - Pattern: '{pattern}', Type: {match_type}")
             
             matched = False
             if match_type == "CONTAINS" and pattern in description:
@@ -1226,6 +1228,8 @@ async def bulk_categorize_by_rules(
                 matched = True
             elif match_type == "EXACT" and description == pattern:
                 matched = True
+            
+            logging.info(f"Match result: {matched}")
             
             if matched:
                 logging.info(f"Matched rule: {rule['pattern']} -> category_id: {rule['category_id']}")
