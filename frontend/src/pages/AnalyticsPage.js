@@ -246,14 +246,15 @@ const AnalyticsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {/* Income Card */}
                 <Card className="border-green-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide">Income</h3>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-green-700 text-lg">Income</CardTitle>
                     {incomeCategories.length > 0 && (
-                      <span className="text-sm text-muted-foreground">
+                      <CardDescription className="text-2xl font-bold text-green-900 mt-2">
                         ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                      </span>
+                      </CardDescription>
                     )}
-                  </div>
+                  </CardHeader>
+                  <CardContent>
                   {incomeCategories.length > 0 ? (
                     <div className="space-y-4">
                       {/* Income Pie Chart */}
