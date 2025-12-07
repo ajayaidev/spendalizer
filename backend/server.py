@@ -1179,6 +1179,100 @@ async def bulk_categorize_transactions(
         "updated_count": result.modified_count
     }
 
+# Bulk categorize using rules
+class BulkRuleCategorize(BaseModel):
+    transaction_ids: List[str]
+
+@api_router.post("/transactions/bulk-categorize-by-rules")
+async def bulk_categorize_by_rules(
+    update: BulkRuleCategorize,
+    user_id: str = Depends(get_current_user)
+):
+    # Get all rules for this user sorted by priority
+    rules = await db.rules.find({"user_id": user_id}, {"_id": 0}).sort("priority", -1).to_list(1000)
+    
+    updated_count = 0
+    for txn_id in update.transaction_ids:
+        txn = await db.transactions.find_one({"id": txn_id, "user_id": user_id})
+        if not txn:
+            continue
+            
+        description = txn.get("description", "").lower()
+        
+        # Match against rules
+        for rule in rules:
+            pattern = rule["pattern"].lower()
+            match_type = rule["match_type"]
+            
+            matched = False
+            if match_type == "CONTAINS" and pattern in description:
+                matched = True
+            elif match_type == "STARTS_WITH" and description.startswith(pattern):
+                matched = True
+            elif match_type == "ENDS_WITH" and description.endswith(pattern):
+                matched = True
+            elif match_type == "EXACT" and description == pattern:
+                matched = True
+            
+            if matched:
+                await db.transactions.update_one(
+                    {"id": txn_id},
+                    {
+                        "$set": {
+                            "category_id": rule["category_id"],
+                            "categorisation_source": "RULE",
+                            "updated_at": datetime.now(timezone.utc).isoformat()
+                        }
+                    }
+                )
+                updated_count += 1
+                break  # Stop after first match (highest priority)
+    
+    return {
+        "success": True,
+        "updated_count": updated_count
+    }
+
+# Bulk categorize using AI/LLM
+@api_router.post("/transactions/bulk-categorize-by-ai")
+async def bulk_categorize_by_ai(
+    update: BulkRuleCategorize,
+    user_id: str = Depends(get_current_user)
+):
+    # Get all categories
+    categories = await db.categories.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    
+    if not categories:
+        raise HTTPException(status_code=400, detail="No categories found. Please create categories first.")
+    
+    updated_count = 0
+    for txn_id in update.transaction_ids:
+        txn = await db.transactions.find_one({"id": txn_id, "user_id": user_id})
+        if not txn:
+            continue
+        
+        # Use existing categorize_with_llm function
+        result = await categorize_with_llm(txn.get("description", ""), categories)
+        
+        if result and result.get("category_id"):
+            await db.transactions.update_one(
+                {"id": txn_id},
+                {
+                    "$set": {
+                        "category_id": result["category_id"],
+                        "categorisation_source": "AI",
+                        "confidence_score": result.get("confidence", 0.0),
+                        "updated_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }
+            )
+            updated_count += 1
+    
+    return {
+        "success": True,
+        "updated_count": updated_count
+    }
+
 # Rules Routes
 @api_router.get("/rules", response_model=List[CategoryRule])
 async def get_rules(user_id: str = Depends(get_current_user)):
