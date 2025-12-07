@@ -263,28 +263,35 @@ const AnalyticsPage = () => {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide">Income</h3>
-                    <span className="text-sm text-muted-foreground">
-                      ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                    </span>
+                    {incomeCategories.length > 0 && (
+                      <span className="text-sm text-muted-foreground">
+                        ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                      </span>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    {incomeCategories.map((cat, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-green-100 bg-green-50/50 hover:bg-green-50 transition-colors" data-testid={`category-income-${cat.category_id}`}>
-                        <div className="flex-1">
-                          <p className="font-medium text-green-900">{cat.category_name}</p>
-                          <p className="text-sm text-green-700">{cat.count} transactions</p>
+                  {incomeCategories.length > 0 ? (
+                    <div className="space-y-2">
+                      {incomeCategories.map((cat, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-green-100 bg-green-50/50 hover:bg-green-50 transition-colors" data-testid={`category-income-${cat.category_id}`}>
+                          <div className="flex-1">
+                            <p className="font-medium text-green-900">{cat.category_name}</p>
+                            <p className="text-sm text-green-700">{cat.count} transactions</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-semibold text-green-900">₹{cat.total.toLocaleString()}</p>
+                            <p className="text-xs text-green-700">
+                              {((cat.total / summary.total_income) * 100).toFixed(1)}% of income
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-lg font-semibold text-green-900">₹{cat.total.toLocaleString()}</p>
-                          <p className="text-xs text-green-700">
-                            {((cat.total / summary.total_income) * 100).toFixed(1)}% of income
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                      <p className="text-sm">No income categories</p>
+                    </div>
+                  )}
                 </div>
-              )}
 
               {/* Expense Categories */}
               {expenseCategories.length > 0 && (
