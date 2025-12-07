@@ -10,7 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popove
 import { Calendar } from '../components/ui/calendar';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../components/ui/command';
 import { Checkbox } from '../components/ui/checkbox';
-import { Search, Filter, Calendar as CalendarIcon, Check, ChevronsUpDown, Plus, Tag } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Search, Filter, Calendar as CalendarIcon, Check, ChevronsUpDown, Plus, Tag, Sparkles, Brain } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { cn } from '../lib/utils';
