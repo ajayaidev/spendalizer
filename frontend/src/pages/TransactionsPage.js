@@ -549,89 +549,151 @@ const TransactionsPage = () => {
         if (!open) {
           setBulkCategory('');
           setBulkCategorySearch('');
+          setBulkMethod('manual');
         }
       }}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Bulk Categorize Transactions</DialogTitle>
             <DialogDescription>
-              Assign a category to {selectedTransactions.length} selected transaction{selectedTransactions.length !== 1 ? 's' : ''}
+              Categorize {selectedTransactions.length} selected transaction{selectedTransactions.length !== 1 ? 's' : ''}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Select Category</Label>
-              <Popover open={bulkComboOpen} onOpenChange={setBulkComboOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={bulkComboOpen}
-                    className="w-full justify-between"
-                  >
-                    {bulkCategory
-                      ? categories.find((cat) => cat.id === bulkCategory)?.name
-                      : "Select category..."}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Search categories..."
-                      value={bulkCategorySearch}
-                      onValueChange={setBulkCategorySearch}
-                    />
-                    <CommandList>
-                      <CommandEmpty>No category found.</CommandEmpty>
-                      <CommandGroup>
-                        {categories
-                          .filter((cat) =>
-                            cat.name.toLowerCase().includes(bulkCategorySearch.toLowerCase())
-                          )
-                          .map((category) => (
-                            <CommandItem
-                              key={category.id}
-                              value={category.id}
-                              onSelect={() => {
-                                setBulkCategory(category.id);
-                                setBulkComboOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  bulkCategory === category.id ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              {category.name}
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowBulkDialog(false);
-                  setBulkCategory('');
-                }}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleBulkCategorize}
-                disabled={!bulkCategory}
-                className="flex-1"
-              >
-                Categorize {selectedTransactions.length} Transaction{selectedTransactions.length !== 1 ? 's' : ''}
-              </Button>
-            </div>
+          
+          <Tabs value={bulkMethod} onValueChange={setBulkMethod} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="manual">
+                <Tag className="w-4 h-4 mr-2" />
+                Manual
+              </TabsTrigger>
+              <TabsTrigger value="rules">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Rules
+              </TabsTrigger>
+              <TabsTrigger value="ai">
+                <Brain className="w-4 h-4 mr-2" />
+                AI
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="manual" className="space-y-4">
+              <div className="space-y-2">
+                <Label>Select Category</Label>
+                <Popover open={bulkComboOpen} onOpenChange={setBulkComboOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={bulkComboOpen}
+                      className="w-full justify-between"
+                    >
+                      {bulkCategory
+                        ? categories.find((cat) => cat.id === bulkCategory)?.name
+                        : "Select category..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput
+                        placeholder="Search categories..."
+                        value={bulkCategorySearch}
+                        onValueChange={setBulkCategorySearch}
+                      />
+                      <CommandList>
+                        <CommandEmpty>No category found.</CommandEmpty>
+                        <CommandGroup>
+                          {categories
+                            .filter((cat) =>
+                              cat.name.toLowerCase().includes(bulkCategorySearch.toLowerCase())
+                            )
+                            .map((category) => (
+                              <CommandItem
+                                key={category.id}
+                                value={category.id}
+                                onSelect={() => {
+                                  setBulkCategory(category.id);
+                                  setBulkComboOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    bulkCategory === category.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {category.name}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                <p className="text-sm text-muted-foreground">
+                  Manually assign a category to all selected transactions
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="rules" className="space-y-4">
+              <div className="rounded-lg border p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <h4 className="font-medium">Rule-based Categorization</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Automatically categorize transactions based on your existing rules. Rules are applied in priority order, matching transaction descriptions against patterns.
+                </p>
+                <p className="text-sm font-medium text-muted-foreground mt-2">
+                  ✓ Fast and deterministic<br/>
+                  ✓ Uses your custom rules<br/>
+                  ✓ No external API calls
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="ai" className="space-y-4">
+              <div className="rounded-lg border p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-primary" />
+                  <h4 className="font-medium">AI-Powered Categorization</h4>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Use local LLM (Ollama) to intelligently categorize transactions based on description context and your existing categories.
+                </p>
+                <p className="text-sm font-medium text-muted-foreground mt-2">
+                  ✓ Context-aware<br/>
+                  ✓ Learns from categories<br/>
+                  ✓ Handles complex descriptions
+                </p>
+                <p className="text-xs text-amber-600 mt-2">
+                  Note: Requires Ollama running locally
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex gap-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowBulkDialog(false);
+                setBulkCategory('');
+                setBulkMethod('manual');
+              }}
+              disabled={bulkLoading}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleBulkCategorize}
+              disabled={(bulkMethod === 'manual' && !bulkCategory) || bulkLoading}
+              className="flex-1"
+            >
+              {bulkLoading ? 'Processing...' : `Categorize ${selectedTransactions.length}`}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
