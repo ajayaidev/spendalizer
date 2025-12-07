@@ -270,21 +270,73 @@ const AnalyticsPage = () => {
                     )}
                   </div>
                   {incomeCategories.length > 0 ? (
-                    <div className="space-y-2">
-                      {incomeCategories.map((cat, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-green-100 bg-green-50/50 hover:bg-green-50 transition-colors" data-testid={`category-income-${cat.category_id}`}>
-                          <div className="flex-1">
-                            <p className="font-medium text-green-900">{cat.category_name}</p>
-                            <p className="text-sm text-green-700">{cat.count} transactions</p>
+                    <div className="space-y-4">
+                      {/* Income Pie Chart */}
+                      <div className="flex justify-center">
+                        <ResponsiveContainer width="100%" height={200}>
+                          <PieChart>
+                            <Pie
+                              data={(() => {
+                                const topIncome = incomeCategories.slice(0, 5);
+                                const othersIncome = incomeCategories.slice(5);
+                                const pieData = topIncome.map(cat => ({
+                                  name: cat.category_name,
+                                  value: cat.total
+                                }));
+                                if (othersIncome.length > 0) {
+                                  pieData.push({
+                                    name: 'All Others',
+                                    value: othersIncome.reduce((sum, cat) => sum + cat.total, 0)
+                                  });
+                                }
+                                return pieData;
+                              })()}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={80}
+                              paddingAngle={2}
+                              dataKey="value"
+                            >
+                              {incomeCategories.slice(0, 5).map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={`hsl(${142 + index * 20}, 70%, ${40 + index * 10}%)`} />
+                              ))}
+                              {incomeCategories.length > 5 && (
+                                <Cell fill="hsl(142, 30%, 70%)" />
+                              )}
+                            </Pie>
+                            <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      
+                      {/* Top 5 Income Categories */}
+                      <div className="space-y-2">
+                        {incomeCategories.slice(0, 5).map((cat, index) => (
+                          <div key={index} className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${142 + index * 20}, 70%, ${40 + index * 10}%)` }}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-green-900 text-sm truncate">{cat.category_name}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-green-900 text-sm">₹{cat.total.toLocaleString()}</p>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-lg font-semibold text-green-900">₹{cat.total.toLocaleString()}</p>
-                            <p className="text-xs text-green-700">
-                              {((cat.total / summary.total_income) * 100).toFixed(1)}% of income
-                            </p>
+                        ))}
+                        {incomeCategories.length > 5 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(142, 30%, 70%)' }}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-green-700 text-sm">All Others</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-green-900 text-sm">
+                                ₹{incomeCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
