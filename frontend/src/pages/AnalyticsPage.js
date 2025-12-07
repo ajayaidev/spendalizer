@@ -420,16 +420,17 @@ const AnalyticsPage = () => {
                   </CardContent>
                 </Card>
 
-                {/* Transfer Categories */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Transfers</h3>
+                {/* Transfer Card */}
+                <Card className="border-blue-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-blue-700 text-lg">Transfers</CardTitle>
                     {transferCategories.length > 0 && (
-                      <span className="text-sm text-muted-foreground">
+                      <CardDescription className="text-2xl font-bold text-blue-900 mt-2">
                         ₹{transferCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                      </span>
+                      </CardDescription>
                     )}
-                  </div>
+                  </CardHeader>
+                  <CardContent>
                   {transferCategories.length > 0 ? (
                     <div className="space-y-4">
                       {/* Transfer Pie Chart */}
