@@ -94,6 +94,40 @@ const TransactionsPage = () => {
     }
   };
 
+  const handleBulkCategorize = async () => {
+    if (!bulkCategory || selectedTransactions.length === 0) {
+      toast.error('Please select transactions and a category');
+      return;
+    }
+
+    try {
+      const response = await bulkCategorizeTransactions(selectedTransactions, bulkCategory);
+      toast.success(`Successfully categorized ${response.data.updated_count} transactions!`);
+      setShowBulkDialog(false);
+      setBulkCategory('');
+      setSelectedTransactions([]);
+      loadData();
+    } catch (error) {
+      toast.error('Failed to bulk categorize transactions');
+    }
+  };
+
+  const toggleTransactionSelection = (txnId) => {
+    setSelectedTransactions(prev =>
+      prev.includes(txnId)
+        ? prev.filter(id => id !== txnId)
+        : [...prev, txnId]
+    );
+  };
+
+  const selectAllTransactions = () => {
+    if (selectedTransactions.length === filteredTransactions.length) {
+      setSelectedTransactions([]);
+    } else {
+      setSelectedTransactions(filteredTransactions.map(t => t.id));
+    }
+  };
+
   const setDatePreset = (preset) => {
     const today = new Date();
     switch (preset) {
