@@ -332,16 +332,17 @@ const AnalyticsPage = () => {
                   </CardContent>
                 </Card>
 
-                {/* Expense Categories */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-red-700 uppercase tracking-wide">Expenses</h3>
+                {/* Expense Card */}
+                <Card className="border-red-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-red-700 text-lg">Expenses</CardTitle>
                     {expenseCategories.length > 0 && (
-                      <span className="text-sm text-muted-foreground">
+                      <CardDescription className="text-2xl font-bold text-red-900 mt-2">
                         ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                      </span>
+                      </CardDescription>
                     )}
-                  </div>
+                  </CardHeader>
+                  <CardContent>
                   {expenseCategories.length > 0 ? (
                     <div className="space-y-4">
                       {/* Expense Pie Chart */}
