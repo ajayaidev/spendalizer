@@ -424,27 +424,27 @@ const AnalyticsPage = () => {
                   </CardContent>
                 </Card>
 
-                {/* Transfer Card */}
+                {/* Incoming Transfers Card */}
                 <Card className="border-blue-200">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-blue-700 text-lg">Transfers</CardTitle>
-                    {transferCategories.length > 0 && (
+                    <CardTitle className="text-blue-700 text-lg">Incoming Transfers</CardTitle>
+                    {transferInCategories.length > 0 && (
                       <CardDescription className="text-2xl font-bold text-blue-900 mt-2">
-                        ₹{transferCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                        ₹{transferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                       </CardDescription>
                     )}
                   </CardHeader>
                   <CardContent>
-                  {transferCategories.length > 0 ? (
+                  {transferInCategories.length > 0 ? (
                     <div className="space-y-4">
-                      {/* Transfer Pie Chart */}
+                      {/* Incoming Transfer Pie Chart */}
                       <div className="flex justify-center">
                         <ResponsiveContainer width="100%" height={200}>
                           <PieChart>
                             <Pie
                               data={(() => {
-                                const topTransfer = transferCategories.slice(0, 5);
-                                const othersTransfer = transferCategories.slice(5);
+                                const topTransfer = transferInCategories.slice(0, 5);
+                                const othersTransfer = transferInCategories.slice(5);
                                 const pieData = topTransfer.map(cat => ({
                                   name: cat.category_name,
                                   value: cat.total
@@ -464,11 +464,11 @@ const AnalyticsPage = () => {
                               paddingAngle={2}
                               dataKey="value"
                             >
-                              {transferCategories.slice(0, 5).map((_, index) => (
-                                <Cell key={`cell-${index}`} fill={`hsl(${221 + index * 20}, 70%, ${50 + index * 8}%)`} />
+                              {transferInCategories.slice(0, 5).map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={`hsl(${200 + index * 20}, 70%, ${50 + index * 8}%)`} />
                               ))}
-                              {transferCategories.length > 5 && (
-                                <Cell fill="hsl(221, 30%, 70%)" />
+                              {transferInCategories.length > 5 && (
+                                <Cell fill="hsl(200, 30%, 70%)" />
                               )}
                             </Pie>
                             <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
@@ -476,11 +476,11 @@ const AnalyticsPage = () => {
                         </ResponsiveContainer>
                       </div>
                       
-                      {/* Top 5 Transfer Categories */}
+                      {/* Top 5 Incoming Transfer Categories */}
                       <div className="space-y-2">
-                        {transferCategories.slice(0, 5).map((cat, index) => (
+                        {transferInCategories.slice(0, 5).map((cat, index) => (
                           <div key={index} className="flex items-center gap-3">
-                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${221 + index * 20}, 70%, ${50 + index * 8}%)` }}></div>
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${200 + index * 20}, 70%, ${50 + index * 8}%)` }}></div>
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-blue-900 text-sm truncate">{cat.category_name}</p>
                             </div>
@@ -489,15 +489,15 @@ const AnalyticsPage = () => {
                             </div>
                           </div>
                         ))}
-                        {transferCategories.length > 5 && (
+                        {transferInCategories.length > 5 && (
                           <div className="flex items-center gap-3">
-                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(221, 30%, 70%)' }}></div>
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(200, 30%, 70%)' }}></div>
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-blue-700 text-sm">All Others</p>
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-blue-900 text-sm">
-                                ₹{transferCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                                ₹{transferInCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -506,7 +506,95 @@ const AnalyticsPage = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
-                      <p className="text-sm">No transfer categories</p>
+                      <p className="text-sm">No incoming transfers</p>
+                    </div>
+                  )}
+                  </CardContent>
+                </Card>
+
+                {/* Outgoing Transfers Card */}
+                <Card className="border-purple-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-purple-700 text-lg">Outgoing Transfers</CardTitle>
+                    {transferOutCategories.length > 0 && (
+                      <CardDescription className="text-2xl font-bold text-purple-900 mt-2">
+                        ₹{transferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                  {transferOutCategories.length > 0 ? (
+                    <div className="space-y-4">
+                      {/* Outgoing Transfer Pie Chart */}
+                      <div className="flex justify-center">
+                        <ResponsiveContainer width="100%" height={200}>
+                          <PieChart>
+                            <Pie
+                              data={(() => {
+                                const topTransfer = transferOutCategories.slice(0, 5);
+                                const othersTransfer = transferOutCategories.slice(5);
+                                const pieData = topTransfer.map(cat => ({
+                                  name: cat.category_name,
+                                  value: cat.total
+                                }));
+                                if (othersTransfer.length > 0) {
+                                  pieData.push({
+                                    name: 'All Others',
+                                    value: othersTransfer.reduce((sum, cat) => sum + cat.total, 0)
+                                  });
+                                }
+                                return pieData;
+                              })()}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={80}
+                              paddingAngle={2}
+                              dataKey="value"
+                            >
+                              {transferOutCategories.slice(0, 5).map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={`hsl(${270 + index * 20}, 70%, ${50 + index * 8}%)`} />
+                              ))}
+                              {transferOutCategories.length > 5 && (
+                                <Cell fill="hsl(270, 30%, 70%)" />
+                              )}
+                            </Pie>
+                            <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      
+                      {/* Top 5 Outgoing Transfer Categories */}
+                      <div className="space-y-2">
+                        {transferOutCategories.slice(0, 5).map((cat, index) => (
+                          <div key={index} className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${270 + index * 20}, 70%, ${50 + index * 8}%)` }}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-purple-900 text-sm truncate">{cat.category_name}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-purple-900 text-sm">₹{cat.total.toLocaleString()}</p>
+                            </div>
+                          </div>
+                        ))}
+                        {transferOutCategories.length > 5 && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(270, 30%, 70%)' }}></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-purple-700 text-sm">All Others</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-purple-900 text-sm">
+                                ₹{transferOutCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                      <p className="text-sm">No outgoing transfers</p>
                     </div>
                   )}
                   </CardContent>
