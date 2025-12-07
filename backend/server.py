@@ -1361,18 +1361,50 @@ async def get_analytics_summary(
             uncategorized_total += txn["amount"]
             uncategorized_count += 1
     
-    # Enrich with category names
+    # Enrich with category names and split transfers by direction
     enriched_breakdown = []
     for cat_id, data in category_breakdown.items():
         category = await db.categories.find_one({"id": cat_id})
         if category:
-            enriched_breakdown.append({
-                "category_id": cat_id,
-                "category_name": category["name"],
-                "category_type": category["type"],
-                "total": data["total"],
-                "count": data["count"]
-            })
+            # For transfers, split by direction
+            if category["type"] == "TRANSFER":
+                # Get incoming (CREDIT) transfers
+                incoming_total = sum(txn["amount"] for txn in transactions 
+                                   if txn.get("category_id") == cat_id and txn["direction"] == "CREDIT")
+                incoming_count = sum(1 for txn in transactions 
+                                   if txn.get("category_id") == cat_id and txn["direction"] == "CREDIT")
+                
+                # Get outgoing (DEBIT) transfers
+                outgoing_total = sum(txn["amount"] for txn in transactions 
+                                   if txn.get("category_id") == cat_id and txn["direction"] == "DEBIT")
+                outgoing_count = sum(1 for txn in transactions 
+                                   if txn.get("category_id") == cat_id and txn["direction"] == "DEBIT")
+                
+                if incoming_count > 0:
+                    enriched_breakdown.append({
+                        "category_id": cat_id,
+                        "category_name": category["name"],
+                        "category_type": "TRANSFER_IN",
+                        "total": incoming_total,
+                        "count": incoming_count
+                    })
+                
+                if outgoing_count > 0:
+                    enriched_breakdown.append({
+                        "category_id": cat_id,
+                        "category_name": category["name"],
+                        "category_type": "TRANSFER_OUT",
+                        "total": outgoing_total,
+                        "count": outgoing_count
+                    })
+            else:
+                enriched_breakdown.append({
+                    "category_id": cat_id,
+                    "category_name": category["name"],
+                    "category_type": category["type"],
+                    "total": data["total"],
+                    "count": data["count"]
+                })
     
     # Add uncategorized if any
     if uncategorized_count > 0:
