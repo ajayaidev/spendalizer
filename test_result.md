@@ -144,6 +144,21 @@ backend:
           agent: "testing"
           comment: "✅ Fixed validation logic to check confirmation text FIRST regardless of transaction count. Now properly validates case-insensitive 'DELETE ALL' confirmation text. Correctly rejects wrong confirmation with 400 status. Successfully deletes transactions while preserving categories and rules."
 
+  - task: "Bulk Categorization by Rules API Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ Critical bug found: bulk_categorize_by_rules endpoint was querying wrong database collection (db.rules instead of db.category_rules), causing 'No rules found' error even when rules existed. Rule pattern matching was not working for transactions like 'ACH C- CAMS 2ND INTDIV25 26-425884' with 'ACH C-' STARTS_WITH rule."
+        - working: true
+          agent: "testing"
+          comment: "✅ FIXED: Changed line 1192 in server.py from 'db.rules' to 'db.category_rules'. Verified comprehensive functionality: 1) Rules are properly retrieved (GET /api/rules works) 2) Pattern matching works correctly ('ACH C-' STARTS_WITH matches target transactions) 3) Bulk categorization updates transactions with correct category_id and categorisation_source='RULE' 4) Backend logs show proper rule processing and matching. Feature now fully functional for the reported use case."
+
 frontend:
   - task: "Forgot Password UI Integration"
     implemented: true
