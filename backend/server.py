@@ -1145,6 +1145,32 @@ async def update_transaction_category(
     
     return {"success": True}
 
+# Bulk update transactions
+class BulkCategoryUpdate(BaseModel):
+    transaction_ids: List[str]
+    category_id: str
+
+@api_router.post("/transactions/bulk-categorize")
+async def bulk_categorize_transactions(
+    update: BulkCategoryUpdate,
+    user_id: str = Depends(get_current_user)
+):
+    result = await db.transactions.update_many(
+        {"id": {"$in": update.transaction_ids}, "user_id": user_id},
+        {
+            "$set": {
+                "category_id": update.category_id,
+                "categorisation_source": "MANUAL",
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+        }
+    )
+    
+    return {
+        "success": True,
+        "updated_count": result.modified_count
+    }
+
 # Rules Routes
 @api_router.get("/rules", response_model=List[CategoryRule])
 async def get_rules(user_id: str = Depends(get_current_user)):
