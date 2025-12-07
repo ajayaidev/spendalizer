@@ -1191,13 +1191,26 @@ async def bulk_categorize_by_rules(
     # Get all rules for this user sorted by priority
     rules = await db.rules.find({"user_id": user_id}, {"_id": 0}).sort("priority", -1).to_list(1000)
     
+    if not rules:
+        logging.info(f"No rules found for user {user_id}")
+        return {
+            "success": True,
+            "updated_count": 0,
+            "message": "No rules found. Please create categorization rules first."
+        }
+    
+    logging.info(f"Found {len(rules)} rules for user {user_id}")
+    
     updated_count = 0
+    matched_count = 0
     for txn_id in update.transaction_ids:
         txn = await db.transactions.find_one({"id": txn_id, "user_id": user_id})
         if not txn:
+            logging.warning(f"Transaction {txn_id} not found")
             continue
             
         description = txn.get("description", "").lower()
+        logging.info(f"Processing transaction: {description}")
         
         # Match against rules
         for rule in rules:
@@ -1215,6 +1228,7 @@ async def bulk_categorize_by_rules(
                 matched = True
             
             if matched:
+                logging.info(f"Matched rule: {rule['pattern']} -> category_id: {rule['category_id']}")
                 await db.transactions.update_one(
                     {"id": txn_id},
                     {
@@ -1226,11 +1240,16 @@ async def bulk_categorize_by_rules(
                     }
                 )
                 updated_count += 1
+                matched_count += 1
                 break  # Stop after first match (highest priority)
+    
+    logging.info(f"Bulk categorization by rules complete: {updated_count} transactions updated out of {len(update.transaction_ids)}")
     
     return {
         "success": True,
-        "updated_count": updated_count
+        "updated_count": updated_count,
+        "total_processed": len(update.transaction_ids),
+        "rules_available": len(rules)
     }
 
 # Bulk categorize using AI/LLM
