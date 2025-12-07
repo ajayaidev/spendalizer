@@ -190,23 +190,17 @@ frontend:
           agent: "testing"
           comment: "✅ Delete All Transactions UI fully functional. Settings page loads correctly when authenticated. Double confirmation flow works: Step 1 shows warning dialog with 'I Understand, Proceed' button. Step 2 requires typing 'DELETE ALL' exactly. Button is properly disabled/enabled based on confirmation text. Successfully redirects to dashboard after deletion. All UI elements present and working correctly."
 
-  - task: "Bulk Categorize Transactions Feature"
+  - task: "Analytics Category Breakdown with Three Sections"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/TransactionsPage.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/AnalyticsPage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
-          agent: "main"
-          comment: "New bulk categorize feature implemented with checkboxes, select all functionality, bulk categorization dialog, and analytics integration. Needs comprehensive testing."
-        - working: true
           agent: "testing"
-          comment: "✅ Bulk Categorize feature fully implemented and working. Fixed authentication issue (password_hash field exclusion in User model). Verified: 1) Authentication system works correctly 2) Transactions page loads successfully 3) Bulk categorize UI elements are properly implemented with conditional rendering (only shows when transactions exist) 4) Analytics page structure is in place and ready for category data 5) Feature is ready for use once transactions are imported. All UI components, API endpoints, and integration points are functional."
-        - working: true
-          agent: "testing"
-          comment: "✅ ENHANCED BULK CATEGORIZATION TESTING COMPLETE: Fixed critical authentication bug (password_hash field exclusion in User model). Successfully verified all requested features: 1) Uncategorized filter exists in category dropdown and works correctly 2) Enhanced bulk categorization dialog has all 3 tabs (Manual, Rules, AI) with proper functionality 3) AI tab correctly mentions Ollama requirement 4) Analytics page displays category breakdown table and charts correctly 5) All UI components are properly implemented and functional. Authentication system now works correctly after fixing password_hash field issue. Feature is production-ready."
+          comment: "New testing request: Verify Analytics Category Breakdown with three distinct sections (Income, Expenses, Transfers) with proper color coding and visual organization. Need to test login/register, navigation to Analytics page, verify section headers, color themes, data display, and hover effects."
 
 metadata:
   created_by: "testing_agent"
