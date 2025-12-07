@@ -293,33 +293,39 @@ const AnalyticsPage = () => {
                   )}
                 </div>
 
-              {/* Expense Categories */}
-              {expenseCategories.length > 0 && (
+                {/* Expense Categories */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold text-red-700 uppercase tracking-wide">Expenses</h3>
-                    <span className="text-sm text-muted-foreground">
-                      ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                    </span>
+                    {expenseCategories.length > 0 && (
+                      <span className="text-sm text-muted-foreground">
+                        ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                      </span>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    {expenseCategories.map((cat, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-red-100 bg-red-50/50 hover:bg-red-50 transition-colors" data-testid={`category-expense-${cat.category_id}`}>
-                        <div className="flex-1">
-                          <p className="font-medium text-red-900">{cat.category_name}</p>
-                          <p className="text-sm text-red-700">{cat.count} transactions</p>
+                  {expenseCategories.length > 0 ? (
+                    <div className="space-y-2">
+                      {expenseCategories.map((cat, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-red-100 bg-red-50/50 hover:bg-red-50 transition-colors" data-testid={`category-expense-${cat.category_id}`}>
+                          <div className="flex-1">
+                            <p className="font-medium text-red-900">{cat.category_name}</p>
+                            <p className="text-sm text-red-700">{cat.count} transactions</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-semibold text-red-900">₹{cat.total.toLocaleString()}</p>
+                            <p className="text-xs text-red-700">
+                              {((cat.total / summary.total_expense) * 100).toFixed(1)}% of expenses
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-lg font-semibold text-red-900">₹{cat.total.toLocaleString()}</p>
-                          <p className="text-xs text-red-700">
-                            {((cat.total / summary.total_expense) * 100).toFixed(1)}% of expenses
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                      <p className="text-sm">No expense categories</p>
+                    </div>
+                  )}
                 </div>
-              )}
 
               {/* Transfer Categories */}
               {transferCategories.length > 0 && (
