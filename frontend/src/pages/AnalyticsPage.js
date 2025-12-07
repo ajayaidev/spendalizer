@@ -329,7 +329,8 @@ const AnalyticsPage = () => {
                       <p className="text-sm">No income categories</p>
                     </div>
                   )}
-                </div>
+                  </CardContent>
+                </Card>
 
                 {/* Expense Categories */}
                 <div>
