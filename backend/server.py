@@ -1071,6 +1071,7 @@ async def get_transactions(
     user_id: str = Depends(get_current_user),
     account_id: Optional[str] = None,
     category_id: Optional[str] = None,
+    uncategorized: Optional[str] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     limit: int = 100,
@@ -1079,7 +1080,9 @@ async def get_transactions(
     query = {"user_id": user_id}
     if account_id:
         query["account_id"] = account_id
-    if category_id:
+    if uncategorized == "true":
+        query["$or"] = [{"category_id": None}, {"category_id": ""}]
+    elif category_id:
         query["category_id"] = category_id
     if start_date:
         query["date"] = query.get("date", {})
