@@ -244,8 +244,8 @@ const AnalyticsPage = () => {
 
       {/* Three Cards Layout for Desktop */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                {/* Income Categories */}
-                <div>
+                {/* Income Card */}
+                <Card className="border-green-200">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide">Income</h3>
                     {incomeCategories.length > 0 && (
