@@ -235,7 +235,7 @@ const AnalyticsPage = () => {
             <div className="space-y-6">
               {/* Show uncategorized first if it exists */}
               {uncategorizedData && (
-                <div>
+                <div className="mb-6">
                   <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">Uncategorized</h3>
                   <div 
                     className="flex items-center justify-between p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50" 
@@ -257,8 +257,10 @@ const AnalyticsPage = () => {
                 </div>
               )}
               
-              {/* Income Categories */}
-              {incomeCategories.length > 0 && (
+              {/* Three Column Layout for Desktop */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Income Categories */}
+                {incomeCategories.length > 0 && (
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold text-green-700 uppercase tracking-wide">Income</h3>
