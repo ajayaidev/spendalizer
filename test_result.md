@@ -175,6 +175,18 @@ frontend:
           agent: "testing"
           comment: "✅ Delete All Transactions UI fully functional. Settings page loads correctly when authenticated. Double confirmation flow works: Step 1 shows warning dialog with 'I Understand, Proceed' button. Step 2 requires typing 'DELETE ALL' exactly. Button is properly disabled/enabled based on confirmation text. Successfully redirects to dashboard after deletion. All UI elements present and working correctly."
 
+  - task: "Bulk Categorize Transactions Feature"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/TransactionsPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "New bulk categorize feature implemented with checkboxes, select all functionality, bulk categorization dialog, and analytics integration. Needs comprehensive testing."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
