@@ -1189,7 +1189,7 @@ async def bulk_categorize_by_rules(
     user_id: str = Depends(get_current_user)
 ):
     # Get all rules for this user sorted by priority
-    rules = await db.rules.find({"user_id": user_id}, {"_id": 0}).sort("priority", -1).to_list(1000)
+    rules = await db.category_rules.find({"user_id": user_id}, {"_id": 0}).sort("priority", -1).to_list(1000)
     
     if not rules:
         logging.info(f"No rules found for user {user_id}")
