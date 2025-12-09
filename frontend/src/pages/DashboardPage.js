@@ -224,6 +224,107 @@ const DashboardPage = () => {
         </Card>
       </div>
 
+      {/* Trend Graph */}
+      <Card className="mt-6">
+        <CardHeader>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <CardTitle>Financial Trends</CardTitle>
+              <CardDescription>Track your income and expenses over time</CardDescription>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="income-toggle"
+                  checked={visibleLines.income}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, income: checked })}
+                />
+                <Label htmlFor="income-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-1"></span>
+                  Income
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="expense-toggle"
+                  checked={visibleLines.expense}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, expense: checked })}
+                />
+                <Label htmlFor="expense-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-1"></span>
+                  Expense
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="net-toggle"
+                  checked={visibleLines.net}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, net: checked })}
+                />
+                <Label htmlFor="net-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-blue-500 mr-1"></span>
+                  Net
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="transfer-in-toggle"
+                  checked={visibleLines.transfer_in}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_in: checked })}
+                />
+                <Label htmlFor="transfer-in-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-cyan-500 mr-1"></span>
+                  Transfer In
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="transfer-out-toggle"
+                  checked={visibleLines.transfer_out}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_out: checked })}
+                />
+                <Label htmlFor="transfer-out-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-purple-500 mr-1"></span>
+                  Transfer Out
+                </Label>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {trendData.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No trend data available for the selected period</p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="period" />
+                <YAxis tickFormatter={(value) => `₹${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
+                <Legend />
+                {visibleLines.income && (
+                  <Line type="monotone" dataKey="income" stroke="hsl(142, 76%, 36%)" strokeWidth={2} name="Income" />
+                )}
+                {visibleLines.expense && (
+                  <Line type="monotone" dataKey="expense" stroke="hsl(0, 84%, 60%)" strokeWidth={2} name="Expense" />
+                )}
+                {visibleLines.net && (
+                  <Line type="monotone" dataKey="net" stroke="hsl(221, 83%, 53%)" strokeWidth={2} name="Net" />
+                )}
+                {visibleLines.transfer_in && (
+                  <Line type="monotone" dataKey="transfer_in" stroke="hsl(189, 85%, 44%)" strokeWidth={2} name="Transfer In" />
+                )}
+                {visibleLines.transfer_out && (
+                  <Line type="monotone" dataKey="transfer_out" stroke="hsl(271, 76%, 53%)" strokeWidth={2} name="Transfer Out" />
+                )}
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Recent Transactions & Accounts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2" data-testid="recent-transactions-card">
