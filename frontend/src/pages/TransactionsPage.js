@@ -379,7 +379,7 @@ const TransactionsPage = () => {
                         className="px-2 py-1 rounded-full text-xs font-medium bg-secondary cursor-pointer hover:bg-primary/10"
                         onClick={() => {
                           setEditingTxn(txn);
-                          setNewCategory(txn.category_id || '');
+                          setNewCategory(txn.category_id || '_none');
                         }}
                         data-testid={`category-badge-${txn.id}`}
                       >
