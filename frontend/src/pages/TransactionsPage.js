@@ -74,13 +74,13 @@ const TransactionsPage = () => {
   };
 
   const handleCategoryUpdate = async () => {
-    if (!newCategory || !editingTxn) return;
+    if (!newCategory || newCategory === '_none' || !editingTxn) return;
     
     try {
       await updateTransactionCategory(editingTxn.id, newCategory);
       toast.success('Category updated successfully!');
       setEditingTxn(null);
-      setNewCategory('');
+      setNewCategory('_none');
       loadData();
     } catch (error) {
       toast.error('Failed to update category');
