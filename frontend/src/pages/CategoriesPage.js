@@ -102,7 +102,13 @@ const CategoriesPage = () => {
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Categories</h1>
           <p className="text-muted-foreground">Manage your transaction categories and sub-categories</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) {
+            setEditingCategory(null);
+            setFormData({ name: '', type: 'EXPENSE', parent_category_id: '_none' });
+          }
+        }}>
           <DialogTrigger asChild>
             <Button data-testid="add-category-button">
               <Plus className="w-4 h-4 mr-2" />
