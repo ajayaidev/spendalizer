@@ -433,7 +433,7 @@ const TransactionsPage = () => {
                       className="w-full justify-between"
                       data-testid="category-combobox-trigger"
                     >
-                      {newCategory
+                      {newCategory && newCategory !== '_none'
                         ? categories.find((cat) => cat.id === newCategory)?.name
                         : 'Select category...'}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
