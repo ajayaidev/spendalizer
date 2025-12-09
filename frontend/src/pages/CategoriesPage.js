@@ -134,11 +134,13 @@ const CategoriesPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="_none">None (Top-level category)</SelectItem>
-                    {parentCategories.filter(c => c.type === formData.type).map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
+                    {parentCategories
+                      .filter(c => c.type === formData.type && c.id && c.id.trim() !== '')
+                      .map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
