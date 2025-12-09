@@ -111,8 +111,10 @@ const CategoriesPage = () => {
           </DialogTrigger>
           <DialogContent data-testid="add-category-dialog">
             <DialogHeader>
-              <DialogTitle>Create New Category</DialogTitle>
-              <DialogDescription>Add a custom category or sub-category</DialogDescription>
+              <DialogTitle>{editingCategory ? 'Edit Category' : 'Create New Category'}</DialogTitle>
+              <DialogDescription>
+                {editingCategory ? 'Update category details' : 'Add a custom category or sub-category'}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
