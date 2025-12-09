@@ -242,7 +242,7 @@ const TransactionsPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="_all">All Accounts</SelectItem>
-                {accounts.map((account) => (
+                {accounts.filter(acc => acc.id && acc.id.trim() !== '').map((account) => (
                   <SelectItem key={account.id} value={account.id}>
                     {account.name}
                   </SelectItem>
