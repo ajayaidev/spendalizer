@@ -109,8 +109,62 @@ const AnalyticsPage = () => {
   return (
     <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="analytics-page">
       <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Analytics</h1>
-        <p className="text-muted-foreground">Insights into your spending and saving patterns</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Analytics</h1>
+            <p className="text-muted-foreground">Insights into your spending and saving patterns</p>
+          </div>
+          
+          {/* Date Filter */}
+          <div className="flex flex-wrap gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="justify-start text-left font-normal">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, 'LLL dd, y')} - {format(dateRange.to, 'LLL dd, y')}
+                      </>
+                    ) : (
+                      format(dateRange.from, 'LLL dd, y')
+                    )
+                  ) : (
+                    <span>All Time</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <div className="p-3 border-b space-y-1">
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => handleQuickDateFilter('this_month')}>
+                    This Month
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => handleQuickDateFilter('last_month')}>
+                    Last Month
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => handleQuickDateFilter('last_3_months')}>
+                    Last 3 Months
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => handleQuickDateFilter('last_6_months')}>
+                    Last 6 Months
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => handleQuickDateFilter('this_year')}>
+                    This Year
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => handleQuickDateFilter('clear')}>
+                    Clear Filter
+                  </Button>
+                </div>
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
       </div>
 
       {/* Uncategorized Alert */}
