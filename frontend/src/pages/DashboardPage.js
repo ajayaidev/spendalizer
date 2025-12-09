@@ -34,17 +34,26 @@ const DashboardPage = () => {
   const loadData = async () => {
     try {
       const params = { limit: 10 };
-      if (dateRange.from) params.start_date = format(dateRange.from, 'yyyy-MM-dd');
-      if (dateRange.to) params.end_date = format(dateRange.to, 'yyyy-MM-dd');
+      const trendParams = { group_by: 'month' };
+      if (dateRange.from) {
+        params.start_date = format(dateRange.from, 'yyyy-MM-dd');
+        trendParams.start_date = format(dateRange.from, 'yyyy-MM-dd');
+      }
+      if (dateRange.to) {
+        params.end_date = format(dateRange.to, 'yyyy-MM-dd');
+        trendParams.end_date = format(dateRange.to, 'yyyy-MM-dd');
+      }
 
-      const [summaryRes, txnRes, accountsRes] = await Promise.all([
+      const [summaryRes, txnRes, accountsRes, trendRes] = await Promise.all([
         getAnalyticsSummary(dateRange.from ? params : {}),
         getTransactions(params),
-        getAccounts()
+        getAccounts(),
+        getSpendingOverTime(trendParams)
       ]);
       setSummary(summaryRes.data);
       setRecentTransactions(txnRes.data.transactions);
       setAccounts(accountsRes.data);
+      setTrendData(trendRes.data);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
     } finally {
