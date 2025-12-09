@@ -256,7 +256,7 @@ const TransactionsPage = () => {
               <SelectContent>
                 <SelectItem value="_all">All Categories</SelectItem>
                 <SelectItem value="_uncategorized">Uncategorized</SelectItem>
-                {categories.map((category) => (
+                {categories.filter(cat => cat.id && cat.id.trim() !== '').map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
                   </SelectItem>
