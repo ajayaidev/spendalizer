@@ -16,7 +16,7 @@ const CategoriesPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     type: 'EXPENSE',
-    parent_category_id: ''
+    parent_category_id: '_none'
   });
 
   useEffect(() => {
