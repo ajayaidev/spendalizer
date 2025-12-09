@@ -231,7 +231,7 @@ const CategoriesPage = () => {
                           </div>
                         </div>
                       </div>
-                      {!category.is_system && (
+                      {category.is_system !== true && (
                         <div className="flex gap-1">
                           <Button
                             variant="ghost"
