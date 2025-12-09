@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getAnalyticsSummary } from '../lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { Calendar } from '../components/ui/calendar';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { TrendingUp, TrendingDown, PieChart as PieChartIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, PieChart as PieChartIcon, Calendar as CalendarIcon } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { toast } from 'sonner';
+import { cn } from '../lib/utils';
 
 const COLORS = ['hsl(221, 83%, 53%)', 'hsl(142, 76%, 36%)', 'hsl(35, 92%, 55%)', 'hsl(262, 83%, 58%)', 'hsl(346, 87%, 43%)'];
 const UNCATEGORIZED_COLOR = 'hsl(0, 0%, 60%)'; // Gray for uncategorized
@@ -11,19 +16,51 @@ const UNCATEGORIZED_COLOR = 'hsl(0, 0%, 60%)'; // Gray for uncategorized
 const AnalyticsPage = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [dateRange]);
 
   const loadData = async () => {
     try {
-      const response = await getAnalyticsSummary();
+      const params = {};
+      if (dateRange.from) params.start_date = format(dateRange.from, 'yyyy-MM-dd');
+      if (dateRange.to) params.end_date = format(dateRange.to, 'yyyy-MM-dd');
+      
+      const response = await getAnalyticsSummary(params);
       setSummary(response.data);
     } catch (error) {
       toast.error('Failed to load analytics');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleQuickDateFilter = (option) => {
+    const today = new Date();
+    switch (option) {
+      case 'this_month':
+        setDateRange({ from: startOfMonth(today), to: endOfMonth(today) });
+        break;
+      case 'last_month':
+        const lastMonth = subMonths(today, 1);
+        setDateRange({ from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) });
+        break;
+      case 'last_3_months':
+        setDateRange({ from: subMonths(today, 3), to: today });
+        break;
+      case 'last_6_months':
+        setDateRange({ from: subMonths(today, 6), to: today });
+        break;
+      case 'this_year':
+        setDateRange({ from: startOfYear(today), to: endOfYear(today) });
+        break;
+      case 'clear':
+        setDateRange({ from: null, to: null });
+        break;
+      default:
+        break;
     }
   };
 
