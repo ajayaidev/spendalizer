@@ -26,7 +26,7 @@ const TransactionsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('_all');
   const [dateRange, setDateRange] = useState({ from: null, to: null });
   const [editingTxn, setEditingTxn] = useState(null);
-  const [newCategory, setNewCategory] = useState('');
+  const [newCategory, setNewCategory] = useState('_none');
   const [categorySearch, setCategorySearch] = useState('');
   const [categoryComboOpen, setCategoryComboOpen] = useState(false);
   const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false);
