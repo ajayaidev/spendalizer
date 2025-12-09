@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAnalyticsSummary, getTransactions, getAccounts } from '../lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { TrendingUp, TrendingDown, Wallet, Receipt } from 'lucide-react';
-import { format } from 'date-fns';
+import { Button } from '../components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { Calendar } from '../components/ui/calendar';
+import { TrendingUp, TrendingDown, Wallet, Receipt, Calendar as CalendarIcon } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
+import { cn } from '../lib/utils';
 
 const DashboardPage = () => {
   const [summary, setSummary] = useState(null);
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
 
   useEffect(() => {
     loadData();
