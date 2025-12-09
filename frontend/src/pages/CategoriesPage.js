@@ -166,7 +166,7 @@ const CategoriesPage = () => {
                 </Select>
               </div>
               <Button type="submit" className="w-full" data-testid="submit-category-button">
-                Create Category
+                {editingCategory ? 'Update Category' : 'Create Category'}
               </Button>
             </form>
           </DialogContent>
