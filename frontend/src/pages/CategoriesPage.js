@@ -43,14 +43,32 @@ const CategoriesPage = () => {
         type: formData.type,
         parent_category_id: formData.parent_category_id === '_none' ? null : formData.parent_category_id
       };
-      await createCategory(data);
-      toast.success('Category created successfully!');
+      
+      if (editingCategory) {
+        await updateCategory(editingCategory.id, data);
+        toast.success('Category updated successfully!');
+      } else {
+        await createCategory(data);
+        toast.success('Category created successfully!');
+      }
+      
       setDialogOpen(false);
+      setEditingCategory(null);
       setFormData({ name: '', type: 'EXPENSE', parent_category_id: '_none' });
       loadCategories();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to create category');
+      toast.error(error.response?.data?.detail || `Failed to ${editingCategory ? 'update' : 'create'} category`);
     }
+  };
+
+  const handleEdit = (category) => {
+    setEditingCategory(category);
+    setFormData({
+      name: category.name,
+      type: category.type,
+      parent_category_id: category.parent_category_id || '_none'
+    });
+    setDialogOpen(true);
   };
 
   const handleDelete = async (categoryId) => {
