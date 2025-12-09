@@ -18,13 +18,17 @@ const DashboardPage = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [dateRange]);
 
   const loadData = async () => {
     try {
+      const params = { limit: 10 };
+      if (dateRange.from) params.start_date = format(dateRange.from, 'yyyy-MM-dd');
+      if (dateRange.to) params.end_date = format(dateRange.to, 'yyyy-MM-dd');
+
       const [summaryRes, txnRes, accountsRes] = await Promise.all([
-        getAnalyticsSummary(),
-        getTransactions({ limit: 10 }),
+        getAnalyticsSummary(dateRange.from ? params : {}),
+        getTransactions(params),
         getAccounts()
       ]);
       setSummary(summaryRes.data);
@@ -34,6 +38,33 @@ const DashboardPage = () => {
       console.error('Failed to load dashboard data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleQuickDateFilter = (option) => {
+    const today = new Date();
+    switch (option) {
+      case 'this_month':
+        setDateRange({ from: startOfMonth(today), to: endOfMonth(today) });
+        break;
+      case 'last_month':
+        const lastMonth = subMonths(today, 1);
+        setDateRange({ from: startOfMonth(lastMonth), to: endOfMonth(lastMonth) });
+        break;
+      case 'last_3_months':
+        setDateRange({ from: subMonths(today, 3), to: today });
+        break;
+      case 'last_6_months':
+        setDateRange({ from: subMonths(today, 6), to: today });
+        break;
+      case 'this_year':
+        setDateRange({ from: startOfYear(today), to: endOfYear(today) });
+        break;
+      case 'clear':
+        setDateRange({ from: null, to: null });
+        break;
+      default:
+        break;
     }
   };
 
