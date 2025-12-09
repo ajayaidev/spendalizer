@@ -1424,6 +1424,77 @@ async def get_analytics_summary(
         "category_breakdown": sorted(enriched_breakdown, key=lambda x: x["total"], reverse=True)
     }
 
+@api_router.get("/analytics/spending-over-time")
+async def get_spending_over_time(
+    user_id: str = Depends(get_current_user),
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    group_by: str = "month"  # month, week, day
+):
+    query = {"user_id": user_id}
+    if start_date:
+        query["date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("date", {})["$lte"] = end_date
+    
+    transactions = await db.transactions.find(query, {"_id": 0}).to_list(10000)
+    
+    # Group transactions by date period
+    from collections import defaultdict
+    grouped_data = defaultdict(lambda: {"income": 0, "expense": 0, "transfer_in": 0, "transfer_out": 0})
+    
+    for txn in transactions:
+        date_str = txn.get("date", "")
+        if not date_str:
+            continue
+            
+        # Format date based on grouping
+        try:
+            date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            if group_by == "month":
+                period_key = date_obj.strftime("%Y-%m")
+            elif group_by == "week":
+                period_key = date_obj.strftime("%Y-W%U")
+            else:  # day
+                period_key = date_obj.strftime("%Y-%m-%d")
+        except:
+            continue
+        
+        amount = txn.get("amount", 0)
+        direction = txn.get("direction", "DEBIT")
+        
+        # Get category type to determine if transfer
+        category_id = txn.get("category_id")
+        is_transfer = False
+        if category_id:
+            category = await db.categories.find_one({"id": category_id})
+            if category and category.get("type") == "TRANSFER":
+                is_transfer = True
+        
+        if is_transfer:
+            if direction == "CREDIT":
+                grouped_data[period_key]["transfer_in"] += amount
+            else:
+                grouped_data[period_key]["transfer_out"] += amount
+        elif direction == "CREDIT":
+            grouped_data[period_key]["income"] += amount
+        else:
+            grouped_data[period_key]["expense"] += amount
+    
+    # Convert to sorted list
+    result = []
+    for period, data in sorted(grouped_data.items()):
+        result.append({
+            "period": period,
+            "income": round(data["income"], 2),
+            "expense": round(data["expense"], 2),
+            "net": round(data["income"] - data["expense"], 2),
+            "transfer_in": round(data["transfer_in"], 2),
+            "transfer_out": round(data["transfer_out"], 2)
+        })
+    
+    return result
+
 # Import History
 @api_router.get("/imports", response_model=List[ImportBatch])
 async def get_import_history(user_id: str = Depends(get_current_user)):
