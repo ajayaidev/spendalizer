@@ -40,12 +40,12 @@ const CategoriesPage = () => {
       const data = {
         name: formData.name,
         type: formData.type,
-        parent_category_id: formData.parent_category_id || null
+        parent_category_id: formData.parent_category_id === '_none' ? null : formData.parent_category_id
       };
       await createCategory(data);
       toast.success('Category created successfully!');
       setDialogOpen(false);
-      setFormData({ name: '', type: 'EXPENSE', parent_category_id: '' });
+      setFormData({ name: '', type: 'EXPENSE', parent_category_id: '_none' });
       loadCategories();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to create category');
