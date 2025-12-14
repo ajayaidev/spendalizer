@@ -20,6 +20,7 @@ const RulesPage = () => {
     category_id: '',
     priority: 10
   });
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     loadData();
