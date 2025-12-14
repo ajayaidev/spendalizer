@@ -1068,6 +1068,14 @@ def main():
     test_results.append(("Create Rule", tester.test_create_rule()))
     test_results.append(("Get Rules", tester.test_get_rules()))
     
+    # Rule Import/Export Tests
+    print("\n📋 RULE IMPORT/EXPORT TESTS")
+    test_results.append(("Create Test Categories and Rules", tester.create_test_categories_and_rules()))
+    test_results.append(("Export Rules", tester.test_rules_export()))
+    test_results.append(("Import Valid Rules", tester.test_rules_import_valid_data()))
+    test_results.append(("Import Rules with Invalid Category", tester.test_rules_import_invalid_category()))
+    test_results.append(("Import Empty Rules Array", tester.test_rules_import_empty_array()))
+    
     # Analytics Tests
     print("\n📋 ANALYTICS TESTS")
     test_results.append(("Analytics Summary", tester.test_analytics_summary()))
