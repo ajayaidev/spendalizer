@@ -1,0 +1,152 @@
+[
+  {
+    "id": "825d9f15-47ea-411b-b0dd-cf3e5de87850",
+    "name": "Salary",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "51eef408-88b7-423f-8310-50d8bf072d4a",
+    "name": "Business Income",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "43d4a014-2c55-446f-aa37-baf619c10b9b",
+    "name": "Interest",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "2c335c91-90f6-4393-b44d-b25a8a1aab60",
+    "name": "Dividends",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "d5221882-05a4-4540-aa04-64f595253d16",
+    "name": "Refunds/Reimbursements",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "2d9f50c2-4a06-4d7a-8092-db6eedb6b3f1",
+    "name": "Loan Received",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "92481d97-3308-4be1-8d81-ce8f20953050",
+    "name": "Loan Returned Back",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "f3bbfa2c-d64f-4044-9259-339ab37d656b",
+    "name": "Other Income",
+    "type": "INCOME",
+    "is_system": true
+  },
+  {
+    "id": "0c5f0656-1c01-4452-9705-67267519b91a",
+    "name": "Food & Dining",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "c44e410b-2d01-40ed-a873-1ea2828a3965",
+    "name": "Groceries",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "8b3a1c5e-6d9f-4a2b-8e7c-1f5a9d3c2b4e",
+    "name": "Utilities",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "7c2b8d4f-9e1a-4b3c-7f6d-2e8b9a4c3d5f",
+    "name": "Transport",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "6d1c9e2a-8f3b-4c5d-6e7a-3f9b8c5d4e6a",
+    "name": "Shopping",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "5e2d8f3c-7a4b-4d5e-6f7c-2a8b9c4d5e6f",
+    "name": "Rent/EMI",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "4f3e9a2d-6b5c-4e6f-7a8d-3b9c8d5e6f7a",
+    "name": "Healthcare",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "3a4f8b3e-5c6d-4f7e-8a9b-2c8d9e6f7a8b",
+    "name": "Education",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "2b5a9c4f-4d7e-4a8f-9b8c-3d9e8f7a8b9c",
+    "name": "Entertainment",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "1c6b8d5a-3e8f-4b9a-8c9d-2e9f8a7b8c9d",
+    "name": "Subscriptions",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "9d7c8e6b-2f9a-4c8b-7d8e-3f8a9b7c8d9e",
+    "name": "Travel",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "8e7d9f6c-1a8b-4d9c-6e7f-2a9b8c7d8e9f",
+    "name": "Miscellaneous",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "7f8e9a7d-9b7c-4e8d-5f6a-3b8c9d7e8f9a",
+    "name": "Loan Given",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "6a9f8b8e-8c6d-4f9e-4a5b-2c9d8e7f8a9b",
+    "name": "Loan Returned Back",
+    "type": "EXPENSE",
+    "is_system": true
+  },
+  {
+    "id": "5b8a9c9f-7d5e-4a8f-3b4c-3d8e9f7a8b9c",
+    "name": "Bank Transfer",
+    "type": "TRANSFER",
+    "is_system": true
+  },
+  {
+    "id": "4c9b8d7a-6e4f-4b9a-2c3d-2e9f8a7b8c9d",
+    "name": "Credit Card Bill Payment",
+    "type": "TRANSFER",
+    "is_system": true
+  },
+  {
+    "id": "3d8c9e6b-5f3a-4c8b-1d2e-3f8a9b7c8d9e",
+    "name": "Wallet Transfer",
+    "type": "TRANSFER",
+    "is_system": true
+  }
+]
