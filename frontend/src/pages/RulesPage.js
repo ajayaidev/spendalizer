@@ -69,6 +69,67 @@ const RulesPage = () => {
     return cat ? cat.name : 'Unknown';
   };
 
+  const handleExport = async () => {
+    try {
+      const response = await exportRules();
+      const rulesData = response.data;
+      
+      // Create JSON file
+      const dataStr = JSON.stringify(rulesData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      // Download file
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `categorization-rules-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success(`Exported ${rulesData.length} rules successfully!`);
+    } catch (error) {
+      toast.error('Failed to export rules');
+    }
+  };
+
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const rulesData = JSON.parse(text);
+      
+      if (!Array.isArray(rulesData)) {
+        toast.error('Invalid file format. Expected an array of rules.');
+        return;
+      }
+
+      const response = await importRules(rulesData);
+      const { imported_count, skipped_count, message } = response.data;
+      
+      if (imported_count > 0) {
+        toast.success(message);
+        loadData();
+      } else {
+        toast.warning(message);
+      }
+    } catch (error) {
+      if (error.message.includes('JSON')) {
+        toast.error('Invalid JSON file');
+      } else {
+        toast.error('Failed to import rules');
+      }
+    } finally {
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading rules...</div>;
   }
