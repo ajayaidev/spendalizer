@@ -247,46 +247,30 @@ def generate_reset_token() -> str:
     """Generate secure random token"""
     return secrets.token_urlsafe(32)
 
-# Initialize default categories
+# Initialize default categories from fixed JSON file
+# This ensures system categories have consistent IDs across all environments
 async def init_default_categories():
-    default_categories = [
-        # Income
-        {"name": "Salary", "type": "INCOME", "is_system": True},
-        {"name": "Business Income", "type": "INCOME", "is_system": True},
-        {"name": "Interest", "type": "INCOME", "is_system": True},
-        {"name": "Dividends", "type": "INCOME", "is_system": True},
-        {"name": "Refunds/Reimbursements", "type": "INCOME", "is_system": True},
-        {"name": "Loan Received", "type": "INCOME", "is_system": True},
-        {"name": "Loan Returned Back", "type": "INCOME", "is_system": True},
-        {"name": "Other Income", "type": "INCOME", "is_system": True},
-        # Expense
-        {"name": "Food & Dining", "type": "EXPENSE", "is_system": True},
-        {"name": "Groceries", "type": "EXPENSE", "is_system": True},
-        {"name": "Utilities", "type": "EXPENSE", "is_system": True},
-        {"name": "Transport", "type": "EXPENSE", "is_system": True},
-        {"name": "Shopping", "type": "EXPENSE", "is_system": True},
-        {"name": "Rent/EMI", "type": "EXPENSE", "is_system": True},
-        {"name": "Healthcare", "type": "EXPENSE", "is_system": True},
-        {"name": "Education", "type": "EXPENSE", "is_system": True},
-        {"name": "Entertainment", "type": "EXPENSE", "is_system": True},
-        {"name": "Subscriptions", "type": "EXPENSE", "is_system": True},
-        {"name": "Travel", "type": "EXPENSE", "is_system": True},
-        {"name": "Miscellaneous", "type": "EXPENSE", "is_system": True},
-        {"name": "Loan Given", "type": "EXPENSE", "is_system": True},
-        {"name": "Loan Returned Back", "type": "EXPENSE", "is_system": True},
-        # Transfer
-        {"name": "Bank Transfer", "type": "TRANSFER", "is_system": True},
-        {"name": "Credit Card Bill Payment", "type": "TRANSFER", "is_system": True},
-        {"name": "Wallet Transfer", "type": "TRANSFER", "is_system": True},
-    ]
+    # Load system categories from JSON file (version controlled)
+    system_categories_path = ROOT_DIR / 'system_categories.json'
     
-    for cat in default_categories:
-        cat_obj = Category(**cat, id=str(uuid.uuid4()))
-        existing = await db.categories.find_one({"name": cat["name"], "is_system": True})
+    try:
+        with open(system_categories_path, 'r') as f:
+            default_categories = json.load(f)
+    except FileNotFoundError:
+        logging.error(f"System categories file not found: {system_categories_path}")
+        return
+    
+    for cat_data in default_categories:
+        # Use the predefined ID from the JSON file
+        existing = await db.categories.find_one({"id": cat_data["id"]})
         if not existing:
-            doc = cat_obj.model_dump()
-            doc['created_at'] = doc.get('created_at', datetime.now(timezone.utc)).isoformat()
-            await db.categories.insert_one(doc)
+            # Insert with predefined ID
+            cat_data['created_at'] = datetime.now(timezone.utc).isoformat()
+            await db.categories.insert_one(cat_data)
+            logging.info(f"Initialized system category: {cat_data['name']} (id: {cat_data['id']})")
+        else:
+            # Category already exists with this ID - skip
+            logging.debug(f"System category already exists: {cat_data['name']}")
 
 # Categorization Engine
 async def categorize_with_rules(user_id: str, description: str, account_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
