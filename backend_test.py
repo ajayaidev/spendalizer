@@ -806,6 +806,219 @@ class SpendAlizerAPITester:
             print(f"   ❌ Error creating test transactions: {e}")
             return False
 
+    def test_rules_export(self):
+        """Test exporting rules"""
+        success, response = self.run_test(
+            "Export Rules",
+            "GET",
+            "rules/export",
+            200
+        )
+        
+        if success:
+            print(f"   Exported {len(response)} rules")
+            # Verify each rule has required fields
+            for rule in response:
+                if 'pattern' not in rule or 'match_type' not in rule or 'category_id' not in rule:
+                    print(f"   ❌ Rule missing required fields: {rule}")
+                    return False
+                if 'category_name' not in rule:
+                    print(f"   ❌ Rule missing category_name field: {rule}")
+                    return False
+            print(f"   ✅ All exported rules have required fields including category_name")
+            return True
+        return False
+
+    def test_rules_import_valid_data(self):
+        """Test importing rules with valid data"""
+        # First export existing rules to get valid format
+        success, exported_rules = self.run_test(
+            "Export Rules for Import Test",
+            "GET", 
+            "rules/export",
+            200
+        )
+        
+        if not success:
+            print("   ❌ Could not export rules for import test")
+            return False
+        
+        # Store original count
+        original_count = len(exported_rules)
+        print(f"   Original rules count: {original_count}")
+        
+        # Delete all existing rules first
+        for rule in exported_rules:
+            if 'id' in rule:
+                self.run_test(
+                    f"Delete Rule {rule['id'][:8]}",
+                    "DELETE",
+                    f"rules/{rule['id']}",
+                    200
+                )
+        
+        # Verify rules are deleted
+        success, empty_rules = self.run_test(
+            "Verify Rules Deleted",
+            "GET",
+            "rules",
+            200
+        )
+        
+        if success and len(empty_rules) == 0:
+            print(f"   ✅ All rules deleted successfully")
+        else:
+            print(f"   ❌ Rules not deleted properly: {len(empty_rules)} remaining")
+            return False
+        
+        # Import the exported rules back
+        import_data = {"rules": exported_rules}
+        
+        success, response = self.run_test(
+            "Import Valid Rules",
+            "POST",
+            "rules/import",
+            200,
+            data=import_data
+        )
+        
+        if success:
+            imported_count = response.get('imported_count', 0)
+            skipped_count = response.get('skipped_count', 0)
+            print(f"   Imported: {imported_count}, Skipped: {skipped_count}")
+            
+            # Verify rules were recreated
+            success, new_rules = self.run_test(
+                "Verify Rules Imported",
+                "GET",
+                "rules",
+                200
+            )
+            
+            if success and len(new_rules) == imported_count:
+                print(f"   ✅ Rules successfully imported and verified")
+                return True
+            else:
+                print(f"   ❌ Rule count mismatch: expected {imported_count}, got {len(new_rules)}")
+                return False
+        return False
+
+    def test_rules_import_invalid_category(self):
+        """Test importing rules with non-existent category_id"""
+        invalid_rules = [{
+            "pattern": "INVALID_TEST",
+            "match_type": "CONTAINS",
+            "category_id": "non-existent-category-id-12345",
+            "priority": 10
+        }]
+        
+        import_data = {"rules": invalid_rules}
+        
+        success, response = self.run_test(
+            "Import Rules with Invalid Category",
+            "POST",
+            "rules/import",
+            200,
+            data=import_data
+        )
+        
+        if success:
+            imported_count = response.get('imported_count', 0)
+            skipped_count = response.get('skipped_count', 0)
+            
+            if imported_count == 0 and skipped_count == 1:
+                print(f"   ✅ Correctly skipped rule with invalid category")
+                return True
+            else:
+                print(f"   ❌ Expected 0 imported, 1 skipped. Got {imported_count} imported, {skipped_count} skipped")
+                return False
+        return False
+
+    def test_rules_import_empty_array(self):
+        """Test importing empty rules array"""
+        import_data = {"rules": []}
+        
+        success, response = self.run_test(
+            "Import Empty Rules Array",
+            "POST",
+            "rules/import",
+            200,
+            data=import_data
+        )
+        
+        if success:
+            imported_count = response.get('imported_count', 0)
+            skipped_count = response.get('skipped_count', 0)
+            
+            if imported_count == 0 and skipped_count == 0:
+                print(f"   ✅ Correctly handled empty rules array")
+                return True
+            else:
+                print(f"   ❌ Expected 0 imported, 0 skipped. Got {imported_count} imported, {skipped_count} skipped")
+                return False
+        return False
+
+    def create_test_categories_and_rules(self):
+        """Create test categories and rules for import/export testing"""
+        print("\n🔧 Creating test categories and rules for import/export testing...")
+        
+        # Get existing categories
+        success, categories = self.run_test(
+            "Get Categories for Rule Testing",
+            "GET",
+            "categories",
+            200
+        )
+        
+        if not success or len(categories) == 0:
+            print("   ❌ No categories available for rule testing")
+            return False
+        
+        # Use first few categories for testing
+        test_categories = categories[:3]
+        print(f"   Using {len(test_categories)} categories for testing")
+        
+        # Create test rules
+        test_rules_data = [
+            {
+                "pattern": "ZOMATO",
+                "match_type": "CONTAINS",
+                "category_id": test_categories[0]['id'],
+                "priority": 10
+            },
+            {
+                "pattern": "SWIGGY",
+                "match_type": "CONTAINS", 
+                "category_id": test_categories[1]['id'],
+                "priority": 9
+            },
+            {
+                "pattern": "ACH C-",
+                "match_type": "STARTS_WITH",
+                "category_id": test_categories[2]['id'] if len(test_categories) > 2 else test_categories[0]['id'],
+                "priority": 8
+            }
+        ]
+        
+        created_rules = 0
+        for rule_data in test_rules_data:
+            success, response = self.run_test(
+                f"Create Test Rule: {rule_data['pattern']}",
+                "POST",
+                "rules",
+                200,
+                data=rule_data
+            )
+            
+            if success:
+                created_rules += 1
+                print(f"   ✅ Created rule: {rule_data['pattern']}")
+            else:
+                print(f"   ❌ Failed to create rule: {rule_data['pattern']}")
+        
+        print(f"   Created {created_rules} test rules")
+        return created_rules > 0
+
     def cleanup_test_data(self):
         """Clean up test data"""
         if self.test_rule_id:
