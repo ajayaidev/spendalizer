@@ -227,7 +227,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus: 
+    - "Rule Import/Export Feature - Backend testing completed successfully"
   stuck_tasks: 
     - "Authentication System - Login/Register functionality preventing full UI testing"
   test_all: false
