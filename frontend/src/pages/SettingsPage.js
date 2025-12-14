@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deleteAllTransactions } from '../lib/api';
+import { deleteAllTransactions, backupDatabase, restoreDatabase } from '../lib/api';
 import { AuthContext } from '../App';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
-import { AlertTriangle, Trash2, User } from 'lucide-react';
+import { AlertTriangle, Trash2, User, Download, Upload, Database } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SettingsPage = () => {
