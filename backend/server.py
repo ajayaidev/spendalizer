@@ -1324,6 +1324,61 @@ async def delete_rule(rule_id: str, user_id: str = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Rule not found")
     return {"success": True}
 
+@api_router.get("/rules/export")
+async def export_rules(user_id: str = Depends(get_current_user)):
+    rules = await db.category_rules.find({"user_id": user_id}, {"_id": 0, "user_id": 0}).to_list(1000)
+    
+    # Get category names for better readability
+    for rule in rules:
+        category = await db.categories.find_one({"id": rule.get("category_id")})
+        if category:
+            rule["category_name"] = category.get("name")
+    
+    return rules
+
+class RuleImport(BaseModel):
+    rules: List[Dict[str, Any]]
+
+@api_router.post("/rules/import")
+async def import_rules(data: RuleImport, user_id: str = Depends(get_current_user)):
+    imported_count = 0
+    skipped_count = 0
+    
+    for rule_data in data.rules:
+        # Remove id and category_name if present
+        rule_data.pop("id", None)
+        rule_data.pop("category_name", None)
+        
+        # Check if category_id exists for this user
+        if "category_id" in rule_data:
+            category = await db.categories.find_one({
+                "id": rule_data["category_id"],
+                "user_id": user_id
+            })
+            if not category:
+                skipped_count += 1
+                continue
+        
+        # Create new rule
+        rule_doc = {
+            "id": str(uuid4()),
+            "user_id": user_id,
+            "pattern": rule_data.get("pattern", ""),
+            "match_type": rule_data.get("match_type", "CONTAINS"),
+            "category_id": rule_data.get("category_id"),
+            "priority": rule_data.get("priority", 10)
+        }
+        
+        await db.category_rules.insert_one(rule_doc)
+        imported_count += 1
+    
+    return {
+        "success": True,
+        "imported_count": imported_count,
+        "skipped_count": skipped_count,
+        "message": f"Imported {imported_count} rules, skipped {skipped_count} (missing categories)"
+    }
+
 # Analytics Routes
 @api_router.get("/analytics/summary")
 async def get_analytics_summary(
