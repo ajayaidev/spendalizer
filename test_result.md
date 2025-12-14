@@ -159,6 +159,21 @@ backend:
           agent: "testing"
           comment: "✅ FIXED: Changed line 1192 in server.py from 'db.rules' to 'db.category_rules'. Verified comprehensive functionality: 1) Rules are properly retrieved (GET /api/rules works) 2) Pattern matching works correctly ('ACH C-' STARTS_WITH matches target transactions) 3) Bulk categorization updates transactions with correct category_id and categorisation_source='RULE' 4) Backend logs show proper rule processing and matching. Feature now fully functional for the reported use case."
 
+  - task: "Rule Import/Export API Endpoints"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ Critical bug found in rule import functionality: import endpoint was only looking for categories with specific user_id, but system categories don't have user_id, causing all rules to be skipped during import. Also missing required fields in rule document creation."
+        - working: true
+          agent: "testing"
+          comment: "✅ RULE IMPORT/EXPORT FULLY FUNCTIONAL: Fixed critical import bug by updating category query to include system categories ($or: [{is_system: true}, {user_id: user_id}]). Added missing fields (account_id, is_active, created_at) to rule document creation. COMPREHENSIVE TESTING COMPLETED: 1) GET /api/rules/export returns JSON array with all required fields including category_name 2) POST /api/rules/import correctly imports valid rules (3/3 imported, 0 skipped) 3) Invalid category_id rules are properly skipped (0 imported, 1 skipped) 4) Empty rules array handled correctly (0 imported, 0 skipped) 5) All API responses match expected format with success, imported_count, skipped_count, and message fields. Feature is production-ready and handles all edge cases correctly."
+
 frontend:
   - task: "Forgot Password UI Integration"
     implemented: true
