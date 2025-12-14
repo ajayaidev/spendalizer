@@ -1651,7 +1651,14 @@ async def backup_database(user_id: str = Depends(get_current_user)):
     try:
         # Collect all user data
         transactions = await db.transactions.find({"user_id": user_id}, {"_id": 0}).to_list(10000)
-        categories = await db.categories.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        
+        # Get ALL categories (system + user) that user's data references
+        # This ensures transactions and rules have valid category references
+        categories = await db.categories.find(
+            {"$or": [{"is_system": True}, {"user_id": user_id}]},
+            {"_id": 0}
+        ).to_list(1000)
+        
         rules = await db.category_rules.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
         accounts = await db.accounts.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
         import_batches = await db.import_batches.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
