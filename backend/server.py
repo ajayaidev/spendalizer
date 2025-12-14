@@ -1361,12 +1361,15 @@ async def import_rules(data: RuleImport, user_id: str = Depends(get_current_user
         
         # Create new rule
         rule_doc = {
-            "id": str(uuid4()),
+            "id": str(uuid.uuid4()),
             "user_id": user_id,
             "pattern": rule_data.get("pattern", ""),
             "match_type": rule_data.get("match_type", "CONTAINS"),
+            "account_id": rule_data.get("account_id"),
             "category_id": rule_data.get("category_id"),
-            "priority": rule_data.get("priority", 10)
+            "priority": rule_data.get("priority", 10),
+            "is_active": rule_data.get("is_active", True),
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         await db.category_rules.insert_one(rule_doc)
