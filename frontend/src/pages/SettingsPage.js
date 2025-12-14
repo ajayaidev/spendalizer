@@ -149,6 +149,84 @@ const SettingsPage = () => {
         </CardContent>
       </Card>
 
+      {/* Data Management Section */}
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <Database className="w-6 h-6 text-blue-500" />
+            </div>
+            <div>
+              <CardTitle>Data Management</CardTitle>
+              <CardDescription>Backup and restore your financial data</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Backup Section */}
+          <div className="p-4 rounded-lg border bg-card">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h3 className="font-semibold mb-1 flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Export Database Backup
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Download a complete backup of all your financial data including transactions, 
+                  categories, rules, and accounts as a ZIP file.
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• All transactions and import history</li>
+                  <li>• Custom categories and rules</li>
+                  <li>• Account information</li>
+                  <li>• Backup file: SpendAlizer-{'{domain}'}-{'{timestamp}'}.zip</li>
+                </ul>
+              </div>
+            </div>
+            <Button
+              onClick={handleBackup}
+              disabled={backupLoading}
+              data-testid="backup-button"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {backupLoading ? 'Creating Backup...' : 'Download Backup'}
+            </Button>
+          </div>
+
+          {/* Restore Section */}
+          <div className="p-4 rounded-lg border bg-amber-50/50 border-amber-200">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h3 className="font-semibold mb-1 flex items-center gap-2 text-amber-900">
+                  <Upload className="w-4 h-4" />
+                  Import & Restore Database
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Restore your data from a previous backup. This will replace all current data.
+                </p>
+                <div className="p-3 rounded bg-amber-100 border border-amber-300 mb-3">
+                  <p className="text-sm font-medium text-amber-900 mb-2">⚠️ Important:</p>
+                  <ul className="text-sm text-amber-800 space-y-1">
+                    <li>• A backup of current data will be created first</li>
+                    <li>• All existing data will be replaced with backup data</li>
+                    <li>• This process cannot be undone (except via the auto-created backup)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <Button
+              onClick={() => setRestoreDialogOpen(true)}
+              variant="outline"
+              className="border-amber-300 hover:bg-amber-50"
+              data-testid="restore-button"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Restore from Backup
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Danger Zone */}
       <Card className="border-destructive">
         <CardHeader>
