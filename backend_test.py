@@ -1688,6 +1688,28 @@ def main():
     test_results.append(("Verify Categories Preserved", tester.verify_categories_preserved()))
     test_results.append(("Verify Rules Preserved", tester.verify_rules_preserved()))
     
+    # Database Backup and Restore Tests
+    print("\n📋 DATABASE BACKUP AND RESTORE TESTS")
+    
+    # Create comprehensive test data first
+    test_data_result = tester.create_comprehensive_test_data()
+    test_results.append(("Create Comprehensive Test Data", test_data_result.get('transactions', 0) > 0))
+    
+    # Test backup functionality
+    backup_success, backup_data = tester.test_database_backup()
+    test_results.append(("Database Backup", backup_success))
+    
+    # Test restore functionality
+    if backup_success and backup_data:
+        test_results.append(("Database Restore", tester.test_database_restore(backup_data)))
+        test_results.append(("Restore with Modified Data", tester.test_restore_with_modified_data(backup_data)))
+    else:
+        test_results.append(("Database Restore", False))
+        test_results.append(("Restore with Modified Data", False))
+    
+    # Test error cases
+    test_results.append(("Restore Error Cases", tester.test_restore_error_cases()))
+    
     # Cleanup
     print("\n📋 CLEANUP")
     tester.cleanup_test_data()
