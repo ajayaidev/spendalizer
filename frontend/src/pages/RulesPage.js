@@ -234,8 +234,9 @@ const RulesPage = () => {
                 Create Rule
               </Button>
             </form>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {rules.length === 0 ? (
