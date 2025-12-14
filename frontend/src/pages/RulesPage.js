@@ -136,18 +136,34 @@ const RulesPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="rules-page">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Categorization Rules</h1>
           <p className="text-muted-foreground">Automate transaction categorization with custom rules</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button data-testid="add-rule-button">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Rule
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport} disabled={rules.length === 0}>
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" />
+            Import
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImport}
+            className="hidden"
+          />
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button data-testid="add-rule-button">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Rule
+              </Button>
+            </DialogTrigger>
           <DialogContent data-testid="add-rule-dialog">
             <DialogHeader>
               <DialogTitle>Create New Rule</DialogTitle>
