@@ -366,6 +366,70 @@ const SettingsPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Restore Confirmation Dialog */}
+      <Dialog open={restoreDialogOpen} onOpenChange={setRestoreDialogOpen}>
+        <DialogContent data-testid="restore-confirmation-dialog">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-600">
+              <AlertTriangle className="w-5 h-5" />
+              Restore Database from Backup
+            </DialogTitle>
+            <DialogDescription>
+              This will restore your data from a backup file
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+              <p className="text-sm font-medium text-amber-900 mb-2">⚠️ Before proceeding:</p>
+              <ul className="text-sm space-y-1 text-amber-800">
+                <li>• A backup of your current data will be created automatically</li>
+                <li>• All existing data will be replaced with the backup data</li>
+                <li>• Only upload backup files created by SpendAlizer</li>
+                <li>• The backup file should be a .zip file</li>
+              </ul>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="restore-file">Select Backup File (.zip)</Label>
+              <Input
+                id="restore-file"
+                ref={restoreFileInputRef}
+                type="file"
+                accept=".zip"
+                onChange={handleRestoreFileSelect}
+                disabled={restoreLoading}
+                data-testid="restore-file-input"
+              />
+            </div>
+
+            {restoreLoading && (
+              <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                <p className="text-sm text-blue-900 font-medium">
+                  🔄 Restoring database... This may take a moment.
+                </p>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setRestoreDialogOpen(false);
+                  if (restoreFileInputRef.current) {
+                    restoreFileInputRef.current.value = '';
+                  }
+                }}
+                disabled={restoreLoading}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
