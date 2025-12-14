@@ -45,6 +45,78 @@ const SettingsPage = () => {
     }
   };
 
+  const handleBackup = async () => {
+    setBackupLoading(true);
+    try {
+      const response = await backupDatabase();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from response headers or create default
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'SpendAlizer-backup.zip';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Backup downloaded successfully!');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to create backup');
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const handleRestoreFileSelect = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.name.endsWith('.zip')) {
+      toast.error('Please select a valid ZIP backup file');
+      return;
+    }
+
+    setRestoreLoading(true);
+    try {
+      const response = await restoreDatabase(file);
+      const { restored_counts, backup_metadata } = response.data;
+      
+      toast.success(
+        `Database restored successfully! Restored: ${restored_counts.transactions} transactions, ` +
+        `${restored_counts.categories} categories, ${restored_counts.rules} rules, ` +
+        `${restored_counts.accounts} accounts`
+      );
+      
+      setRestoreDialogOpen(false);
+      
+      // Redirect to dashboard after restore
+      setTimeout(() => {
+        navigate('/');
+        window.location.reload(); // Reload to refresh all data
+      }, 2000);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to restore database');
+    } finally {
+      setRestoreLoading(false);
+      if (restoreFileInputRef.current) {
+        restoreFileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="settings-page">
       <div className="mb-8">
