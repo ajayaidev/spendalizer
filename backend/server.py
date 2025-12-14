@@ -1593,6 +1593,215 @@ async def delete_all_transactions(
         "deleted_count": result.deleted_count
     }
 
+# Settings - Backup and Restore
+@api_router.get("/settings/backup")
+async def backup_database(user_id: str = Depends(get_current_user)):
+    """
+    Create a backup of all user data (transactions, categories, rules, accounts, imports)
+    Returns a ZIP file containing JSON data
+    """
+    import zipfile
+    from io import BytesIO
+    
+    try:
+        # Collect all user data
+        transactions = await db.transactions.find({"user_id": user_id}, {"_id": 0}).to_list(10000)
+        categories = await db.categories.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        rules = await db.category_rules.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        accounts = await db.accounts.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        import_batches = await db.import_batches.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        
+        # Create ZIP file in memory
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            # Add each collection as a JSON file
+            zip_file.writestr('transactions.json', json.dumps(transactions, indent=2, default=str))
+            zip_file.writestr('categories.json', json.dumps(categories, indent=2, default=str))
+            zip_file.writestr('rules.json', json.dumps(rules, indent=2, default=str))
+            zip_file.writestr('accounts.json', json.dumps(accounts, indent=2, default=str))
+            zip_file.writestr('import_batches.json', json.dumps(import_batches, indent=2, default=str))
+            
+            # Add metadata
+            metadata = {
+                "backup_date": datetime.now(timezone.utc).isoformat(),
+                "user_id": user_id,
+                "app_version": "1.0.0",
+                "collections": {
+                    "transactions": len(transactions),
+                    "categories": len(categories),
+                    "rules": len(rules),
+                    "accounts": len(accounts),
+                    "import_batches": len(import_batches)
+                }
+            }
+            zip_file.writestr('metadata.json', json.dumps(metadata, indent=2))
+        
+        # Prepare response
+        zip_buffer.seek(0)
+        
+        # Generate filename with domain and timestamp
+        domain = os.environ.get('DOMAIN', 'localhost')
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+        filename = f"SpendAlizer-{domain}-{timestamp}.zip"
+        
+        from fastapi.responses import StreamingResponse
+        return StreamingResponse(
+            iter([zip_buffer.getvalue()]),
+            media_type="application/zip",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        logging.error(f"Backup failed for user {user_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Backup failed: {str(e)}")
+
+class RestoreRequest(BaseModel):
+    file: str  # Base64 encoded ZIP file content
+
+@api_router.post("/settings/restore")
+async def restore_database(file: UploadFile = File(...), user_id: str = Depends(get_current_user)):
+    """
+    Restore database from a backup file
+    1. Create backup of current data
+    2. Flush current user data
+    3. Restore from uploaded backup
+    """
+    import zipfile
+    from io import BytesIO
+    
+    try:
+        # Step 1: Create backup of current data first
+        logging.info(f"Creating pre-restore backup for user {user_id}")
+        current_transactions = await db.transactions.find({"user_id": user_id}, {"_id": 0}).to_list(10000)
+        current_categories = await db.categories.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        current_rules = await db.category_rules.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        current_accounts = await db.accounts.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        current_imports = await db.import_batches.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        
+        # Create pre-restore backup ZIP
+        pre_restore_buffer = BytesIO()
+        with zipfile.ZipFile(pre_restore_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.writestr('transactions.json', json.dumps(current_transactions, indent=2, default=str))
+            zip_file.writestr('categories.json', json.dumps(current_categories, indent=2, default=str))
+            zip_file.writestr('rules.json', json.dumps(current_rules, indent=2, default=str))
+            zip_file.writestr('accounts.json', json.dumps(current_accounts, indent=2, default=str))
+            zip_file.writestr('import_batches.json', json.dumps(current_imports, indent=2, default=str))
+            
+            metadata = {
+                "backup_date": datetime.now(timezone.utc).isoformat(),
+                "backup_type": "pre_restore",
+                "user_id": user_id
+            }
+            zip_file.writestr('metadata.json', json.dumps(metadata, indent=2))
+        
+        # Save pre-restore backup to disk (optional - for safety)
+        backup_dir = Path("/tmp/spendalizer_backups")
+        backup_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+        backup_path = backup_dir / f"pre_restore_{user_id}_{timestamp}.zip"
+        with open(backup_path, 'wb') as f:
+            f.write(pre_restore_buffer.getvalue())
+        logging.info(f"Pre-restore backup saved to {backup_path}")
+        
+        # Step 2: Read and validate uploaded backup file
+        content = await file.read()
+        zip_buffer = BytesIO(content)
+        
+        try:
+            with zipfile.ZipFile(zip_buffer, 'r') as zip_file:
+                # Verify ZIP structure
+                required_files = ['transactions.json', 'categories.json', 'rules.json', 'accounts.json', 'metadata.json']
+                zip_files = zip_file.namelist()
+                
+                for req_file in required_files:
+                    if req_file not in zip_files:
+                        raise HTTPException(status_code=400, detail=f"Invalid backup file: missing {req_file}")
+                
+                # Read metadata
+                metadata_content = zip_file.read('metadata.json')
+                metadata = json.loads(metadata_content)
+                
+                # Read all data
+                transactions_data = json.loads(zip_file.read('transactions.json'))
+                categories_data = json.loads(zip_file.read('categories.json'))
+                rules_data = json.loads(zip_file.read('rules.json'))
+                accounts_data = json.loads(zip_file.read('accounts.json'))
+                import_batches_data = json.loads(zip_file.read('import_batches.json')) if 'import_batches.json' in zip_files else []
+                
+        except zipfile.BadZipFile:
+            raise HTTPException(status_code=400, detail="Invalid ZIP file")
+        except json.JSONDecodeError as e:
+            raise HTTPException(status_code=400, detail=f"Invalid JSON in backup file: {str(e)}")
+        
+        # Step 3: Flush current data
+        logging.info(f"Flushing current data for user {user_id}")
+        await db.transactions.delete_many({"user_id": user_id})
+        await db.categories.delete_many({"user_id": user_id})
+        await db.category_rules.delete_many({"user_id": user_id})
+        await db.accounts.delete_many({"user_id": user_id})
+        await db.import_batches.delete_many({"user_id": user_id})
+        
+        # Step 4: Restore data
+        logging.info(f"Restoring data for user {user_id}")
+        restored_counts = {
+            "transactions": 0,
+            "categories": 0,
+            "rules": 0,
+            "accounts": 0,
+            "import_batches": 0
+        }
+        
+        # Restore transactions
+        if transactions_data:
+            # Ensure user_id matches current user for security
+            for txn in transactions_data:
+                txn["user_id"] = user_id
+            await db.transactions.insert_many(transactions_data)
+            restored_counts["transactions"] = len(transactions_data)
+        
+        # Restore categories
+        if categories_data:
+            for cat in categories_data:
+                cat["user_id"] = user_id
+            await db.categories.insert_many(categories_data)
+            restored_counts["categories"] = len(categories_data)
+        
+        # Restore rules
+        if rules_data:
+            for rule in rules_data:
+                rule["user_id"] = user_id
+            await db.category_rules.insert_many(rules_data)
+            restored_counts["rules"] = len(rules_data)
+        
+        # Restore accounts
+        if accounts_data:
+            for acc in accounts_data:
+                acc["user_id"] = user_id
+            await db.accounts.insert_many(accounts_data)
+            restored_counts["accounts"] = len(accounts_data)
+        
+        # Restore import batches
+        if import_batches_data:
+            for batch in import_batches_data:
+                batch["user_id"] = user_id
+            await db.import_batches.insert_many(import_batches_data)
+            restored_counts["import_batches"] = len(import_batches_data)
+        
+        logging.info(f"Restore completed for user {user_id}: {restored_counts}")
+        
+        return {
+            "success": True,
+            "message": "Database restored successfully",
+            "pre_restore_backup": str(backup_path),
+            "restored_counts": restored_counts,
+            "backup_metadata": metadata
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Restore failed for user {user_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Restore failed: {str(e)}")
+
 # Include router
 app.include_router(api_router)
 
