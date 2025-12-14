@@ -1352,8 +1352,10 @@ async def import_rules(data: RuleImport, user_id: str = Depends(get_current_user
         # Check if category_id exists for this user (including system categories)
         if "category_id" in rule_data:
             category = await db.categories.find_one({
-                "id": rule_data["category_id"],
-                "$or": [{"is_system": True}, {"user_id": user_id}]
+                "$and": [
+                    {"id": rule_data["category_id"]},
+                    {"$or": [{"is_system": True}, {"user_id": user_id}]}
+                ]
             })
             if not category:
                 skipped_count += 1
