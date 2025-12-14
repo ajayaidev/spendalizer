@@ -1785,7 +1785,7 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
         await db.accounts.delete_many({"user_id": user_id})
         await db.import_batches.delete_many({"user_id": user_id})
         
-        # Step 4: Restore data
+        # Step 4: Restore data with category ID mapping
         logging.info(f"Restoring data for user {user_id}")
         restored_counts = {
             "transactions": 0,
@@ -1795,20 +1795,48 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
             "import_batches": 0
         }
         
-        # Restore transactions
-        if transactions_data:
-            # Ensure user_id matches current user for security
-            for txn in transactions_data:
-                txn["user_id"] = user_id
-            await db.transactions.insert_many(transactions_data)
-            restored_counts["transactions"] = len(transactions_data)
+        # Build category ID mapping (old ID -> new ID)
+        # System categories need to be mapped to existing ones by name
+        category_id_mapping = {}
         
-        # Restore categories
+        # Get existing system categories in current environment
+        existing_system_cats = await db.categories.find({"is_system": True}, {"_id": 0}).to_list(1000)
+        system_cats_by_name = {cat["name"]: cat["id"] for cat in existing_system_cats}
+        
+        # Restore categories (only user categories, map system categories)
         if categories_data:
             for cat in categories_data:
-                cat["user_id"] = user_id
-            await db.categories.insert_many(categories_data)
-            restored_counts["categories"] = len(categories_data)
+                old_id = cat["id"]
+                
+                if cat.get("is_system"):
+                    # For system categories, map to existing system category by name
+                    if cat["name"] in system_cats_by_name:
+                        category_id_mapping[old_id] = system_cats_by_name[cat["name"]]
+                        logging.info(f"Mapped system category '{cat['name']}': {old_id} -> {category_id_mapping[old_id]}")
+                    else:
+                        # System category doesn't exist, skip it
+                        logging.warning(f"System category '{cat['name']}' not found in target environment")
+                        continue
+                else:
+                    # For user categories, restore with same ID
+                    cat["user_id"] = user_id
+                    await db.categories.insert_one(cat)
+                    category_id_mapping[old_id] = cat["id"]  # Keep same ID
+                    restored_counts["categories"] += 1
+        
+        logging.info(f"Category ID mapping created with {len(category_id_mapping)} entries")
+        
+        # Restore transactions with mapped category IDs
+        if transactions_data:
+            for txn in transactions_data:
+                txn["user_id"] = user_id
+                # Map category_id if it exists in mapping
+                if txn.get("category_id") and txn["category_id"] in category_id_mapping:
+                    old_cat_id = txn["category_id"]
+                    txn["category_id"] = category_id_mapping[old_cat_id]
+                    logging.debug(f"Mapped transaction category: {old_cat_id} -> {txn['category_id']}")
+            await db.transactions.insert_many(transactions_data)
+            restored_counts["transactions"] = len(transactions_data)
         
         # Restore rules
         if rules_data:
