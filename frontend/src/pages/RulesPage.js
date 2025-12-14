@@ -164,7 +164,7 @@ const RulesPage = () => {
                 Add Rule
               </Button>
             </DialogTrigger>
-          <DialogContent data-testid="add-rule-dialog">
+            <DialogContent data-testid="add-rule-dialog">
             <DialogHeader>
               <DialogTitle>Create New Rule</DialogTitle>
               <DialogDescription>Define a pattern to automatically categorize transactions</DialogDescription>
