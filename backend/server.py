@@ -1424,7 +1424,11 @@ async def get_analytics_summary(
     # Enrich with category names and split transfers by direction
     enriched_breakdown = []
     for cat_id, data in category_breakdown.items():
-        category = await db.categories.find_one({"id": cat_id})
+        # Find category - check both system categories and user categories
+        category = await db.categories.find_one({
+            "id": cat_id,
+            "$or": [{"is_system": True}, {"user_id": user_id}]
+        })
         if category:
             # For transfers, split by direction
             if category["type"] == "TRANSFER":
