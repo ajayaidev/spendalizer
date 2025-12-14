@@ -66,4 +66,14 @@ export const getSpendingOverTime = (params) => api.get('/analytics/spending-over
 // Danger Zone
 export const deleteAllTransactions = (data) => api.post('/transactions/delete-all', data);
 
+// Settings - Backup and Restore
+export const backupDatabase = () => api.get('/settings/backup', { responseType: 'blob' });
+export const restoreDatabase = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return api.post('/settings/restore', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
 export default api;
