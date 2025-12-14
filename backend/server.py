@@ -1788,12 +1788,19 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
         
         logging.info(f"Restore completed for user {user_id}: {restored_counts}")
         
+        # Get current user info
+        user_info = await db.users.find_one({"id": user_id}, {"_id": 0, "email": 1, "name": 1})
+        
         return {
             "success": True,
             "message": "Database restored successfully",
             "pre_restore_backup": str(backup_path),
             "restored_counts": restored_counts,
-            "backup_metadata": metadata
+            "backup_metadata": metadata,
+            "restored_to_user": {
+                "email": user_info.get("email") if user_info else "unknown",
+                "name": user_info.get("name") if user_info else "unknown"
+            }
         }
         
     except HTTPException:
