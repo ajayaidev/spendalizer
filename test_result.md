@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the rule import/export feature for the SpendAlizer app - verify both backend endpoints and full frontend flow work correctly"
+user_problem_statement: "Test the new Database Backup and Restore feature in SpendAlizer - verify both backend endpoints work correctly with comprehensive test scenarios"
 
 backend:
   - task: "Forgot Password API Endpoint"
