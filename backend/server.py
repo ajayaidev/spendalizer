@@ -1597,6 +1597,47 @@ async def delete_all_transactions(
         "deleted_count": result.deleted_count
     }
 
+# Debug endpoint to check data consistency
+@api_router.get("/debug/data-check")
+async def debug_data_check(user_id: str = Depends(get_current_user)):
+    """
+    Debug endpoint to check data consistency between transactions and categories
+    """
+    # Get all transactions
+    transactions = await db.transactions.find({"user_id": user_id}, {"_id": 0}).to_list(10000)
+    
+    # Get all categories (system + user)
+    categories = await db.categories.find(
+        {"$or": [{"is_system": True}, {"user_id": user_id}]},
+        {"_id": 0}
+    ).to_list(1000)
+    
+    # Get category IDs from transactions
+    txn_category_ids = set(txn.get("category_id") for txn in transactions if txn.get("category_id"))
+    
+    # Get available category IDs
+    available_category_ids = set(cat["id"] for cat in categories)
+    
+    # Find orphaned transactions
+    orphaned_category_ids = txn_category_ids - available_category_ids
+    
+    # Count by type
+    categorized_count = sum(1 for txn in transactions if txn.get("category_id"))
+    uncategorized_count = len(transactions) - categorized_count
+    
+    return {
+        "total_transactions": len(transactions),
+        "categorized_transactions": categorized_count,
+        "uncategorized_transactions": uncategorized_count,
+        "total_categories": len(categories),
+        "system_categories": sum(1 for cat in categories if cat.get("is_system")),
+        "user_categories": sum(1 for cat in categories if cat.get("user_id")),
+        "unique_category_ids_in_transactions": len(txn_category_ids),
+        "orphaned_category_ids": list(orphaned_category_ids),
+        "orphaned_count": len(orphaned_category_ids),
+        "status": "OK" if len(orphaned_category_ids) == 0 else "WARNING: Orphaned categories found"
+    }
+
 # Settings - Backup and Restore
 @api_router.get("/settings/backup")
 async def backup_database(user_id: str = Depends(get_current_user)):
