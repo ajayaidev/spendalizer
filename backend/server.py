@@ -1807,13 +1807,10 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
             await db.transactions.insert_many(transactions_data)
             restored_counts["transactions"] = len(transactions_data)
         
-        # Restore rules with mapped category IDs
+        # Restore rules (no mapping needed)
         if rules_data:
             for rule in rules_data:
                 rule["user_id"] = user_id
-                # Map category_id if it exists in mapping
-                if rule.get("category_id") and rule["category_id"] in category_id_mapping:
-                    rule["category_id"] = category_id_mapping[rule["category_id"]]
             await db.category_rules.insert_many(rules_data)
             restored_counts["rules"] = len(rules_data)
         
