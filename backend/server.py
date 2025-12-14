@@ -1802,46 +1802,45 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
             "import_batches": 0
         }
         
-        # Build category ID mapping (old ID -> new ID)
-        # System categories need to be mapped to existing ones by name
+        # Build category ID mapping (backup category ID -> target environment category ID)
+        # System categories: map by name to existing ones (they already exist in target)
+        # User categories: restore as-is with same IDs
         category_id_mapping = {}
         
         # Get existing system categories in current environment
         existing_system_cats = await db.categories.find({"is_system": True}, {"_id": 0}).to_list(1000)
         system_cats_by_name = {cat["name"]: cat["id"] for cat in existing_system_cats}
         
-        # Restore categories (only user categories, map system categories)
+        # Process categories from backup
         if categories_data:
             for cat in categories_data:
                 old_id = cat["id"]
                 
                 if cat.get("is_system"):
-                    # For system categories, map to existing system category by name
+                    # System category: map to existing one by name (don't restore, already exists)
                     if cat["name"] in system_cats_by_name:
                         category_id_mapping[old_id] = system_cats_by_name[cat["name"]]
                         logging.info(f"Mapped system category '{cat['name']}': {old_id} -> {category_id_mapping[old_id]}")
                     else:
-                        # System category doesn't exist, skip it
-                        logging.warning(f"System category '{cat['name']}' not found in target environment")
+                        # System category doesn't exist in target - this shouldn't happen
+                        logging.warning(f"System category '{cat['name']}' not found in target environment, skipping")
                         continue
                 else:
-                    # For user categories, restore with same ID
+                    # User category: restore with same ID (no mapping needed)
                     cat["user_id"] = user_id
                     await db.categories.insert_one(cat)
-                    category_id_mapping[old_id] = cat["id"]  # Keep same ID
+                    category_id_mapping[old_id] = cat["id"]  # Same ID
                     restored_counts["categories"] += 1
         
-        logging.info(f"Category ID mapping created with {len(category_id_mapping)} entries")
+        logging.info(f"Category ID mapping: {len(category_id_mapping)} entries")
         
         # Restore transactions with mapped category IDs
         if transactions_data:
             for txn in transactions_data:
                 txn["user_id"] = user_id
-                # Map category_id if it exists in mapping
+                # Map category_id for system categories only (user category IDs stay the same)
                 if txn.get("category_id") and txn["category_id"] in category_id_mapping:
-                    old_cat_id = txn["category_id"]
-                    txn["category_id"] = category_id_mapping[old_cat_id]
-                    logging.debug(f"Mapped transaction category: {old_cat_id} -> {txn['category_id']}")
+                    txn["category_id"] = category_id_mapping[txn["category_id"]]
             await db.transactions.insert_many(transactions_data)
             restored_counts["transactions"] = len(transactions_data)
         
