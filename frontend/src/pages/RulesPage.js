@@ -237,7 +237,6 @@ const RulesPage = () => {
           </DialogContent>
         </Dialog>
       </div>
-      </div>
 
       {rules.length === 0 ? (
         <Card>
