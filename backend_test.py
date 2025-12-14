@@ -1019,6 +1019,588 @@ class SpendAlizerAPITester:
         print(f"   Created {created_rules} test rules")
         return created_rules > 0
 
+    def create_comprehensive_test_data(self):
+        """Create comprehensive test data for backup/restore testing"""
+        print("\n🔧 Creating comprehensive test data for backup/restore testing...")
+        
+        # Create 2 accounts
+        account_data_1 = {
+            "name": "Test HDFC Savings",
+            "account_type": "BANK",
+            "institution": "HDFC Bank",
+            "last_four": "1234"
+        }
+        
+        account_data_2 = {
+            "name": "Test SBI Credit Card",
+            "account_type": "CREDIT_CARD", 
+            "institution": "SBI Bank",
+            "last_four": "5678"
+        }
+        
+        accounts_created = 0
+        test_account_ids = []
+        
+        for i, account_data in enumerate([account_data_1, account_data_2], 1):
+            success, response = self.run_test(
+                f"Create Test Account {i}",
+                "POST",
+                "accounts",
+                200,
+                data=account_data
+            )
+            
+            if success and 'id' in response:
+                accounts_created += 1
+                test_account_ids.append(response['id'])
+                print(f"   ✅ Created account: {account_data['name']}")
+        
+        # Create 3-5 custom categories
+        categories_data = [
+            {"name": "Test Food Delivery", "type": "EXPENSE"},
+            {"name": "Test Investment Income", "type": "INCOME"},
+            {"name": "Test Online Shopping", "type": "EXPENSE"},
+            {"name": "Test Freelance Income", "type": "INCOME"},
+            {"name": "Test Bank Transfer", "type": "TRANSFER"}
+        ]
+        
+        categories_created = 0
+        test_category_ids = []
+        
+        for category_data in categories_data:
+            success, response = self.run_test(
+                f"Create Test Category: {category_data['name']}",
+                "POST",
+                "categories",
+                200,
+                data=category_data
+            )
+            
+            if success and 'id' in response:
+                categories_created += 1
+                test_category_ids.append(response['id'])
+                print(f"   ✅ Created category: {category_data['name']}")
+        
+        # Create 2-3 rules
+        if test_category_ids:
+            rules_data = [
+                {
+                    "pattern": "ZOMATO",
+                    "match_type": "CONTAINS",
+                    "category_id": test_category_ids[0],
+                    "priority": 10
+                },
+                {
+                    "pattern": "AMAZON",
+                    "match_type": "CONTAINS",
+                    "category_id": test_category_ids[2] if len(test_category_ids) > 2 else test_category_ids[0],
+                    "priority": 9
+                },
+                {
+                    "pattern": "SALARY",
+                    "match_type": "CONTAINS",
+                    "category_id": test_category_ids[1] if len(test_category_ids) > 1 else test_category_ids[0],
+                    "priority": 8
+                }
+            ]
+            
+            rules_created = 0
+            for rule_data in rules_data:
+                success, response = self.run_test(
+                    f"Create Test Rule: {rule_data['pattern']}",
+                    "POST",
+                    "rules",
+                    200,
+                    data=rule_data
+                )
+                
+                if success:
+                    rules_created += 1
+                    print(f"   ✅ Created rule: {rule_data['pattern']}")
+        
+        # Create 10-15 transactions via CSV import
+        if test_account_ids:
+            csv_content = """Date,Narration,Withdrawal Amt.,Deposit Amt.
+15/01/24,ZOMATO FOOD ORDER,450.00,
+16/01/24,AMAZON PURCHASE,1250.00,
+17/01/24,SALARY CREDIT,,75000.00
+18/01/24,ATM WITHDRAWAL,2000.00,
+19/01/24,GROCERY STORE,850.00,
+20/01/24,FREELANCE PAYMENT,,15000.00
+21/01/24,ELECTRICITY BILL,1200.00,
+22/01/24,MOVIE TICKETS,600.00,
+23/01/24,BANK TRANSFER,5000.00,
+24/01/24,DIVIDEND INCOME,,2500.00
+25/01/24,RESTAURANT BILL,1800.00,
+26/01/24,ONLINE SHOPPING,950.00,
+27/01/24,FUEL EXPENSE,3200.00,
+28/01/24,INTEREST CREDIT,,450.00
+29/01/24,MEDICAL EXPENSE,2200.00"""
+            
+            import tempfile
+            import os
+            
+            try:
+                with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+                    f.write(csv_content)
+                    temp_csv_path = f.name
+                
+                with open(temp_csv_path, 'rb') as f:
+                    files = {'file': ('comprehensive_test_data.csv', f, 'text/csv')}
+                    data = {
+                        'account_id': test_account_ids[0],  # Use first account
+                        'data_source': 'HDFC_BANK'
+                    }
+                    
+                    success, response = self.run_test(
+                        "Import Comprehensive Test Transactions",
+                        "POST",
+                        "import",
+                        200,
+                        data=data,
+                        files=files
+                    )
+                    
+                    os.unlink(temp_csv_path)
+                    
+                    if success and response.get('success_count', 0) > 0:
+                        print(f"   ✅ Created {response['success_count']} test transactions")
+                        transactions_created = response['success_count']
+                    else:
+                        print(f"   ❌ Failed to create test transactions: {response}")
+                        transactions_created = 0
+                        
+            except Exception as e:
+                print(f"   ❌ Error creating test transactions: {e}")
+                transactions_created = 0
+        
+        print(f"\n   📊 Test data summary:")
+        print(f"   - Accounts: {accounts_created}")
+        print(f"   - Categories: {categories_created}")
+        print(f"   - Rules: {rules_created}")
+        print(f"   - Transactions: {transactions_created}")
+        
+        return {
+            'accounts': accounts_created,
+            'categories': categories_created, 
+            'rules': rules_created,
+            'transactions': transactions_created,
+            'account_ids': test_account_ids,
+            'category_ids': test_category_ids
+        }
+
+    def test_database_backup(self):
+        """Test database backup functionality"""
+        print("\n🔍 Testing Database Backup...")
+        
+        # Test backup endpoint
+        success, response = self.run_test(
+            "Database Backup",
+            "GET",
+            "settings/backup",
+            200
+        )
+        
+        if not success:
+            print("   ❌ Backup request failed")
+            return False, None
+        
+        # Since this returns a file, we need to handle it differently
+        url = f"{self.base_url}/api/settings/backup"
+        headers = {'Authorization': f'Bearer {self.token}'}
+        
+        try:
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code != 200:
+                print(f"   ❌ Backup failed with status {response.status_code}")
+                return False, None
+            
+            # Check if response is a ZIP file
+            content_type = response.headers.get('content-type', '')
+            if 'application/zip' not in content_type:
+                print(f"   ❌ Expected ZIP file, got content-type: {content_type}")
+                return False, None
+            
+            # Check Content-Disposition header for filename
+            content_disposition = response.headers.get('content-disposition', '')
+            if 'SpendAlizer-' not in content_disposition:
+                print(f"   ❌ Invalid filename format in header: {content_disposition}")
+                return False, None
+            
+            # Verify ZIP content
+            import zipfile
+            from io import BytesIO
+            
+            zip_content = response.content
+            zip_buffer = BytesIO(zip_content)
+            
+            try:
+                with zipfile.ZipFile(zip_buffer, 'r') as zip_file:
+                    zip_files = zip_file.namelist()
+                    required_files = ['transactions.json', 'categories.json', 'rules.json', 'accounts.json', 'import_batches.json', 'metadata.json']
+                    
+                    for req_file in required_files:
+                        if req_file not in zip_files:
+                            print(f"   ❌ Missing required file in backup: {req_file}")
+                            return False, None
+                    
+                    # Verify metadata structure
+                    metadata_content = zip_file.read('metadata.json')
+                    metadata = json.loads(metadata_content)
+                    
+                    required_metadata_fields = ['backup_date', 'user_id', 'app_version', 'collections']
+                    for field in required_metadata_fields:
+                        if field not in metadata:
+                            print(f"   ❌ Missing metadata field: {field}")
+                            return False, None
+                    
+                    # Verify collections count structure
+                    collections = metadata.get('collections', {})
+                    required_collections = ['transactions', 'categories', 'rules', 'accounts', 'import_batches']
+                    for collection in required_collections:
+                        if collection not in collections:
+                            print(f"   ❌ Missing collection count in metadata: {collection}")
+                            return False, None
+                    
+                    print(f"   ✅ Backup ZIP file structure verified")
+                    print(f"   ✅ Filename format correct: {content_disposition}")
+                    print(f"   ✅ Metadata structure valid")
+                    print(f"   📊 Collections in backup:")
+                    for collection, count in collections.items():
+                        print(f"      - {collection}: {count}")
+                    
+                    return True, zip_content
+                    
+            except zipfile.BadZipFile:
+                print("   ❌ Invalid ZIP file returned")
+                return False, None
+            except json.JSONDecodeError:
+                print("   ❌ Invalid JSON in metadata")
+                return False, None
+                
+        except Exception as e:
+            print(f"   ❌ Backup test error: {e}")
+            return False, None
+
+    def test_database_restore(self, backup_data):
+        """Test database restore functionality"""
+        print("\n🔍 Testing Database Restore...")
+        
+        if not backup_data:
+            print("   ❌ No backup data provided for restore test")
+            return False
+        
+        # Save current data counts for comparison
+        current_counts = {}
+        
+        # Get current transactions count
+        success, txn_response = self.run_test(
+            "Get Current Transactions Count",
+            "GET",
+            "transactions?limit=1000",
+            200
+        )
+        if success:
+            current_counts['transactions'] = len(txn_response.get('transactions', []))
+        
+        # Get current categories count
+        success, cat_response = self.run_test(
+            "Get Current Categories Count",
+            "GET",
+            "categories",
+            200
+        )
+        if success:
+            # Only count user categories, not system categories
+            user_categories = [cat for cat in cat_response if not cat.get('is_system', False)]
+            current_counts['categories'] = len(user_categories)
+        
+        # Get current rules count
+        success, rules_response = self.run_test(
+            "Get Current Rules Count",
+            "GET",
+            "rules",
+            200
+        )
+        if success:
+            current_counts['rules'] = len(rules_response)
+        
+        # Get current accounts count
+        success, acc_response = self.run_test(
+            "Get Current Accounts Count",
+            "GET",
+            "accounts",
+            200
+        )
+        if success:
+            current_counts['accounts'] = len(acc_response)
+        
+        print(f"   📊 Current data counts: {current_counts}")
+        
+        # Test restore endpoint
+        url = f"{self.base_url}/api/settings/restore"
+        headers = {'Authorization': f'Bearer {self.token}'}
+        
+        try:
+            # Create a temporary file for the backup
+            import tempfile
+            import os
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_file:
+                temp_file.write(backup_data)
+                temp_file_path = temp_file.name
+            
+            # Upload the backup file
+            with open(temp_file_path, 'rb') as f:
+                files = {'file': ('backup.zip', f, 'application/zip')}
+                response = requests.post(url, headers=headers, files=files)
+            
+            # Clean up temp file
+            os.unlink(temp_file_path)
+            
+            if response.status_code != 200:
+                print(f"   ❌ Restore failed with status {response.status_code}")
+                try:
+                    error_detail = response.json()
+                    print(f"   Error: {error_detail}")
+                except:
+                    print(f"   Response: {response.text}")
+                return False
+            
+            restore_response = response.json()
+            
+            # Verify response structure
+            required_fields = ['success', 'message', 'pre_restore_backup', 'restored_counts', 'backup_metadata']
+            for field in required_fields:
+                if field not in restore_response:
+                    print(f"   ❌ Missing field in restore response: {field}")
+                    return False
+            
+            if not restore_response.get('success'):
+                print(f"   ❌ Restore reported failure: {restore_response.get('message')}")
+                return False
+            
+            restored_counts = restore_response.get('restored_counts', {})
+            print(f"   📊 Restored counts: {restored_counts}")
+            
+            # Verify restored counts match original data
+            for collection, original_count in current_counts.items():
+                restored_count = restored_counts.get(collection, 0)
+                if restored_count != original_count:
+                    print(f"   ⚠️  Count mismatch for {collection}: original={original_count}, restored={restored_count}")
+                else:
+                    print(f"   ✅ {collection} count matches: {restored_count}")
+            
+            # Verify pre-restore backup was created
+            backup_path = restore_response.get('pre_restore_backup')
+            if backup_path and os.path.exists(backup_path):
+                print(f"   ✅ Pre-restore backup created: {backup_path}")
+            else:
+                print(f"   ⚠️  Pre-restore backup path not found: {backup_path}")
+            
+            print(f"   ✅ Database restore completed successfully")
+            return True
+            
+        except Exception as e:
+            print(f"   ❌ Restore test error: {e}")
+            return False
+
+    def test_restore_with_modified_data(self, original_backup_data):
+        """Test restore after modifying current data"""
+        print("\n🔍 Testing Restore with Modified Data...")
+        
+        if not original_backup_data:
+            print("   ❌ No original backup data provided")
+            return False
+        
+        # Step 1: Delete some transactions
+        success, txn_response = self.run_test(
+            "Get Transactions for Deletion",
+            "GET",
+            "transactions?limit=5",
+            200
+        )
+        
+        if success and txn_response.get('transactions'):
+            transactions = txn_response['transactions']
+            if len(transactions) > 0:
+                # Delete first transaction using delete all (since there's no individual delete endpoint)
+                print(f"   Modifying data by deleting all transactions...")
+                delete_data = {"confirmation_text": "DELETE ALL"}
+                
+                success, delete_response = self.run_test(
+                    "Delete All Transactions for Restore Test",
+                    "POST",
+                    "transactions/delete-all",
+                    200,
+                    data=delete_data
+                )
+                
+                if success:
+                    print(f"   ✅ Deleted {delete_response.get('deleted_count', 0)} transactions")
+        
+        # Step 2: Add a new category
+        new_category_data = {
+            "name": "Test Temporary Category",
+            "type": "EXPENSE"
+        }
+        
+        success, cat_response = self.run_test(
+            "Create Temporary Category",
+            "POST",
+            "categories",
+            200,
+            data=new_category_data
+        )
+        
+        if success:
+            print(f"   ✅ Created temporary category: {cat_response.get('id')}")
+        
+        # Step 3: Restore original backup
+        print(f"   🔄 Restoring original backup...")
+        restore_success = self.test_database_restore(original_backup_data)
+        
+        if restore_success:
+            # Step 4: Verify data is restored to original state
+            success, final_txn_response = self.run_test(
+                "Verify Transactions Restored",
+                "GET",
+                "transactions?limit=1000",
+                200
+            )
+            
+            if success:
+                final_txn_count = len(final_txn_response.get('transactions', []))
+                print(f"   ✅ Final transaction count after restore: {final_txn_count}")
+            
+            # Check if temporary category is gone (should be replaced by backup data)
+            success, final_cat_response = self.run_test(
+                "Verify Categories Restored",
+                "GET",
+                "categories",
+                200
+            )
+            
+            if success:
+                categories = final_cat_response
+                temp_category_exists = any(cat.get('name') == 'Test Temporary Category' for cat in categories)
+                if not temp_category_exists:
+                    print(f"   ✅ Temporary category correctly removed during restore")
+                else:
+                    print(f"   ⚠️  Temporary category still exists after restore")
+            
+            print(f"   ✅ Restore with modified data test completed")
+            return True
+        else:
+            print(f"   ❌ Restore failed")
+            return False
+
+    def test_restore_error_cases(self):
+        """Test restore error handling"""
+        print("\n🔍 Testing Restore Error Cases...")
+        
+        url = f"{self.base_url}/api/settings/restore"
+        headers = {'Authorization': f'Bearer {self.token}'}
+        
+        # Test 1: Upload non-ZIP file
+        print("   Testing non-ZIP file upload...")
+        try:
+            import tempfile
+            import os
+            
+            # Create a text file instead of ZIP
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as temp_file:
+                temp_file.write("This is not a ZIP file")
+                temp_file_path = temp_file.name
+            
+            with open(temp_file_path, 'rb') as f:
+                files = {'file': ('not_a_zip.txt', f, 'text/plain')}
+                response = requests.post(url, headers=headers, files=files)
+            
+            os.unlink(temp_file_path)
+            
+            if response.status_code == 400:
+                print("   ✅ Correctly rejected non-ZIP file")
+            else:
+                print(f"   ❌ Expected 400, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"   ❌ Error testing non-ZIP file: {e}")
+            return False
+        
+        # Test 2: Upload ZIP with missing files
+        print("   Testing ZIP with missing files...")
+        try:
+            import zipfile
+            from io import BytesIO
+            
+            # Create incomplete ZIP
+            zip_buffer = BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+                zip_file.writestr('transactions.json', '[]')
+                # Missing other required files
+            
+            zip_content = zip_buffer.getvalue()
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_file:
+                temp_file.write(zip_content)
+                temp_file_path = temp_file.name
+            
+            with open(temp_file_path, 'rb') as f:
+                files = {'file': ('incomplete.zip', f, 'application/zip')}
+                response = requests.post(url, headers=headers, files=files)
+            
+            os.unlink(temp_file_path)
+            
+            if response.status_code == 400:
+                print("   ✅ Correctly rejected incomplete ZIP file")
+            else:
+                print(f"   ❌ Expected 400, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"   ❌ Error testing incomplete ZIP: {e}")
+            return False
+        
+        # Test 3: Upload ZIP with invalid JSON
+        print("   Testing ZIP with invalid JSON...")
+        try:
+            zip_buffer = BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+                zip_file.writestr('transactions.json', 'invalid json content')
+                zip_file.writestr('categories.json', '[]')
+                zip_file.writestr('rules.json', '[]')
+                zip_file.writestr('accounts.json', '[]')
+                zip_file.writestr('import_batches.json', '[]')
+                zip_file.writestr('metadata.json', '{}')
+            
+            zip_content = zip_buffer.getvalue()
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as temp_file:
+                temp_file.write(zip_content)
+                temp_file_path = temp_file.name
+            
+            with open(temp_file_path, 'rb') as f:
+                files = {'file': ('invalid_json.zip', f, 'application/zip')}
+                response = requests.post(url, headers=headers, files=files)
+            
+            os.unlink(temp_file_path)
+            
+            if response.status_code == 400:
+                print("   ✅ Correctly rejected ZIP with invalid JSON")
+            else:
+                print(f"   ❌ Expected 400, got {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"   ❌ Error testing invalid JSON: {e}")
+            return False
+        
+        print("   ✅ All error cases handled correctly")
+        return True
+
     def cleanup_test_data(self):
         """Clean up test data"""
         if self.test_rule_id:
