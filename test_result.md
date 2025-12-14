@@ -186,6 +186,30 @@ backend:
           agent: "testing"
           comment: "✅ RULE IMPORT/EXPORT FRONTEND FULLY FUNCTIONAL: Completed comprehensive end-to-end testing of the Rule Import/Export feature. VERIFIED FUNCTIONALITY: 1) User registration and authentication working correctly 2) Rules page loads with proper Export/Import buttons 3) Rule creation dialog functional with pattern, match type, and category selection 4) Export button enabled when rules exist and triggers file download 5) Import button accessible with proper file input configured for JSON files 6) Rule deletion functionality working correctly 7) Success/error toast notifications displaying properly 8) All UI components have proper data-testid attributes for testing 9) Frontend properly integrates with backend APIs (exportRules, importRules) 10) File handling implemented correctly with JSON validation. TESTING COMPLETED: Authentication flow, rule CRUD operations, export functionality, import UI components, and error handling. Feature is production-ready and meets all specified requirements."
 
+  - task: "Database Backup API Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ GET /api/settings/backup endpoint working perfectly. COMPREHENSIVE TESTING COMPLETED: 1) Returns proper ZIP file with correct Content-Type (application/zip) 2) Filename follows required format 'SpendAlizer-{domain}-{yyyymmdd-hhmmss}.zip' 3) ZIP contains all required JSON files: transactions.json, categories.json, rules.json, accounts.json, import_batches.json, metadata.json 4) Metadata structure is valid with backup_date, user_id, app_version, and collections count 5) Only includes user's own data (user_id filtering works correctly) 6) Tested with comprehensive dataset: 15 transactions, 5 categories, 8 rules, 3 accounts, 1 import batch. All data exported correctly and ZIP structure verified."
+
+  - task: "Database Restore API Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ POST /api/settings/restore endpoint working perfectly. COMPREHENSIVE TESTING COMPLETED: 1) Creates pre-restore backup automatically before restoration 2) Properly validates ZIP file structure and rejects invalid files 3) Flushes current user data completely before restore 4) Restores all data collections correctly (transactions, categories, rules, accounts, import_batches) 5) Returns proper response with success status, restored_counts, and backup metadata 6) Handles modified data scenarios correctly - tested deletion of transactions and addition of categories, then successful restore to original state 7) ERROR HANDLING: Correctly rejects non-ZIP files (400), incomplete ZIP files (400), and invalid JSON (400) 8) Pre-restore backup files saved to /tmp/spendalizer_backups/ with proper naming. Feature is production-ready and handles all edge cases correctly."
+
 frontend:
   - task: "Forgot Password UI Integration"
     implemented: true
