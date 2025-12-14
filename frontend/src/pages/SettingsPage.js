@@ -394,6 +394,15 @@ const SettingsPage = () => {
               </ul>
             </div>
 
+            <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
+              <p className="text-sm font-medium text-blue-900 mb-2">ℹ️ Restoring to: {user?.email}</p>
+              <p className="text-xs text-blue-800">
+                The backup data will be associated with your current account. If you're restoring 
+                a backup from a different environment (e.g., from online to local), the data will 
+                appear in your current logged-in account only.
+              </p>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="restore-file">Select Backup File (.zip)</Label>
               <Input
