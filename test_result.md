@@ -264,9 +264,9 @@ metadata:
 
 test_plan:
   current_focus: 
-    - "Rule Import/Export Feature - Backend testing completed successfully"
+    - "Database Backup and Restore Feature - Backend testing completed successfully"
   stuck_tasks: 
-    - "Authentication System - Login/Register functionality preventing full UI testing"
+    - "CSV Import functionality - missing sample CSV file preventing full import testing"
   test_all: false
   test_priority: "high_first"
 
