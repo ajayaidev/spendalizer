@@ -92,20 +92,23 @@ const SettingsPage = () => {
     setRestoreLoading(true);
     try {
       const response = await restoreDatabase(file);
-      const { restored_counts, backup_metadata } = response.data;
+      const { restored_counts, backup_metadata, restored_to_user } = response.data;
       
+      // Show success message with user info
+      const userInfo = restored_to_user ? ` for ${restored_to_user.email}` : '';
       toast.success(
-        `Database restored successfully! Restored: ${restored_counts.transactions} transactions, ` +
+        `Database restored successfully${userInfo}! ` +
+        `Restored: ${restored_counts.transactions} transactions, ` +
         `${restored_counts.categories} categories, ${restored_counts.rules} rules, ` +
-        `${restored_counts.accounts} accounts`
+        `${restored_counts.accounts} accounts`,
+        { duration: 5000 }
       );
       
       setRestoreDialogOpen(false);
       
-      // Redirect to dashboard after restore
+      // Redirect to dashboard after restore with a full reload
       setTimeout(() => {
-        navigate('/');
-        window.location.reload(); // Reload to refresh all data
+        window.location.href = '/';
       }, 2000);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to restore database');
