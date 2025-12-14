@@ -14,9 +14,13 @@ const SettingsPage = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [confirmationText, setConfirmationText] = useState('');
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [restoreLoading, setRestoreLoading] = useState(false);
+  const restoreFileInputRef = useRef(null);
 
   const handleDeleteAll = async () => {
     if (confirmationText.trim().toUpperCase() !== 'DELETE ALL') {
