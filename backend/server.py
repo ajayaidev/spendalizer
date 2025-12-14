@@ -1784,10 +1784,10 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
         except json.JSONDecodeError as e:
             raise HTTPException(status_code=400, detail=f"Invalid JSON in backup file: {str(e)}")
         
-        # Step 3: Flush current data
+        # Step 3: Flush current data (user-specific only, not system categories)
         logging.info(f"Flushing current data for user {user_id}")
         await db.transactions.delete_many({"user_id": user_id})
-        await db.categories.delete_many({"user_id": user_id})
+        await db.categories.delete_many({"user_id": user_id})  # Only user categories
         await db.category_rules.delete_many({"user_id": user_id})
         await db.accounts.delete_many({"user_id": user_id})
         await db.import_batches.delete_many({"user_id": user_id})
