@@ -508,19 +508,35 @@ def parse_hdfc_bank_excel(file_content: bytes) -> List[Dict[str, Any]]:
     return transactions
 
 def parse_generic_excel(file_content: bytes, data_source: str) -> List[Dict[str, Any]]:
-    """Parse generic Excel file"""
+    """Parse generic Excel file - handles .xlsx, .xls, and HTML-based Excel files"""
+    df = None
+    
     try:
-        # Try openpyxl engine first (for .xlsx files)
-        try:
-            df = pd.read_excel(io.BytesIO(file_content), engine='openpyxl')
-            logging.info(f"Successfully parsed Excel file with openpyxl engine: {len(df)} rows")
-        except Exception:
-            # Fall back to xlrd for older .xls files
-            df = pd.read_excel(io.BytesIO(file_content), engine='xlrd')
-            logging.info(f"Successfully parsed Excel file with xlrd engine: {len(df)} rows")
+        # Check if it's actually an HTML file disguised as Excel (common with some banks)
+        file_str = file_content[:1000].decode('utf-8', errors='ignore').lower()
+        if '<html' in file_str or '<table' in file_str or '<!doctype' in file_str:
+            logging.info("Detected HTML-based Excel file, using HTML parser")
+            df = pd.read_html(io.BytesIO(file_content))[0]  # Get first table
+            logging.info(f"Successfully parsed HTML table with {len(df)} rows")
+        else:
+            # Try openpyxl engine first (for .xlsx files)
+            try:
+                df = pd.read_excel(io.BytesIO(file_content), engine='openpyxl')
+                logging.info(f"Successfully parsed Excel file with openpyxl engine: {len(df)} rows")
+            except Exception as e1:
+                logging.debug(f"openpyxl failed: {e1}")
+                # Fall back to xlrd for older .xls files
+                try:
+                    df = pd.read_excel(io.BytesIO(file_content), engine='xlrd')
+                    logging.info(f"Successfully parsed Excel file with xlrd engine: {len(df)} rows")
+                except Exception as e2:
+                    logging.debug(f"xlrd failed: {e2}")
+                    # Last resort: try HTML parser
+                    df = pd.read_html(io.BytesIO(file_content))[0]
+                    logging.info(f"Successfully parsed as HTML table with {len(df)} rows")
     except Exception as e:
         logging.error(f"Failed to parse Excel file: {e}")
-        raise ValueError(f"Could not parse Excel file: {str(e)}")
+        raise ValueError(f"Could not parse Excel file. Please ensure it's a valid Excel file (.xlsx or .xls) or try exporting as CSV instead.")
     
     transactions = []
     
