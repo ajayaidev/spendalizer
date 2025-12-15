@@ -525,6 +525,74 @@ const AnalyticsPage = () => {
                   </CardContent>
                 </Card>
 
+                {/* External Transfers IN Card */}
+                <Card className="border-teal-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-teal-700 text-lg">External Transfers IN</CardTitle>
+                    <CardDescription className="text-xs text-teal-600">Incoming investments, returns - affects net worth</CardDescription>
+                    {externalTransferInCategories.length > 0 && (
+                      <CardDescription className="text-2xl font-bold text-teal-900 mt-2">
+                        ₹{externalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                  {externalTransferInCategories.length > 0 ? (
+                    <div className="space-y-2">
+                      {externalTransferInCategories.map((cat, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full flex-shrink-0 bg-teal-500"></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-teal-900 text-sm truncate">{cat.category_name}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-teal-900 text-sm">₹{cat.total.toLocaleString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                      <p className="text-sm">No external incoming transfers</p>
+                    </div>
+                  )}
+                  </CardContent>
+                </Card>
+
+                {/* External Transfers OUT Card */}
+                <Card className="border-orange-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-orange-700 text-lg">External Transfers OUT</CardTitle>
+                    <CardDescription className="text-xs text-orange-600">Investments, loans - affects net worth</CardDescription>
+                    {externalTransferOutCategories.length > 0 && (
+                      <CardDescription className="text-2xl font-bold text-orange-900 mt-2">
+                        ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                  {externalTransferOutCategories.length > 0 ? (
+                    <div className="space-y-2">
+                      {externalTransferOutCategories.map((cat, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full flex-shrink-0 bg-orange-500"></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-orange-900 text-sm truncate">{cat.category_name}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-orange-900 text-sm">₹{cat.total.toLocaleString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                      <p className="text-sm">No external transfers out</p>
+                    </div>
+                  )}
+                  </CardContent>
+                </Card>
+
                 {/* Internal Transfers IN (Bank Transfers) Card */}
                 <Card className="border-blue-200">
                   <CardHeader className="pb-3">
