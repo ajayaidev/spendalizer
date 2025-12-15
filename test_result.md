@@ -297,7 +297,7 @@ metadata:
 
 test_plan:
   current_focus: 
-    - "Database Backup and Restore Feature - Backend testing completed successfully"
+    - "Rule Editing UI Feature - Comprehensive testing completed successfully"
   stuck_tasks: 
     - "CSV Import functionality - missing sample CSV file preventing full import testing"
   test_all: false
