@@ -1847,14 +1847,6 @@ async def get_category_trends(
     for cat_id, category in category_map.items():
         if category_totals.get(cat_id, 0) > 0:
             cat_type = category.get("type", "")
-            
-            # Handle legacy TRANSFER_EXTERNAL type - treat as TRANSFER_EXTERNAL_OUT
-            if cat_type == "TRANSFER_EXTERNAL":
-                cat_type = "TRANSFER_EXTERNAL_OUT"
-            # Handle legacy TRANSFER_INTERNAL type - treat as TRANSFER_INTERNAL_OUT  
-            elif cat_type == "TRANSFER_INTERNAL":
-                cat_type = "TRANSFER_INTERNAL_OUT"
-            
             if cat_type in category_groups:
                 category_groups[cat_type].append({
                     "id": cat_id,
