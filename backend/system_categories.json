@@ -127,7 +127,7 @@
   },
   {
     "id": "6a9f8b8e-8c6d-4f9e-4a5b-2c9d8e7f8a9b",
-    "name": "Loan Returned Back",
+    "name": "Loan Repayment Made",
     "type": "EXPENSE",
     "is_system": true
   },
