@@ -902,7 +902,7 @@ async def get_categories(user_id: str = Depends(get_current_user)):
     categories = await db.categories.find(
         {"$or": [{"is_system": True}, {"user_id": user_id}]},
         {"_id": 0}
-    ).to_list(1000)
+    ).sort("name", 1).to_list(1000)  # Sort alphabetically by name
     return categories
 
 @api_router.post("/categories", response_model=Category)
