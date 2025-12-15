@@ -74,6 +74,7 @@ function App() {
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="rules" element={<RulesPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="trend-report" element={<TrendReportPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
