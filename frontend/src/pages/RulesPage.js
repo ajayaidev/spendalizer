@@ -46,13 +46,42 @@ const RulesPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createRule(formData);
-      toast.success('Rule created successfully!');
+      if (editMode) {
+        await updateRule(editingRuleId, formData);
+        toast.success('Rule updated successfully!');
+      } else {
+        await createRule(formData);
+        toast.success('Rule created successfully!');
+      }
       setDialogOpen(false);
+      setEditMode(false);
+      setEditingRuleId(null);
       setFormData({ pattern: '', match_type: 'CONTAINS', category_id: '', priority: 10 });
       loadData();
     } catch (error) {
-      toast.error('Failed to create rule');
+      toast.error(editMode ? 'Failed to update rule' : 'Failed to create rule');
+    }
+  };
+
+  const handleEdit = (rule) => {
+    setEditMode(true);
+    setEditingRuleId(rule.id);
+    setFormData({
+      pattern: rule.pattern,
+      match_type: rule.match_type,
+      category_id: rule.category_id,
+      priority: rule.priority
+    });
+    setDialogOpen(true);
+  };
+
+  const handleDialogChange = (open) => {
+    setDialogOpen(open);
+    if (!open) {
+      // Reset form when dialog is closed
+      setEditMode(false);
+      setEditingRuleId(null);
+      setFormData({ pattern: '', match_type: 'CONTAINS', category_id: '', priority: 10 });
     }
   };
 
