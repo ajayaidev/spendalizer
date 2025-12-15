@@ -68,23 +68,25 @@ function App() {
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
-          <Route path="/forgot-password" element={!user ? <ForgotPasswordPage /> : <Navigate to="/" />} />
-          <Route path="/reset-password" element={!user ? <ResetPasswordPage /> : <Navigate to="/" />} />
-          
-          <Route path="/" element={user ? <DashboardLayout /> : <Navigate to="/auth" />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="accounts" element={<AccountsPage />} />
-            <Route path="import" element={<ImportPage />} />
-            <Route path="transactions" element={<TransactionsPage />} />
-            <Route path="categories" element={<CategoriesPage />} />
-            <Route path="rules" element={<RulesPage />} />
-            <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="trend-report" element={<TrendReportPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-          </Route>
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/" />} />
+            <Route path="/forgot-password" element={!user ? <ForgotPasswordPage /> : <Navigate to="/" />} />
+            <Route path="/reset-password" element={!user ? <ResetPasswordPage /> : <Navigate to="/" />} />
+            
+            <Route path="/" element={user ? <DashboardLayout /> : <Navigate to="/auth" />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="accounts" element={<AccountsPage />} />
+              <Route path="import" element={<ImportPage />} />
+              <Route path="transactions" element={<TransactionsPage />} />
+              <Route path="categories" element={<CategoriesPage />} />
+              <Route path="rules" element={<RulesPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+              <Route path="trend-report" element={<TrendReportPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
       <Toaster position="top-right" richColors />
     </AuthContext.Provider>
