@@ -133,7 +133,19 @@
   },
   {
     "id": "5b8a9c9f-7d5e-4a8f-3b4c-3d8e9f7a8b9c",
-    "name": "Bank Transfer",
+    "name": "Bank Transfer IN",
+    "type": "TRANSFER_INTERNAL_IN",
+    "is_system": true
+  },
+  {
+    "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Cash Deposit",
+    "type": "TRANSFER_INTERNAL_IN",
+    "is_system": true
+  },
+  {
+    "id": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
+    "name": "Bank Transfer OUT",
     "type": "TRANSFER_INTERNAL_OUT",
     "is_system": true
   },
@@ -153,12 +165,6 @@
     "id": "a8f3e5c7-2b9d-4a1e-8f6c-9d2b7e4a3f1c",
     "name": "Cash Withdrawal",
     "type": "TRANSFER_INTERNAL_OUT",
-    "is_system": true
-  },
-  {
-    "id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Cash Deposit",
-    "type": "TRANSFER_INTERNAL_IN",
     "is_system": true
   },
   {
