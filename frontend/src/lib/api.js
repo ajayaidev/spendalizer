@@ -55,6 +55,7 @@ export const bulkCategorizeByAI = (transactionIds) =>
 // Rules
 export const getRules = () => api.get('/rules');
 export const createRule = (data) => api.post('/rules', data);
+export const updateRule = (ruleId, data) => api.put(`/rules/${ruleId}`, data);
 export const deleteRule = (ruleId) => api.delete(`/rules/${ruleId}`);
 export const exportRules = () => api.get('/rules/export');
 export const importRules = (rules) => api.post('/rules/import', { rules });
