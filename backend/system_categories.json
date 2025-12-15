@@ -102,18 +102,6 @@
     "is_system": true
   },
   {
-    "id": "7f8e9a7d-9b7c-4e8d-5f6a-3b8c9d7e8f9a",
-    "name": "Loan Given",
-    "type": "EXPENSE",
-    "is_system": true
-  },
-  {
-    "id": "6a9f8b8e-8c6d-4f9e-4a5b-2c9d8e7f8a9b",
-    "name": "Loan Repayment Made",
-    "type": "EXPENSE",
-    "is_system": true
-  },
-  {
     "id": "5b8a9c9f-7d5e-4a8f-3b4c-3d8e9f7a8b9c",
     "name": "Bank Transfer IN",
     "type": "TRANSFER_INTERNAL_IN",
