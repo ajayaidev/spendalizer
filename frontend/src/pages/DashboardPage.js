@@ -65,7 +65,7 @@ const DashboardPage = () => {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading analytics...</div>;
+    return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
   }
 
   const expenseCategories = summary?.category_breakdown?.filter(
