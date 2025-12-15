@@ -243,9 +243,9 @@ const AnalyticsPage = () => {
             <CardDescription>Your main income categories</CardDescription>
           </CardHeader>
           <CardContent>
-            {summary?.income_by_category && summary.income_by_category.length > 0 ? (
+            {incomeCategories.length > 0 ? (
               <div className="space-y-4">
-                {summary.income_by_category.slice(0, 5).map((cat, index) => (
+                {incomeCategories.slice(0, 5).map((cat, index) => (
                   <div key={cat.category_name || 'uncategorized'} className="flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1">
                       <div 
