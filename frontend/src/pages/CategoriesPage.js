@@ -101,11 +101,16 @@ const CategoriesPage = () => {
     }
   };
 
-  const groupedCategories = {
-    INCOME: categories.filter(c => c.type === 'INCOME'),
-    EXPENSE: categories.filter(c => c.type === 'EXPENSE'),
-    TRANSFER: categories.filter(c => c.type === 'TRANSFER')
-  };
+  // Group categories in specific order
+  const groupedCategories = [
+    { key: 'INCOME', title: 'Income Categories', categories: categories.filter(c => c.type === 'INCOME') },
+    { key: 'EXPENSE', title: 'Expense Categories', categories: categories.filter(c => c.type === 'EXPENSE') },
+    { key: 'TRANSFER_EXTERNAL_OUT', title: 'External Transfer OUT (Investments, Loans)', categories: categories.filter(c => c.type === 'TRANSFER_EXTERNAL') },
+    { key: 'TRANSFER_EXTERNAL_IN', title: 'External Transfer IN (Returns)', categories: [] }, // Placeholder for symmetry
+    { key: 'TRANSFER_INTERNAL_OUT', title: 'Internal Transfer OUT (Bank-to-Bank)', categories: categories.filter(c => c.type === 'TRANSFER_INTERNAL') },
+    { key: 'TRANSFER_INTERNAL_IN', title: 'Internal Transfer IN (Bank-to-Bank)', categories: [] }, // Placeholder for symmetry
+    { key: 'TRANSFER', title: 'Transfer Categories (Legacy)', categories: categories.filter(c => c.type === 'TRANSFER') }
+  ].filter(group => group.categories.length > 0); // Only show groups with categories
 
   const parentCategories = categories.filter(c => !c.parent_category_id);
 
