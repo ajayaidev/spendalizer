@@ -137,16 +137,32 @@ const TrendReportPage = () => {
 
   // Prepare chart data
   const getChartData = () => {
-    if (!trendData || selectedCategories.size === 0) return [];
+    if (!trendData || (selectedCategories.size === 0 && selectedGroups.size === 0)) return [];
 
+    const groups = groupCategories();
+    
     return trendData.periods.map(period => {
       const dataPoint = { period };
+      
+      // Add selected group totals
+      selectedGroups.forEach(groupKey => {
+        const group = groups.find(g => g.key === groupKey);
+        if (group) {
+          const groupTotal = group.categories.reduce((sum, cat) => {
+            return sum + (trendData.data[period]?.[cat.id] || 0);
+          }, 0);
+          dataPoint[`group_${groupKey}`] = groupTotal;
+        }
+      });
+      
+      // Add selected individual categories
       selectedCategories.forEach(catId => {
         const category = trendData.categories.find(c => c.id === catId);
         if (category) {
           dataPoint[catId] = trendData.data[period]?.[catId] || 0;
         }
       });
+      
       return dataPoint;
     });
   };
