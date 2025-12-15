@@ -545,8 +545,8 @@ const AnalyticsPage = () => {
                           <PieChart>
                             <Pie
                               data={(() => {
-                                const topTransfer = transferInCategories.slice(0, 5);
-                                const othersTransfer = transferInCategories.slice(5);
+                                const topTransfer = internalTransferInCategories.slice(0, 5);
+                                const othersTransfer = internalTransferInCategories.slice(5);
                                 const pieData = topTransfer.map(cat => ({
                                   name: cat.category_name,
                                   value: cat.total
@@ -566,10 +566,10 @@ const AnalyticsPage = () => {
                               paddingAngle={2}
                               dataKey="value"
                             >
-                              {transferInCategories.slice(0, 5).map((_, index) => (
+                              {internalTransferInCategories.slice(0, 5).map((_, index) => (
                                 <Cell key={`cell-${index}`} fill={`hsl(${200 + index * 20}, 70%, ${50 + index * 8}%)`} />
                               ))}
-                              {transferInCategories.length > 5 && (
+                              {internalTransferInCategories.length > 5 && (
                                 <Cell fill="hsl(200, 30%, 70%)" />
                               )}
                             </Pie>
@@ -578,9 +578,9 @@ const AnalyticsPage = () => {
                         </ResponsiveContainer>
                       </div>
                       
-                      {/* Top 5 Incoming Transfer Categories */}
+                      {/* Top 5 Internal Transfer IN Categories */}
                       <div className="space-y-2">
-                        {transferInCategories.slice(0, 5).map((cat, index) => (
+                        {internalTransferInCategories.slice(0, 5).map((cat, index) => (
                           <div key={index} className="flex items-center gap-3">
                             <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${200 + index * 20}, 70%, ${50 + index * 8}%)` }}></div>
                             <div className="flex-1 min-w-0">
