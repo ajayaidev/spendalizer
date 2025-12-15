@@ -212,6 +212,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ POST /api/settings/restore endpoint working perfectly. COMPREHENSIVE TESTING COMPLETED: 1) Creates pre-restore backup automatically before restoration 2) Properly validates ZIP file structure and rejects invalid files 3) Flushes current user data completely before restore 4) Restores all data collections correctly (transactions, categories, rules, accounts, import_batches) 5) Returns proper response with success status, restored_counts, and backup metadata 6) Handles modified data scenarios correctly - tested deletion of transactions and addition of categories, then successful restore to original state 7) ERROR HANDLING: Correctly rejects non-ZIP files (400), incomplete ZIP files (400), and invalid JSON (400) 8) Pre-restore backup files saved to /tmp/spendalizer_backups/ with proper naming. Feature is production-ready and handles all edge cases correctly."
+        - working: true
+          agent: "testing"
+          comment: "✅ SYSTEM CATEGORIES ARCHITECTURE RESTORE VERIFIED: Comprehensive testing of restore with new system categories architecture completed successfully. CRITICAL VERIFICATION: 1) System categories are NOT duplicated during restore - restore logic correctly skips system categories that already exist with same IDs 2) Only user categories are restored from backup 3) All original data restored correctly after modification (delete transactions + add category) 4) /api/debug/data-check shows 0 orphaned categories 5) Analytics works correctly after restore with no orphaned category references 6) Restore handles mix of system and user category transactions correctly 7) Pre-restore backup created successfully 8) All error cases handled properly (non-ZIP, incomplete ZIP, invalid JSON). System categories architecture with fixed UUIDs working perfectly - no duplication issues."
 
 frontend:
   - task: "Forgot Password UI Integration"
