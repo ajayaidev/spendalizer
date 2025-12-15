@@ -27,7 +27,11 @@ const CategoriesPage = () => {
   const loadCategories = async () => {
     try {
       const response = await getCategories();
-      setCategories(response.data);
+      // Sort categories alphabetically by name
+      const sorted = response.data.sort((a, b) => {
+        return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+      });
+      setCategories(sorted);
     } catch (error) {
       toast.error('Failed to load categories');
     } finally {
