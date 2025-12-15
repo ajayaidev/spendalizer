@@ -525,18 +525,19 @@ const AnalyticsPage = () => {
                   </CardContent>
                 </Card>
 
-                {/* Incoming Transfers Card */}
+                {/* Internal Transfers IN (Bank Transfers) Card */}
                 <Card className="border-blue-200">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-blue-700 text-lg">Incoming Transfers</CardTitle>
-                    {transferInCategories.length > 0 && (
+                    <CardTitle className="text-blue-700 text-lg">Internal Transfers IN</CardTitle>
+                    <CardDescription className="text-xs text-blue-600">Bank-to-bank, doesn't affect net worth</CardDescription>
+                    {internalTransferInCategories.length > 0 && (
                       <CardDescription className="text-2xl font-bold text-blue-900 mt-2">
-                        ₹{transferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                        ₹{internalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                       </CardDescription>
                     )}
                   </CardHeader>
                   <CardContent>
-                  {transferInCategories.length > 0 ? (
+                  {internalTransferInCategories.length > 0 ? (
                     <div className="space-y-4">
                       {/* Incoming Transfer Pie Chart */}
                       <div className="flex justify-center">
