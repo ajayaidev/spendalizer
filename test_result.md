@@ -231,15 +231,18 @@ backend:
 frontend:
   - task: "Rule Editing UI Feature"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/RulesPage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "🎯 NEW FEATURE IMPLEMENTED: Rule Editing UI. Added edit functionality to RulesPage.js with: 1) Edit button (pencil icon) for each rule row 2) Dialog mode switching (Create/Edit) 3) Form pre-population with existing rule data 4) Updated submit handler to call updateRule API when in edit mode 5) Proper state management (editMode, editingRuleId) 6) Reset form state when dialog closes. Backend endpoint PUT /api/rules/{rule_id} already exists. Ready for comprehensive frontend testing including CRUD flow: create rule, edit rule, update rule, delete rule, verify changes persist."
+        - working: true
+          agent: "testing"
+          comment: "✅ RULE EDITING UI FEATURE FULLY FUNCTIONAL: Completed comprehensive end-to-end testing of the complete Rule CRUD functionality. FIXED CRITICAL BACKEND BUG: Found and fixed NameError in server.py line 1349 where 'CategoryRuleCreate' was used instead of 'RuleCreate' model, causing backend startup failure. COMPREHENSIVE TESTING COMPLETED: 1) Authentication working correctly with new user 2) Rules page loads properly with system categories available 3) CREATE RULE: Dialog opens with 'Create New Rule' title, form accepts pattern/match type/category/priority, submit button shows 'Create Rule', rule appears in list with correct data 4) EDIT RULE: Edit button (pencil icon) visible on rule cards, dialog opens with 'Edit Rule' title, form pre-populated with existing data (pattern: TEST*PATTERN, priority: 15), submit button changes to 'Update Rule' 5) UPDATE RULE: Successfully updated pattern to 'UPDATED*PATTERN' and priority to 20, changes persist and display immediately, success toast shown 6) FORM RESET: Dialog title and form fields reset properly when switching between create/edit modes 7) DELETE RULE: Delete button (trash icon) working, rule removed from list, success toast shown. All UI elements have proper data-testid attributes. Feature is production-ready and meets all specified requirements from review request."
 
   - task: "Forgot Password UI Integration"
     implemented: true
