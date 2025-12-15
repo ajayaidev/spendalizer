@@ -197,6 +197,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ GET /api/settings/backup endpoint working perfectly. COMPREHENSIVE TESTING COMPLETED: 1) Returns proper ZIP file with correct Content-Type (application/zip) 2) Filename follows required format 'SpendAlizer-{domain}-{yyyymmdd-hhmmss}.zip' 3) ZIP contains all required JSON files: transactions.json, categories.json, rules.json, accounts.json, import_batches.json, metadata.json 4) Metadata structure is valid with backup_date, user_id, app_version, and collections count 5) Only includes user's own data (user_id filtering works correctly) 6) Tested with comprehensive dataset: 15 transactions, 5 categories, 8 rules, 3 accounts, 1 import batch. All data exported correctly and ZIP structure verified."
+        - working: true
+          agent: "testing"
+          comment: "✅ SYSTEM CATEGORIES ARCHITECTURE VERIFIED: Comprehensive testing of new system categories architecture completed successfully. FIXED CRITICAL ISSUE: Found and resolved duplicate system categories (old legacy categories + new system_categories.json categories). TESTING RESULTS: 1) Backup correctly includes ALL categories (25 system + user categories) 2) System categories loaded from /app/backend/system_categories.json with fixed UUIDs 3) Backup ZIP structure verified with proper metadata 4) All required JSON files present and valid 5) Only user-specific data included in backup (user_id filtering works correctly). Fixed duplicate 'Loan Returned Back' categories by renaming to 'Loan Repayment Received' (INCOME) and 'Loan Repayment Made' (EXPENSE). System categories architecture now working correctly with consistent UUIDs across environments."
 
   - task: "Database Restore API Endpoint"
     implemented: true
