@@ -24,24 +24,6 @@
     "is_system": true
   },
   {
-    "id": "d5221882-05a4-4540-aa04-64f595253d16",
-    "name": "Refunds/Reimbursements",
-    "type": "INCOME",
-    "is_system": true
-  },
-  {
-    "id": "2d9f50c2-4a06-4d7a-8092-db6eedb6b3f1",
-    "name": "Loan Received",
-    "type": "INCOME",
-    "is_system": true
-  },
-  {
-    "id": "92481d97-3308-4be1-8d81-ce8f20953050",
-    "name": "Loan Repayment Received",
-    "type": "INCOME",
-    "is_system": true
-  },
-  {
     "id": "f3bbfa2c-d64f-4044-9259-339ab37d656b",
     "name": "Other Income",
     "type": "INCOME",
