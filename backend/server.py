@@ -308,9 +308,13 @@ async def categorize_with_rules(user_id: str, description: str, account_id: Opti
     
     return None
 
-async def categorize_with_llm(description: str, amount: float, direction: str, transaction_type: str) -> Optional[Dict[str, Any]]:
+async def categorize_with_llm(description: str, amount: float, direction: str, transaction_type: str, user_id: str) -> Optional[Dict[str, Any]]:
     try:
-        categories = await db.categories.find({"is_system": True}, {"_id": 0}).to_list(1000)
+        # Get both system categories AND user's custom categories
+        categories = await db.categories.find(
+            {"$or": [{"is_system": True}, {"user_id": user_id}]},
+            {"_id": 0}
+        ).to_list(1000)
         category_names = [cat["name"] for cat in categories]
         
         prompt = f"""You are an AI trained to classify financial transactions.
