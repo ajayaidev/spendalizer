@@ -264,7 +264,7 @@ const RulesPage = () => {
                 />
               </div>
               <Button type="submit" className="w-full" data-testid="submit-rule-button">
-                Create Rule
+                {editMode ? 'Update Rule' : 'Create Rule'}
               </Button>
             </form>
             </DialogContent>
