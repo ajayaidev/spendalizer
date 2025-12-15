@@ -1274,7 +1274,8 @@ async def bulk_categorize_by_ai(
             txn.get("description", ""),
             txn.get("amount", 0.0),
             txn.get("direction", "DEBIT"),
-            transaction_type
+            transaction_type,
+            user_id  # Pass user_id for user categories
         )
         
         if result and result.get("category_id"):
