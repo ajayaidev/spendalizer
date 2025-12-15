@@ -1345,6 +1345,40 @@ async def create_rule(rule_data: RuleCreate, user_id: str = Depends(get_current_
     await db.category_rules.insert_one(doc)
     return rule
 
+@api_router.put("/rules/{rule_id}")
+async def update_rule(rule_id: str, rule_data: CategoryRuleCreate, user_id: str = Depends(get_current_user)):
+    # Verify rule exists and belongs to user
+    existing_rule = await db.category_rules.find_one({"id": rule_id, "user_id": user_id})
+    if not existing_rule:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    
+    # Verify category exists
+    category = await db.categories.find_one({
+        "id": rule_data.category_id,
+        "$or": [{"is_system": True}, {"user_id": user_id}]
+    })
+    if not category:
+        raise HTTPException(status_code=400, detail="Category not found")
+    
+    # Update rule
+    update_data = {
+        "pattern": rule_data.pattern,
+        "match_type": rule_data.match_type,
+        "category_id": rule_data.category_id,
+        "priority": rule_data.priority,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.category_rules.update_one(
+        {"id": rule_id, "user_id": user_id},
+        {"$set": update_data}
+    )
+    
+    if result.modified_count == 0 and result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    
+    return {"success": True, "message": "Rule updated successfully"}
+
 @api_router.delete("/rules/{rule_id}")
 async def delete_rule(rule_id: str, user_id: str = Depends(get_current_user)):
     result = await db.category_rules.delete_one({"id": rule_id, "user_id": user_id})
