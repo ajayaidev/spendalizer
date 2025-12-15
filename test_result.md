@@ -229,6 +229,18 @@ backend:
           comment: "✅ SYSTEM CATEGORIES ARCHITECTURE FULLY VERIFIED: Comprehensive testing of the new system categories architecture completed as per review request. TESTING SCENARIO COMPLETED: 1) Registered new user ✅ 2) Created 2 accounts ✅ 3) Created 3 user categories ✅ 4) Created 5-10 transactions with mix of system and user categories ✅ 5) Created 2 rules ✅ 6) Backup test - ZIP file created with correct structure, includes BOTH system and user categories ✅ 7) Modified data - deleted transactions, added category, added new transactions ✅ 8) Restore test - all original data restored, system categories NOT duplicated ✅ 9) Data consistency check - 0 orphaned categories ✅ 10) Analytics verification - category breakdown works correctly, no orphaned references ✅. CRITICAL ISSUE FIXED: Found and resolved duplicate system categories issue (legacy categories + new system_categories.json). Fixed duplicate 'Loan Returned Back' by renaming to specific names. System categories now loaded from fixed JSON file with consistent UUIDs across environments. Backup/restore works perfectly with new architecture."
 
 frontend:
+  - task: "Rule Editing UI Feature"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/RulesPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🎯 NEW FEATURE IMPLEMENTED: Rule Editing UI. Added edit functionality to RulesPage.js with: 1) Edit button (pencil icon) for each rule row 2) Dialog mode switching (Create/Edit) 3) Form pre-population with existing rule data 4) Updated submit handler to call updateRule API when in edit mode 5) Proper state management (editMode, editingRuleId) 6) Reset form state when dialog closes. Backend endpoint PUT /api/rules/{rule_id} already exists. Ready for comprehensive frontend testing including CRUD flow: create rule, edit rule, update rule, delete rule, verify changes persist."
+
   - task: "Forgot Password UI Integration"
     implemented: true
     working: true
