@@ -269,8 +269,21 @@ async def init_default_categories():
             await db.categories.insert_one(cat_data)
             logging.info(f"Initialized system category: {cat_data['name']} (id: {cat_data['id']})")
         else:
-            # Category already exists with this ID - skip
-            logging.debug(f"System category already exists: {cat_data['name']}")
+            # Category already exists - update name and type if changed
+            updates = {}
+            if existing.get("name") != cat_data["name"]:
+                updates["name"] = cat_data["name"]
+            if existing.get("type") != cat_data["type"]:
+                updates["type"] = cat_data["type"]
+            
+            if updates:
+                await db.categories.update_one(
+                    {"id": cat_data["id"]},
+                    {"$set": updates}
+                )
+                logging.info(f"Updated system category: {cat_data['name']} - {updates}")
+            else:
+                logging.debug(f"System category already up-to-date: {cat_data['name']}")
 
 # Categorization Engine
 async def categorize_with_rules(user_id: str, description: str, account_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
