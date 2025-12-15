@@ -1669,8 +1669,10 @@ async def get_spending_over_time(
             "income": round(data["income"], 2),
             "expense": round(data["expense"], 2),
             "net": round(data["income"] - data["expense"], 2),
-            "transfer_in": round(data["transfer_in"], 2),
-            "transfer_out": round(data["transfer_out"], 2)
+            "transfer_internal_in": round(data["transfer_internal_in"], 2),
+            "transfer_internal_out": round(data["transfer_internal_out"], 2),
+            "transfer_external_in": round(data["transfer_external_in"], 2),
+            "transfer_external_out": round(data["transfer_external_out"], 2)
         })
     
     return result
