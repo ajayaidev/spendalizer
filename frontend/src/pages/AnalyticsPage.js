@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { getAnalyticsSummary, getSpendingOverTime } from '../lib/api';
+import { getAnalyticsSummary } from '../lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Calendar } from '../components/ui/calendar';
-import { Checkbox } from '../components/ui/checkbox';
-import { Label } from '../components/ui/label';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
 import { TrendingUp, TrendingDown, PieChart as PieChartIcon, Calendar as CalendarIcon } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { toast } from 'sonner';
@@ -19,16 +16,6 @@ const AnalyticsPage = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState({ from: null, to: null });
-  const [trendData, setTrendData] = useState([]);
-  const [visibleLines, setVisibleLines] = useState({
-    income: true,
-    expense: true,
-    net: true,
-    transfer_internal_in: false,
-    transfer_internal_out: false,
-    transfer_external_in: false,
-    transfer_external_out: false
-  });
 
   useEffect(() => {
     loadData();
