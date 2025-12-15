@@ -99,12 +99,12 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="analytics-page">
+    <div className="container mx-auto px-4 py-8 md:px-8 md:py-12" data-testid="dashboard-page">
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Analytics</h1>
-            <p className="text-muted-foreground">Insights into your spending and saving patterns</p>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">Dashboard</h1>
+            <p className="text-muted-foreground">Your financial overview at a glance</p>
           </div>
           
           {/* Date Filter */}
