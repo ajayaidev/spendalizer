@@ -323,8 +323,8 @@ const TrendReportPage = () => {
                       <td className="p-3 font-semibold sticky left-0 bg-muted/50">
                         <div className="flex items-center gap-2">
                           <Checkbox
-                            checked={group.categories.every(cat => selectedCategories.has(cat.id))}
-                            onCheckedChange={() => toggleAllInGroup(group.key, group.categories)}
+                            checked={selectedGroups.has(group.key)}
+                            onCheckedChange={() => toggleGroupSelection(group.key)}
                           />
                           <button
                             onClick={() => toggleGroup(group.key)}
