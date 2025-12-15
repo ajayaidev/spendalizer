@@ -120,6 +120,34 @@ const TransactionsPage = () => {
     }
   };
 
+  const handleCreateRule = async () => {
+    if (!ruleForm.pattern || !ruleTransaction?.category_id) {
+      toast.error('Pattern and category are required');
+      return;
+    }
+
+    try {
+      await createRule({
+        pattern: ruleForm.pattern,
+        match_type: ruleForm.match_type,
+        category_id: ruleTransaction.category_id,
+        priority: ruleForm.priority
+      });
+      toast.success('Rule created successfully! Future similar transactions will be categorized automatically.');
+      setShowCreateRuleDialog(false);
+      setRuleTransaction(null);
+      setRuleForm({ pattern: '', match_type: 'CONTAINS', priority: 10 });
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to create rule');
+    }
+  };
+
+  const handleSkipRuleCreation = () => {
+    setShowCreateRuleDialog(false);
+    setRuleTransaction(null);
+    setRuleForm({ pattern: '', match_type: 'CONTAINS', priority: 10 });
+  };
+
   const handleBulkCategorize = async () => {
     if (selectedTransactions.length === 0) {
       toast.error('Please select transactions');
