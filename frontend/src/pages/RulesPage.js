@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getRules, createRule, deleteRule, getCategories, exportRules, importRules } from '../lib/api';
+import { getRules, createRule, deleteRule, getCategories, exportRules, importRules, updateRule } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Plus, Trash2, Sparkles, Download, Upload } from 'lucide-react';
+import { Plus, Trash2, Sparkles, Download, Upload, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 
 const RulesPage = () => {
