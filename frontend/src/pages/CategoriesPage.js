@@ -214,6 +214,7 @@ const CategoriesPage = () => {
                 {group.title}
               </CardTitle>
               <CardDescription>
+                {group.description && <span className="block mb-1">{group.description}</span>}
                 {group.categories.length} {group.categories.length === 1 ? 'category' : 'categories'}
               </CardDescription>
             </CardHeader>
