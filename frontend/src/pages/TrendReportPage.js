@@ -102,19 +102,14 @@ const TrendReportPage = () => {
     setExpandedGroups(newExpanded);
   };
 
-  const toggleAllInGroup = (groupType, categories) => {
-    const newSelected = new Set(selectedCategories);
-    const groupCategories = categories.map(c => c.id);
-    const allSelected = groupCategories.every(id => newSelected.has(id));
-
-    if (allSelected) {
-      // Unselect all
-      groupCategories.forEach(id => newSelected.delete(id));
+  const toggleGroupSelection = (groupType) => {
+    const newSelectedGroups = new Set(selectedGroups);
+    if (newSelectedGroups.has(groupType)) {
+      newSelectedGroups.delete(groupType);
     } else {
-      // Select all
-      groupCategories.forEach(id => newSelected.add(id));
+      newSelectedGroups.add(groupType);
     }
-    setSelectedCategories(newSelected);
+    setSelectedGroups(newSelectedGroups);
   };
 
   // Group categories by type
