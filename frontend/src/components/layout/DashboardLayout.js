@@ -26,6 +26,7 @@ const DashboardLayout = () => {
     { to: '/categories', label: 'Categories', icon: Tag },
     { to: '/rules', label: 'Rules', icon: Sparkles },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+    { to: '/trend-report', label: 'Trend Report', icon: TrendingUp },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
