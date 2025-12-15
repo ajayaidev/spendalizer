@@ -31,9 +31,13 @@ const CategoriesPage = () => {
       const typeOrder = {
         'INCOME': 1,
         'EXPENSE': 2,
-        'TRANSFER_EXTERNAL': 3,
-        'TRANSFER_INTERNAL': 4,
-        'TRANSFER': 5  // Legacy
+        'TRANSFER_EXTERNAL_IN': 3,
+        'TRANSFER_EXTERNAL_OUT': 4,
+        'TRANSFER_EXTERNAL': 4,  // Legacy external (group with OUT)
+        'TRANSFER_INTERNAL_IN': 5,
+        'TRANSFER_INTERNAL_OUT': 6,
+        'TRANSFER_INTERNAL': 6,  // Legacy internal (group with OUT)
+        'TRANSFER': 7  // Legacy
       };
       
       const sorted = response.data.sort((a, b) => {
