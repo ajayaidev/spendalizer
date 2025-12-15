@@ -347,8 +347,8 @@ const AnalyticsPage = () => {
         </Card>
       )}
 
-      {/* Analytics Cards Layout - 4 columns x 2 rows */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+      {/* Analytics Cards Layout - 2 columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 {/* Income Card */}
                 <Card className="border-green-200">
                   <CardHeader className="pb-3">
