@@ -385,6 +385,8 @@ async def categorize_transaction(txn: Transaction) -> Dict[str, Any]:
         txn.description,
         txn.amount,
         txn.direction.value,
+        txn.account_type if hasattr(txn, 'account_type') else "UNKNOWN",
+        txn.user_id  # Pass user_id for user categories
         txn.transaction_type.value
     )
     if llm_result:
