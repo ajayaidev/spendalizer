@@ -216,6 +216,18 @@ backend:
           agent: "testing"
           comment: "✅ SYSTEM CATEGORIES ARCHITECTURE RESTORE VERIFIED: Comprehensive testing of restore with new system categories architecture completed successfully. CRITICAL VERIFICATION: 1) System categories are NOT duplicated during restore - restore logic correctly skips system categories that already exist with same IDs 2) Only user categories are restored from backup 3) All original data restored correctly after modification (delete transactions + add category) 4) /api/debug/data-check shows 0 orphaned categories 5) Analytics works correctly after restore with no orphaned category references 6) Restore handles mix of system and user category transactions correctly 7) Pre-restore backup created successfully 8) All error cases handled properly (non-ZIP, incomplete ZIP, invalid JSON). System categories architecture with fixed UUIDs working perfectly - no duplication issues."
 
+  - task: "System Categories Architecture with Fixed UUIDs"
+    implemented: true
+    working: true
+    file: "/app/backend/system_categories.json"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ SYSTEM CATEGORIES ARCHITECTURE FULLY VERIFIED: Comprehensive testing of the new system categories architecture completed as per review request. TESTING SCENARIO COMPLETED: 1) Registered new user ✅ 2) Created 2 accounts ✅ 3) Created 3 user categories ✅ 4) Created 5-10 transactions with mix of system and user categories ✅ 5) Created 2 rules ✅ 6) Backup test - ZIP file created with correct structure, includes BOTH system and user categories ✅ 7) Modified data - deleted transactions, added category, added new transactions ✅ 8) Restore test - all original data restored, system categories NOT duplicated ✅ 9) Data consistency check - 0 orphaned categories ✅ 10) Analytics verification - category breakdown works correctly, no orphaned references ✅. CRITICAL ISSUE FIXED: Found and resolved duplicate system categories issue (legacy categories + new system_categories.json). Fixed duplicate 'Loan Returned Back' by renaming to specific names. System categories now loaded from fixed JSON file with consistent UUIDs across environments. Backup/restore works perfectly with new architecture."
+
 frontend:
   - task: "Forgot Password UI Integration"
     implemented: true
