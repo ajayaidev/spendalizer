@@ -757,6 +757,102 @@ const TransactionsPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Create Rule Dialog */}
+      <Dialog open={showCreateRuleDialog} onOpenChange={setShowCreateRuleDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Tag className="w-5 h-5" />
+              Create Rule for Auto-Categorization?
+            </DialogTitle>
+            <DialogDescription>
+              Want to automatically categorize similar transactions in the future?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+              <p className="text-sm font-medium text-blue-900">Transaction Details:</p>
+              <p className="text-sm text-blue-800 mt-1">
+                <span className="font-medium">Description:</span> {ruleTransaction?.description}
+              </p>
+              <p className="text-sm text-blue-800">
+                <span className="font-medium">Amount:</span> ₹{ruleTransaction?.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rule-pattern">Pattern to Match</Label>
+              <Input
+                id="rule-pattern"
+                value={ruleForm.pattern}
+                onChange={(e) => setRuleForm({ ...ruleForm, pattern: e.target.value })}
+                placeholder="e.g., ZOMATO, UPI-, SALARY"
+              />
+              <p className="text-xs text-muted-foreground">
+                Edit to match similar transactions (e.g., "ZOMATO" will match all Zomato orders)
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rule-match-type">Match Type</Label>
+              <Select 
+                value={ruleForm.match_type} 
+                onValueChange={(value) => setRuleForm({ ...ruleForm, match_type: value })}
+              >
+                <SelectTrigger id="rule-match-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CONTAINS">Contains</SelectItem>
+                  <SelectItem value="STARTS_WITH">Starts With</SelectItem>
+                  <SelectItem value="ENDS_WITH">Ends With</SelectItem>
+                  <SelectItem value="EXACT">Exact Match</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rule-priority">Priority (1-100)</Label>
+              <Input
+                id="rule-priority"
+                type="number"
+                min="1"
+                max="100"
+                value={ruleForm.priority}
+                onChange={(e) => setRuleForm({ ...ruleForm, priority: parseInt(e.target.value) || 10 })}
+              />
+              <p className="text-xs text-muted-foreground">
+                Higher priority rules are applied first
+              </p>
+            </div>
+
+            <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+              <p className="text-sm text-green-900">
+                ✓ Future transactions matching this pattern will be automatically categorized
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={handleSkipRuleCreation}
+                className="flex-1"
+              >
+                Skip
+              </Button>
+              <Button
+                onClick={handleCreateRule}
+                className="flex-1"
+              >
+                <Tag className="w-4 h-4 mr-2" />
+                Create Rule
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
