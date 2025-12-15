@@ -1346,7 +1346,7 @@ async def create_rule(rule_data: RuleCreate, user_id: str = Depends(get_current_
     return rule
 
 @api_router.put("/rules/{rule_id}")
-async def update_rule(rule_id: str, rule_data: CategoryRuleCreate, user_id: str = Depends(get_current_user)):
+async def update_rule(rule_id: str, rule_data: RuleCreate, user_id: str = Depends(get_current_user)):
     # Verify rule exists and belongs to user
     existing_rule = await db.category_rules.find_one({"id": rule_id, "user_id": user_id})
     if not existing_rule:
