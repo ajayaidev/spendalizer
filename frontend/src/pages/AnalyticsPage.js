@@ -19,6 +19,14 @@ const AnalyticsPage = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState({ from: null, to: null });
+  const [trendData, setTrendData] = useState([]);
+  const [visibleLines, setVisibleLines] = useState({
+    income: true,
+    expense: true,
+    net: true,
+    transfer_in: false,
+    transfer_out: false
+  });
 
   useEffect(() => {
     loadData();
