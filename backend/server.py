@@ -1447,8 +1447,39 @@ async def get_analytics_summary(
         if category:
             cat_type = category["type"]
             
-            # Handle all transfer types (legacy TRANSFER, TRANSFER_INTERNAL, TRANSFER_EXTERNAL)
-            if cat_type in ["TRANSFER", "TRANSFER_INTERNAL", "TRANSFER_EXTERNAL"]:
+            # Handle new explicit IN/OUT types
+            if cat_type in ["TRANSFER_INTERNAL_IN", "TRANSFER_EXTERNAL_IN"]:
+                # Explicit IN categories - only show in IN
+                incoming_total = sum(txn["amount"] for txn in transactions 
+                                   if txn.get("category_id") == cat_id)
+                incoming_count = len([txn for txn in transactions 
+                                    if txn.get("category_id") == cat_id])
+                
+                if incoming_count > 0:
+                    enriched_breakdown.append({
+                        "category_id": cat_id,
+                        "category_name": category["name"],
+                        "category_type": cat_type.replace("TRANSFER_", "TRANSFER_").replace("_IN", "_IN"),
+                        "total": incoming_total,
+                        "count": incoming_count
+                    })
+            elif cat_type in ["TRANSFER_INTERNAL_OUT", "TRANSFER_EXTERNAL_OUT"]:
+                # Explicit OUT categories - only show in OUT
+                outgoing_total = sum(txn["amount"] for txn in transactions 
+                                   if txn.get("category_id") == cat_id)
+                outgoing_count = len([txn for txn in transactions 
+                                    if txn.get("category_id") == cat_id])
+                
+                if outgoing_count > 0:
+                    enriched_breakdown.append({
+                        "category_id": cat_id,
+                        "category_name": category["name"],
+                        "category_type": cat_type.replace("TRANSFER_", "TRANSFER_").replace("_OUT", "_OUT"),
+                        "total": outgoing_total,
+                        "count": outgoing_count
+                    })
+            # Handle legacy transfer types (split by direction)
+            elif cat_type in ["TRANSFER", "TRANSFER_INTERNAL", "TRANSFER_EXTERNAL"]:
                 # Get incoming (CREDIT) transfers
                 incoming_total = sum(txn["amount"] for txn in transactions 
                                    if txn.get("category_id") == cat_id and txn["direction"] == "CREDIT")
