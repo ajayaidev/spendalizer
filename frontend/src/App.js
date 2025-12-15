@@ -11,6 +11,7 @@ import ImportPage from './pages/ImportPage';
 import TransactionsPage from './pages/TransactionsPage';
 import RulesPage from './pages/RulesPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import TrendReportPage from './pages/TrendReportPage';
 import CategoriesPage from './pages/CategoriesPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
