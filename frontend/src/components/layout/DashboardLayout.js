@@ -8,7 +8,8 @@ import {
   Receipt, 
   Tag,
   Sparkles, 
-  BarChart3, 
+  BarChart3,
+  TrendingUp,
   Settings,
   LogOut 
 } from 'lucide-react';
