@@ -27,10 +27,24 @@ const CategoriesPage = () => {
   const loadCategories = async () => {
     try {
       const response = await getCategories();
-      // Sort categories alphabetically by name
+      // Group and sort categories by type in specific order
+      const typeOrder = {
+        'INCOME': 1,
+        'EXPENSE': 2,
+        'TRANSFER_EXTERNAL': 3,
+        'TRANSFER_INTERNAL': 4,
+        'TRANSFER': 5  // Legacy
+      };
+      
       const sorted = response.data.sort((a, b) => {
+        // First sort by type order
+        const typeCompare = (typeOrder[a.type] || 999) - (typeOrder[b.type] || 999);
+        if (typeCompare !== 0) return typeCompare;
+        
+        // Then alphabetically by name within same type
         return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
       });
+      
       setCategories(sorted);
     } catch (error) {
       toast.error('Failed to load categories');
