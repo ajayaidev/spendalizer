@@ -37,7 +37,7 @@
   },
   {
     "id": "92481d97-3308-4be1-8d81-ce8f20953050",
-    "name": "Loan Returned Back",
+    "name": "Loan Repayment Received",
     "type": "INCOME",
     "is_system": true
   },
