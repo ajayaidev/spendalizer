@@ -591,7 +591,7 @@ const AnalyticsPage = () => {
                             </div>
                           </div>
                         ))}
-                        {transferInCategories.length > 5 && (
+                        {internalTransferInCategories.length > 5 && (
                           <div className="flex items-center gap-3">
                             <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(200, 30%, 70%)' }}></div>
                             <div className="flex-1 min-w-0">
@@ -599,7 +599,7 @@ const AnalyticsPage = () => {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-blue-900 text-sm">
-                                ₹{transferInCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                                ₹{internalTransferInCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -608,19 +608,20 @@ const AnalyticsPage = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
-                      <p className="text-sm">No incoming transfers</p>
+                      <p className="text-sm">No internal incoming transfers</p>
                     </div>
                   )}
                   </CardContent>
                 </Card>
 
-                {/* Outgoing Transfers Card */}
+                {/* Internal Transfers OUT Card */}
                 <Card className="border-purple-200">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-purple-700 text-lg">Outgoing Transfers</CardTitle>
-                    {transferOutCategories.length > 0 && (
+                    <CardTitle className="text-purple-700 text-lg">Internal Transfers OUT</CardTitle>
+                    <CardDescription className="text-xs text-purple-600">Bank-to-bank, doesn't affect net worth</CardDescription>
+                    {internalTransferOutCategories.length > 0 && (
                       <CardDescription className="text-2xl font-bold text-purple-900 mt-2">
-                        ₹{transferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                        ₹{internalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                       </CardDescription>
                     )}
                   </CardHeader>
