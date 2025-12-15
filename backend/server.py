@@ -1103,6 +1103,11 @@ async def import_transactions(
                 parsed_txns = parse_hdfc_bank_excel(file_content)
             else:
                 parsed_txns = parse_hdfc_bank_csv(file_content)
+        elif data_source in ["SBI_BANK", "SBI_CC"]:
+            if is_excel:
+                parsed_txns = parse_generic_excel(file_content, data_source)
+            else:
+                parsed_txns = parse_sbi_csv(file_content)
         else:
             if is_excel:
                 parsed_txns = parse_generic_excel(file_content, data_source)
