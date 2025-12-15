@@ -14,6 +14,8 @@ const RulesPage = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingRuleId, setEditingRuleId] = useState(null);
   const [formData, setFormData] = useState({
     pattern: '',
     match_type: 'CONTAINS',
