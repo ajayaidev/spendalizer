@@ -275,74 +275,78 @@ const AnalyticsPage = () => {
         </Card>
       </div>
 
-      {/* Charts */}
+      {/* Top Income and Expense Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Income vs Expense Bar Chart */}
-        <Card data-testid="income-expense-chart">
+        {/* Top Income Categories */}
+        <Card data-testid="top-income-card">
           <CardHeader>
-            <CardTitle>Income vs Expense</CardTitle>
-            <CardDescription>Overall comparison</CardDescription>
+            <CardTitle>Top Income Sources</CardTitle>
+            <CardDescription>Your main income categories</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={overviewData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '0.5rem'
-                  }}
-                />
-                <Bar dataKey="value" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {summary?.income_by_category && summary.income_by_category.length > 0 ? (
+              <div className="space-y-4">
+                {summary.income_by_category.slice(0, 5).map((cat, index) => (
+                  <div key={cat.category_name || 'uncategorized'} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div 
+                        className="w-2 h-12 rounded-full" 
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{cat.category_name || 'Uncategorized'}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {((cat.total / (summary.total_income || 1)) * 100).toFixed(1)}% of income
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-green-600">₹{cat.total.toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-[240px] text-muted-foreground">
+                <p>No income data available</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Expense Breakdown Pie Chart */}
-        <Card data-testid="expense-breakdown-chart">
+        {/* Top Expense Categories */}
+        <Card data-testid="top-expense-card">
           <CardHeader>
             <CardTitle>Top Expense Categories</CardTitle>
             <CardDescription>Where your money goes</CardDescription>
           </CardHeader>
           <CardContent>
-            {pieData.length === 0 ? (
-              <div className="flex items-center justify-center h-[300px] text-muted-foreground">
-                <p>No expense data available</p>
+            {summary?.expense_by_category && summary.expense_by_category.length > 0 ? (
+              <div className="space-y-4">
+                {summary.expense_by_category.slice(0, 5).map((cat, index) => (
+                  <div key={cat.category_name || 'uncategorized'} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div 
+                        className="w-2 h-12 rounded-full" 
+                        style={{ backgroundColor: cat.category_name === 'Uncategorized' ? UNCATEGORIZED_COLOR : COLORS[index % COLORS.length] }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{cat.category_name || 'Uncategorized'}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {((cat.total / (summary.total_expense || 1)) * 100).toFixed(1)}% of expenses
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-red-600">₹{cat.total.toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.name === 'Uncategorized' ? UNCATEGORIZED_COLOR : COLORS[index % COLORS.length]} 
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '0.5rem'
-                    }}
-                    formatter={(value) => `₹${value.toLocaleString()}`}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="flex items-center justify-center h-[240px] text-muted-foreground">
+                <p>No expense data available</p>
+              </div>
             )}
           </CardContent>
         </Card>
