@@ -63,24 +63,74 @@ const DashboardLayout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2" data-testid="sidebar-nav">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                data-testid={`nav-link-${item.label.toLowerCase()}`}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-200 ${isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-secondary text-foreground'
-                  }`
-                }
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
-              </NavLink>
-            ))}
+          <nav className="flex-1 p-4 space-y-1" data-testid="sidebar-nav">
+            {navItems.map((item) => {
+              if (item.submenu) {
+                const isExpanded = expandedMenus.has(item.key);
+                const isAnySubmenuActive = item.submenu.some(sub => location.pathname === sub.to);
+                
+                return (
+                  <div key={item.key}>
+                    <button
+                      onClick={() => toggleMenu(item.key)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-200 ${
+                        isAnySubmenuActive
+                          ? 'bg-primary/10 text-primary'
+                          : 'hover:bg-secondary text-foreground'
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span className="font-medium flex-1 text-left">{item.label}</span>
+                      {isExpanded ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      )}
+                    </button>
+                    {isExpanded && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {item.submenu.map((subItem) => (
+                          <NavLink
+                            key={subItem.to}
+                            to={subItem.to}
+                            data-testid={`nav-link-${subItem.label.toLowerCase().replace(' ', '-')}`}
+                            className={({ isActive }) =>
+                              `flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 text-sm ${
+                                isActive
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'hover:bg-secondary text-foreground'
+                              }`
+                            }
+                          >
+                            <subItem.icon className="w-4 h-4" />
+                            <span className="font-medium">{subItem.label}</span>
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === '/'}
+                  data-testid={`nav-link-${item.label.toLowerCase()}`}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-secondary text-foreground'
+                    }`
+                  }
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </NavLink>
+              );
+            })}
           </nav>
 
           {/* User Info */}
