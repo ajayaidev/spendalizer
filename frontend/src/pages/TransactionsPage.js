@@ -590,11 +590,13 @@ const TransactionsPage = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="INCOME">Income</SelectItem>
-                  <SelectItem value="EXPENSE">Expense</SelectItem>
-                  <SelectItem value="TRANSFER_EXTERNAL">External Transfer (Investments, Loans)</SelectItem>
-                  <SelectItem value="TRANSFER_INTERNAL">Internal Transfer (Bank-to-Bank)</SelectItem>
-                  <SelectItem value="TRANSFER">Transfer (Legacy)</SelectItem>
+                  <SelectItem value="INCOME">1. Income</SelectItem>
+                  <SelectItem value="EXPENSE">2. Expense</SelectItem>
+                  <SelectItem value="TRANSFER_EXTERNAL_IN">3. External Transfer IN (Investment Returns)</SelectItem>
+                  <SelectItem value="TRANSFER_EXTERNAL_OUT">4. External Transfer OUT (Investments, Loans)</SelectItem>
+                  <SelectItem value="TRANSFER_INTERNAL_IN">5. Internal Transfer IN (Bank Deposits)</SelectItem>
+                  <SelectItem value="TRANSFER_INTERNAL_OUT">6. Internal Transfer OUT (Bank Withdrawals)</SelectItem>
+                  <SelectItem value="TRANSFER">7. Transfer (Legacy)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
