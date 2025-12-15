@@ -188,7 +188,7 @@ const RulesPage = () => {
             onChange={handleImport}
             className="hidden"
           />
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
             <DialogTrigger asChild>
               <Button data-testid="add-rule-button">
                 <Plus className="w-4 h-4 mr-2" />
@@ -197,8 +197,10 @@ const RulesPage = () => {
             </DialogTrigger>
             <DialogContent data-testid="add-rule-dialog">
             <DialogHeader>
-              <DialogTitle>Create New Rule</DialogTitle>
-              <DialogDescription>Define a pattern to automatically categorize transactions</DialogDescription>
+              <DialogTitle>{editMode ? 'Edit Rule' : 'Create New Rule'}</DialogTitle>
+              <DialogDescription>
+                {editMode ? 'Update the pattern to automatically categorize transactions' : 'Define a pattern to automatically categorize transactions'}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
