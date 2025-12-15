@@ -626,16 +626,16 @@ const AnalyticsPage = () => {
                     )}
                   </CardHeader>
                   <CardContent>
-                  {transferOutCategories.length > 0 ? (
+                  {internalTransferOutCategories.length > 0 ? (
                     <div className="space-y-4">
-                      {/* Outgoing Transfer Pie Chart */}
+                      {/* Internal Outgoing Transfer Pie Chart */}
                       <div className="flex justify-center">
                         <ResponsiveContainer width="100%" height={200}>
                           <PieChart>
                             <Pie
                               data={(() => {
-                                const topTransfer = transferOutCategories.slice(0, 5);
-                                const othersTransfer = transferOutCategories.slice(5);
+                                const topTransfer = internalTransferOutCategories.slice(0, 5);
+                                const othersTransfer = internalTransferOutCategories.slice(5);
                                 const pieData = topTransfer.map(cat => ({
                                   name: cat.category_name,
                                   value: cat.total
