@@ -1,24 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import '@/App.css';
 import { Toaster } from 'sonner';
 
-// Pages
-import AuthPage from './pages/AuthPage';
-import DashboardPage from './pages/DashboardPage';
-import AccountsPage from './pages/AccountsPage';
-import ImportPage from './pages/ImportPage';
-import TransactionsPage from './pages/TransactionsPage';
-import RulesPage from './pages/RulesPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import TrendReportPage from './pages/TrendReportPage';
-import CategoriesPage from './pages/CategoriesPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import SettingsPage from './pages/SettingsPage';
-
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
+
+// Lazy load pages for better performance
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const AccountsPage = lazy(() => import('./pages/AccountsPage'));
+const ImportPage = lazy(() => import('./pages/ImportPage'));
+const TransactionsPage = lazy(() => import('./pages/TransactionsPage'));
+const RulesPage = lazy(() => import('./pages/RulesPage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const TrendReportPage = lazy(() => import('./pages/TrendReportPage'));
+const CategoriesPage = lazy(() => import('./pages/CategoriesPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="text-lg">Loading...</div>
+  </div>
+);
 
 // Context
 export const AuthContext = React.createContext();
