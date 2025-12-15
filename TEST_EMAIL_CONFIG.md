@@ -28,15 +28,15 @@ EMAIL_FROM="your-email@gmail.com"        # Same as EMAIL_USER
 
 ## ✅ Testing on Emergent (Current Preview)
 
-**URL:** https://finance-ai-29.preview.emergentagent.com
+**URL:** https://budget-wise-11.preview.emergentagent.com
 
 1. Update `backend/.env` with your SMTP credentials (see above)
 2. Wait ~10 seconds for backend to auto-reload
 3. Test:
-   - Go to: https://finance-ai-29.preview.emergentagent.com/forgot-password
+   - Go to: https://budget-wise-11.preview.emergentagent.com/forgot-password
    - Enter a registered email
    - Check your inbox
-   - Reset link will use: `https://finance-ai-29.preview.emergentagent.com/reset-password?token=...`
+   - Reset link will use: `https://budget-wise-11.preview.emergentagent.com/reset-password?token=...`
 
 ---
 
@@ -64,7 +64,7 @@ EMAIL_FROM="your-email@gmail.com"        # Same as EMAIL_USER
 
 The backend automatically detects the environment:
 
-- **Request from Emergent** → Uses `https://finance-ai-29.preview.emergentagent.com`
+- **Request from Emergent** → Uses `https://budget-wise-11.preview.emergentagent.com`
 - **Request from Localhost** → Uses `http://localhost:3000`
 - **Fallback** → Uses `FRONTEND_URL` from `.env`
 
@@ -78,7 +78,7 @@ Test the endpoint without SMTP configured:
 
 ```bash
 # On Emergent
-curl -X POST "https://finance-ai-29.preview.emergentagent.com/api/auth/forgot-password" \
+curl -X POST "https://budget-wise-11.preview.emergentagent.com/api/auth/forgot-password" \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com"}'
 

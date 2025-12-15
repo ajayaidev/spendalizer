@@ -9,7 +9,7 @@ from datetime import datetime
 from collections import Counter
 
 def investigate_duplicates():
-    base_url = "https://finance-ai-29.preview.emergentagent.com"
+    base_url = "https://budget-wise-11.preview.emergentagent.com"
     
     # Register a new user
     test_user_data = {
