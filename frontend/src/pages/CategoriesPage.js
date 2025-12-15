@@ -206,25 +206,23 @@ const CategoriesPage = () => {
 
       {/* Category Groups */}
       <div className="space-y-8">
-        {Object.entries(groupedCategories).map(([type, cats]) => (
-          <Card key={type}>
+        {groupedCategories.map((group) => (
+          <Card key={group.key}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Tag className="w-5 h-5" />
-                {type === 'INCOME' ? 'Income Categories' : 
-                 type === 'EXPENSE' ? 'Expense Categories' : 
-                 'Transfer Categories'}
+                {group.title}
               </CardTitle>
               <CardDescription>
-                {cats.length} {cats.length === 1 ? 'category' : 'categories'}
+                {group.categories.length} {group.categories.length === 1 ? 'category' : 'categories'}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {cats.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4">No custom categories yet</p>
+              {group.categories.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4">No categories yet</p>
               ) : (
                 <div className="space-y-2">
-                  {cats.map((category) => (
+                  {group.categories.map((category) => (
                     <div
                       key={category.id}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-secondary transition-colors"
