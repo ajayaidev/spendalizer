@@ -770,40 +770,6 @@ const AnalyticsPage = () => {
                   )}
                   </CardContent>
                 </Card>
-
-                {/* External Transfers (Investments) Card */}
-                <Card className="border-orange-200">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-orange-700 text-lg">External Transfers</CardTitle>
-                    <CardDescription className="text-xs text-orange-600">Investments, loans - affects net worth</CardDescription>
-                    {externalTransferOutCategories.length > 0 && (
-                      <CardDescription className="text-2xl font-bold text-orange-900 mt-2">
-                        ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                      </CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent>
-                  {externalTransferOutCategories.length > 0 ? (
-                    <div className="space-y-2">
-                      {externalTransferOutCategories.map((cat, index) => (
-                        <div key={index} className="flex items-center gap-3">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0 bg-orange-500"></div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-orange-900 text-sm truncate">{cat.category_name}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-orange-900 text-sm">₹{cat.total.toLocaleString()}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
-                      <p className="text-sm">No external transfers</p>
-                    </div>
-                  )}
-                  </CardContent>
-                </Card>
               </div>
     </div>
   );
