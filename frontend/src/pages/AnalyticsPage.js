@@ -655,10 +655,10 @@ const AnalyticsPage = () => {
                               paddingAngle={2}
                               dataKey="value"
                             >
-                              {transferOutCategories.slice(0, 5).map((_, index) => (
+                              {internalTransferOutCategories.slice(0, 5).map((_, index) => (
                                 <Cell key={`cell-${index}`} fill={`hsl(${270 + index * 20}, 70%, ${50 + index * 8}%)`} />
                               ))}
-                              {transferOutCategories.length > 5 && (
+                              {internalTransferOutCategories.length > 5 && (
                                 <Cell fill="hsl(270, 30%, 70%)" />
                               )}
                             </Pie>
@@ -667,9 +667,9 @@ const AnalyticsPage = () => {
                         </ResponsiveContainer>
                       </div>
                       
-                      {/* Top 5 Outgoing Transfer Categories */}
+                      {/* Top 5 Internal Outgoing Transfer Categories */}
                       <div className="space-y-2">
-                        {transferOutCategories.slice(0, 5).map((cat, index) => (
+                        {internalTransferOutCategories.slice(0, 5).map((cat, index) => (
                           <div key={index} className="flex items-center gap-3">
                             <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: `hsl(${270 + index * 20}, 70%, ${50 + index * 8}%)` }}></div>
                             <div className="flex-1 min-w-0">
@@ -680,7 +680,7 @@ const AnalyticsPage = () => {
                             </div>
                           </div>
                         ))}
-                        {transferOutCategories.length > 5 && (
+                        {internalTransferOutCategories.length > 5 && (
                           <div className="flex items-center gap-3">
                             <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(270, 30%, 70%)' }}></div>
                             <div className="flex-1 min-w-0">
@@ -688,7 +688,7 @@ const AnalyticsPage = () => {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-purple-900 text-sm">
-                                ₹{transferOutCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                                ₹{internalTransferOutCategories.slice(5).reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -697,7 +697,41 @@ const AnalyticsPage = () => {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
-                      <p className="text-sm">No outgoing transfers</p>
+                      <p className="text-sm">No internal outgoing transfers</p>
+                    </div>
+                  )}
+                  </CardContent>
+                </Card>
+
+                {/* External Transfers (Investments) Card */}
+                <Card className="border-orange-200">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-orange-700 text-lg">External Transfers</CardTitle>
+                    <CardDescription className="text-xs text-orange-600">Investments, loans - affects net worth</CardDescription>
+                    {externalTransferOutCategories.length > 0 && (
+                      <CardDescription className="text-2xl font-bold text-orange-900 mt-2">
+                        ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                  {externalTransferOutCategories.length > 0 ? (
+                    <div className="space-y-2">
+                      {externalTransferOutCategories.map((cat, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full flex-shrink-0 bg-orange-500"></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-orange-900 text-sm truncate">{cat.category_name}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-orange-900 text-sm">₹{cat.total.toLocaleString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground border border-dashed rounded-lg">
+                      <p className="text-sm">No external transfers</p>
                     </div>
                   )}
                   </CardContent>
