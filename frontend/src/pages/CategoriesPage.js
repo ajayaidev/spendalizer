@@ -169,7 +169,9 @@ const CategoriesPage = () => {
                   <SelectContent>
                     <SelectItem value="INCOME">Income</SelectItem>
                     <SelectItem value="EXPENSE">Expense</SelectItem>
-                    <SelectItem value="TRANSFER">Transfer</SelectItem>
+                    <SelectItem value="TRANSFER_EXTERNAL">External Transfer (Investments, Loans)</SelectItem>
+                    <SelectItem value="TRANSFER_INTERNAL">Internal Transfer (Bank-to-Bank)</SelectItem>
+                    <SelectItem value="TRANSFER">Transfer (Legacy)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
