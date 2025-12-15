@@ -686,6 +686,96 @@ def parse_hdfc_bank_csv(file_content: bytes) -> List[Dict[str, Any]]:
     
     return transactions
 
+def parse_sbi_csv(file_content: bytes) -> List[Dict[str, Any]]:
+    """Parse SBI Bank CSV format with multiple header rows"""
+    encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'iso-8859-1', 'cp1252', 'windows-1252']
+    
+    for encoding in encodings:
+        try:
+            # Read the entire file as text first
+            text_content = file_content.decode(encoding)
+            lines = text_content.split('\n')
+            
+            # Find the header row (contains "Txn Date")
+            header_line_idx = None
+            for idx, line in enumerate(lines):
+                if 'Txn Date' in line or 'txn date' in line.lower():
+                    header_line_idx = idx
+                    break
+            
+            if header_line_idx is None:
+                logging.warning("Could not find header row with 'Txn Date'")
+                continue
+            
+            # Create a CSV from header line onwards
+            csv_content = '\n'.join(lines[header_line_idx:])
+            df = pd.read_csv(io.StringIO(csv_content))
+            logging.info(f"Successfully parsed SBI CSV with {len(df)} rows using {encoding} encoding")
+            
+            transactions = []
+            
+            for _, row in df.iterrows():
+                try:
+                    # Skip empty rows
+                    if pd.isna(row.get('Txn Date')) or pd.isna(row.get('Description')):
+                        continue
+                    
+                    # Clean raw metadata
+                    raw_dict = row.to_dict()
+                    clean_metadata = {}
+                    for k, v in raw_dict.items():
+                        if pd.notna(v):
+                            clean_metadata[k] = v
+                        else:
+                            clean_metadata[k] = None
+                    
+                    # Parse date (format: DD-MMM-YY)
+                    date_str = str(row['Txn Date']).strip()
+                    date_obj = pd.to_datetime(date_str, format='%d-%b-%y')
+                    
+                    # Get description
+                    description = str(row['Description']).strip()
+                    
+                    # Determine amount and direction
+                    debit_col = [col for col in df.columns if 'debit' in col.lower()][0]
+                    credit_col = [col for col in df.columns if 'credit' in col.lower()][0]
+                    
+                    amount = 0.0
+                    direction = "DEBIT"
+                    
+                    if pd.notna(row[debit_col]):
+                        amount_str = str(row[debit_col]).replace(",", "").replace("INR", "").strip()
+                        if amount_str:
+                            amount = abs(float(amount_str))
+                            direction = "DEBIT"
+                    elif pd.notna(row[credit_col]):
+                        amount_str = str(row[credit_col]).replace(",", "").replace("INR", "").strip()
+                        if amount_str:
+                            amount = abs(float(amount_str))
+                            direction = "CREDIT"
+                    
+                    if amount > 0:
+                        txn = {
+                            "date": date_obj.strftime("%Y-%m-%d"),
+                            "description": description,
+                            "amount": amount,
+                            "direction": direction,
+                            "raw_metadata": clean_metadata
+                        }
+                        transactions.append(txn)
+                
+                except Exception as e:
+                    logging.error(f"Error parsing SBI row: {e}")
+                    continue
+            
+            return transactions
+            
+        except Exception as e:
+            logging.debug(f"Failed to parse SBI CSV with {encoding}: {e}")
+            continue
+    
+    raise ValueError("Could not parse SBI CSV file. Please ensure it's a valid SBI statement export.")
+
 def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, Any]]:
     # Try different encodings to handle various file formats
     encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'iso-8859-1', 'cp1252', 'windows-1252']
