@@ -1611,7 +1611,14 @@ async def get_spending_over_time(
     
     # Group transactions by date period
     from collections import defaultdict
-    grouped_data = defaultdict(lambda: {"income": 0, "expense": 0, "transfer_in": 0, "transfer_out": 0})
+    grouped_data = defaultdict(lambda: {
+        "income": 0, 
+        "expense": 0, 
+        "transfer_internal_in": 0, 
+        "transfer_internal_out": 0,
+        "transfer_external_in": 0,
+        "transfer_external_out": 0
+    })
     
     for txn in transactions:
         date_str = txn.get("date", "")
@@ -1631,25 +1638,28 @@ async def get_spending_over_time(
             continue
         
         amount = txn.get("amount", 0)
-        direction = txn.get("direction", "DEBIT")
         
-        # Get category type to determine if transfer
+        # Get category type
         category_id = txn.get("category_id")
-        is_transfer = False
+        category_type = None
         if category_id:
             category = await db.categories.find_one({"id": category_id})
-            if category and category.get("type") == "TRANSFER":
-                is_transfer = True
+            if category:
+                category_type = category.get("type")
         
-        if is_transfer:
-            if direction == "CREDIT":
-                grouped_data[period_key]["transfer_in"] += amount
-            else:
-                grouped_data[period_key]["transfer_out"] += amount
-        elif direction == "CREDIT":
+        # Map to appropriate category
+        if category_type == "INCOME":
             grouped_data[period_key]["income"] += amount
-        else:
+        elif category_type == "EXPENSE":
             grouped_data[period_key]["expense"] += amount
+        elif category_type == "TRANSFER_INTERNAL_IN":
+            grouped_data[period_key]["transfer_internal_in"] += amount
+        elif category_type == "TRANSFER_INTERNAL_OUT":
+            grouped_data[period_key]["transfer_internal_out"] += amount
+        elif category_type == "TRANSFER_EXTERNAL_IN":
+            grouped_data[period_key]["transfer_external_in"] += amount
+        elif category_type == "TRANSFER_EXTERNAL_OUT":
+            grouped_data[period_key]["transfer_external_out"] += amount
     
     # Convert to sorted list
     result = []
