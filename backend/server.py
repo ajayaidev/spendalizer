@@ -356,8 +356,11 @@ Return only valid JSON, no other text."""
                     category_name = parsed.get("category")
                     confidence = parsed.get("confidence", 0.5)
                     
-                    # Find category by name
-                    category = await db.categories.find_one({"name": category_name, "is_system": True})
+                    # Find category by name (system or user category)
+                    category = await db.categories.find_one({
+                        "name": category_name,
+                        "$or": [{"is_system": True}, {"user_id": user_id}]
+                    })
                     if category:
                         return {
                             "category_id": category["id"],
