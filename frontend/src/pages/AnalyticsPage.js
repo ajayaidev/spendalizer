@@ -414,24 +414,46 @@ const AnalyticsPage = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
-                  id="transfer-in-toggle"
-                  checked={visibleLines.transfer_in}
-                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_in: checked })}
+                  id="transfer-internal-in-toggle"
+                  checked={visibleLines.transfer_internal_in}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_internal_in: checked })}
                 />
-                <Label htmlFor="transfer-in-toggle" className="text-sm font-medium cursor-pointer">
+                <Label htmlFor="transfer-internal-in-toggle" className="text-sm font-medium cursor-pointer">
                   <span className="inline-block w-3 h-3 rounded-full bg-cyan-500 mr-1"></span>
-                  Transfer In
+                  Internal IN
                 </Label>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
-                  id="transfer-out-toggle"
-                  checked={visibleLines.transfer_out}
-                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_out: checked })}
+                  id="transfer-internal-out-toggle"
+                  checked={visibleLines.transfer_internal_out}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_internal_out: checked })}
                 />
-                <Label htmlFor="transfer-out-toggle" className="text-sm font-medium cursor-pointer">
+                <Label htmlFor="transfer-internal-out-toggle" className="text-sm font-medium cursor-pointer">
                   <span className="inline-block w-3 h-3 rounded-full bg-purple-500 mr-1"></span>
-                  Transfer Out
+                  Internal OUT
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="transfer-external-in-toggle"
+                  checked={visibleLines.transfer_external_in}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_external_in: checked })}
+                />
+                <Label htmlFor="transfer-external-in-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-teal-500 mr-1"></span>
+                  External IN
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="transfer-external-out-toggle"
+                  checked={visibleLines.transfer_external_out}
+                  onCheckedChange={(checked) => setVisibleLines({ ...visibleLines, transfer_external_out: checked })}
+                />
+                <Label htmlFor="transfer-external-out-toggle" className="text-sm font-medium cursor-pointer">
+                  <span className="inline-block w-3 h-3 rounded-full bg-orange-500 mr-1"></span>
+                  External OUT
                 </Label>
               </div>
             </div>
