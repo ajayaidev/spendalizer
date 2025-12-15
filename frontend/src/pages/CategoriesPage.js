@@ -105,10 +105,10 @@ const CategoriesPage = () => {
   const groupedCategories = [
     { key: 'INCOME', title: '1. Income', categories: categories.filter(c => c.type === 'INCOME') },
     { key: 'EXPENSE', title: '2. Expense', categories: categories.filter(c => c.type === 'EXPENSE') },
-    { key: 'TRANSFER_EXTERNAL_IN', title: '3. External Transfer IN', description: 'Incoming investments, returns', categories: [] },
-    { key: 'TRANSFER_EXTERNAL_OUT', title: '4. External Transfer OUT', description: 'Investments, loans given', categories: categories.filter(c => c.type === 'TRANSFER_EXTERNAL') },
-    { key: 'TRANSFER_INTERNAL_IN', title: '5. Internal Transfer IN', description: 'Bank-to-bank incoming', categories: [] },
-    { key: 'TRANSFER_INTERNAL_OUT', title: '6. Internal Transfer OUT', description: 'Bank-to-bank outgoing', categories: categories.filter(c => c.type === 'TRANSFER_INTERNAL') },
+    { key: 'TRANSFER_EXTERNAL_IN', title: '3. External Transfer IN', description: 'Incoming investments, returns', categories: categories.filter(c => c.type === 'TRANSFER_EXTERNAL_IN' || (c.type === 'TRANSFER_EXTERNAL' && c.direction === 'IN')) },
+    { key: 'TRANSFER_EXTERNAL_OUT', title: '4. External Transfer OUT', description: 'Investments, loans given', categories: categories.filter(c => c.type === 'TRANSFER_EXTERNAL_OUT' || (c.type === 'TRANSFER_EXTERNAL' && !c.direction)) },
+    { key: 'TRANSFER_INTERNAL_IN', title: '5. Internal Transfer IN', description: 'Bank-to-bank incoming', categories: categories.filter(c => c.type === 'TRANSFER_INTERNAL_IN' || (c.type === 'TRANSFER_INTERNAL' && c.direction === 'IN')) },
+    { key: 'TRANSFER_INTERNAL_OUT', title: '6. Internal Transfer OUT', description: 'Bank-to-bank outgoing', categories: categories.filter(c => c.type === 'TRANSFER_INTERNAL_OUT' || (c.type === 'TRANSFER_INTERNAL' && !c.direction)) },
     { key: 'TRANSFER', title: '7. Transfer (Legacy)', description: 'Older transfer categories', categories: categories.filter(c => c.type === 'TRANSFER') }
   ];
 
