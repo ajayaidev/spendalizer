@@ -24,22 +24,11 @@ const AnalyticsPage = () => {
   const loadData = async () => {
     try {
       const params = {};
-      const trendParams = { group_by: 'month' };
-      if (dateRange.from) {
-        params.start_date = format(dateRange.from, 'yyyy-MM-dd');
-        trendParams.start_date = format(dateRange.from, 'yyyy-MM-dd');
-      }
-      if (dateRange.to) {
-        params.end_date = format(dateRange.to, 'yyyy-MM-dd');
-        trendParams.end_date = format(dateRange.to, 'yyyy-MM-dd');
-      }
+      if (dateRange.from) params.start_date = format(dateRange.from, 'yyyy-MM-dd');
+      if (dateRange.to) params.end_date = format(dateRange.to, 'yyyy-MM-dd');
       
-      const [summaryRes, trendRes] = await Promise.all([
-        getAnalyticsSummary(params),
-        getSpendingOverTime(trendParams)
-      ]);
-      setSummary(summaryRes.data);
-      setTrendData(trendRes.data);
+      const response = await getAnalyticsSummary(params);
+      setSummary(response.data);
     } catch (error) {
       toast.error('Failed to load analytics');
     } finally {
