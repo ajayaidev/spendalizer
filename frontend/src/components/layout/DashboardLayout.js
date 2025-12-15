@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../App';
 import { 
   LayoutDashboard, 
@@ -11,12 +11,26 @@ import {
   BarChart3,
   TrendingUp,
   Settings,
-  LogOut 
+  LogOut,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
 const DashboardLayout = () => {
   const { user, logout } = useContext(AuthContext);
+  const location = useLocation();
+  const [expandedMenus, setExpandedMenus] = useState(new Set(['analytics']));
+
+  const toggleMenu = (key) => {
+    const newExpanded = new Set(expandedMenus);
+    if (newExpanded.has(key)) {
+      newExpanded.delete(key);
+    } else {
+      newExpanded.add(key);
+    }
+    setExpandedMenus(newExpanded);
+  };
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,8 +39,15 @@ const DashboardLayout = () => {
     { to: '/transactions', label: 'Transactions', icon: Receipt },
     { to: '/categories', label: 'Categories', icon: Tag },
     { to: '/rules', label: 'Rules', icon: Sparkles },
-    { to: '/analytics', label: 'Analytics', icon: BarChart3 },
-    { to: '/trend-report', label: 'Trend Report', icon: TrendingUp },
+    { 
+      key: 'analytics',
+      label: 'Analytics', 
+      icon: BarChart3,
+      submenu: [
+        { to: '/analytics', label: 'Overview', icon: BarChart3 },
+        { to: '/trend-report', label: 'Trend Report', icon: TrendingUp },
+      ]
+    },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
