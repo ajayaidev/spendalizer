@@ -301,14 +301,24 @@ const RulesPage = () => {
                       Auto-categorize as: <span className="font-semibold">{getCategoryName(rule.category_id)}</span>
                     </CardDescription>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDelete(rule.id)}
-                    data-testid={`delete-rule-${rule.id}`}
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(rule)}
+                      data-testid={`edit-rule-${rule.id}`}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(rule.id)}
+                      data-testid={`delete-rule-${rule.id}`}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
             </Card>
