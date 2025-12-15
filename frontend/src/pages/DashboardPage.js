@@ -761,4 +761,4 @@ const DashboardPage = () => {
   );
 };
 
-export default AnalyticsPage;
+export default DashboardPage;
