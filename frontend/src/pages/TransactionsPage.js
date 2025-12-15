@@ -32,6 +32,11 @@ const TransactionsPage = () => {
   const [showNewCategoryDialog, setShowNewCategoryDialog] = useState(false);
   const [newCategoryForm, setNewCategoryForm] = useState({ name: '', type: 'EXPENSE' });
   
+  // Create rule after categorization states
+  const [showCreateRuleDialog, setShowCreateRuleDialog] = useState(false);
+  const [ruleTransaction, setRuleTransaction] = useState(null);
+  const [ruleForm, setRuleForm] = useState({ pattern: '', match_type: 'CONTAINS', priority: 10 });
+  
   // Bulk categorization states
   const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [showBulkDialog, setShowBulkDialog] = useState(false);
