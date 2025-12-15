@@ -1772,6 +1772,99 @@ async def get_spending_over_time(
     
     return result
 
+@api_router.get("/analytics/category-trends")
+async def get_category_trends(
+    user_id: str = Depends(get_current_user),
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    group_by: str = "month"
+):
+    """Get spending trends broken down by individual categories"""
+    query = {"user_id": user_id}
+    if start_date:
+        query["date"] = {"$gte": start_date}
+    if end_date:
+        query.setdefault("date", {})["$lte"] = end_date
+    
+    transactions = await db.transactions.find(query, {"_id": 0}).to_list(10000)
+    categories = await db.categories.find(
+        {"$or": [{"is_system": True}, {"user_id": user_id}]},
+        {"_id": 0}
+    ).to_list(1000)
+    
+    # Create category lookup
+    category_map = {cat["id"]: cat for cat in categories}
+    
+    # Group by period and category
+    from collections import defaultdict
+    period_category_data = defaultdict(lambda: defaultdict(float))
+    category_totals = defaultdict(float)
+    
+    for txn in transactions:
+        date_str = txn.get("date", "")
+        if not date_str:
+            continue
+        
+        try:
+            date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            if group_by == "month":
+                period_key = date_obj.strftime("%Y-%m")
+            elif group_by == "week":
+                period_key = date_obj.strftime("%Y-W%U")
+            else:
+                period_key = date_obj.strftime("%Y-%m-%d")
+        except:
+            continue
+        
+        category_id = txn.get("category_id")
+        amount = txn.get("amount", 0)
+        
+        if category_id and category_id in category_map:
+            period_category_data[period_key][category_id] += amount
+            category_totals[category_id] += amount
+    
+    # Build result structure
+    result = {
+        "periods": sorted(period_category_data.keys()),
+        "categories": [],
+        "data": {}
+    }
+    
+    # Group categories by type
+    category_groups = {
+        "INCOME": [],
+        "EXPENSE": [],
+        "TRANSFER_INTERNAL_IN": [],
+        "TRANSFER_INTERNAL_OUT": [],
+        "TRANSFER_EXTERNAL_IN": [],
+        "TRANSFER_EXTERNAL_OUT": []
+    }
+    
+    for cat_id, category in category_map.items():
+        if category_totals.get(cat_id, 0) > 0:
+            cat_type = category.get("type", "")
+            if cat_type in category_groups:
+                category_groups[cat_type].append({
+                    "id": cat_id,
+                    "name": category["name"],
+                    "type": cat_type,
+                    "total": round(category_totals[cat_id], 2)
+                })
+    
+    # Add to result
+    for group_type, cats in category_groups.items():
+        if cats:
+            result["categories"].extend(sorted(cats, key=lambda x: x["name"]))
+    
+    # Add period data for each category
+    for period in result["periods"]:
+        result["data"][period] = {}
+        for cat_id in category_totals.keys():
+            if category_totals[cat_id] > 0:
+                result["data"][period][cat_id] = round(period_category_data[period].get(cat_id, 0), 2)
+    
+    return result
+
 # Import History
 @api_router.get("/imports", response_model=List[ImportBatch])
 async def get_import_history(user_id: str = Depends(get_current_user)):
