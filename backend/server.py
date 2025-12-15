@@ -1445,8 +1445,10 @@ async def get_analytics_summary(
             "$or": [{"is_system": True}, {"user_id": user_id}]
         })
         if category:
-            # For transfers, split by direction
-            if category["type"] == "TRANSFER":
+            cat_type = category["type"]
+            
+            # Handle all transfer types (legacy TRANSFER, TRANSFER_INTERNAL, TRANSFER_EXTERNAL)
+            if cat_type in ["TRANSFER", "TRANSFER_INTERNAL", "TRANSFER_EXTERNAL"]:
                 # Get incoming (CREDIT) transfers
                 incoming_total = sum(txn["amount"] for txn in transactions 
                                    if txn.get("category_id") == cat_id and txn["direction"] == "CREDIT")
@@ -1459,11 +1461,22 @@ async def get_analytics_summary(
                 outgoing_count = sum(1 for txn in transactions 
                                    if txn.get("category_id") == cat_id and txn["direction"] == "DEBIT")
                 
+                # Determine the final type for display
+                if cat_type == "TRANSFER_INTERNAL":
+                    display_type_in = "TRANSFER_INTERNAL_IN"
+                    display_type_out = "TRANSFER_INTERNAL_OUT"
+                elif cat_type == "TRANSFER_EXTERNAL":
+                    display_type_in = "TRANSFER_EXTERNAL_IN"
+                    display_type_out = "TRANSFER_EXTERNAL_OUT"
+                else:  # Legacy TRANSFER
+                    display_type_in = "TRANSFER_IN"
+                    display_type_out = "TRANSFER_OUT"
+                
                 if incoming_count > 0:
                     enriched_breakdown.append({
                         "category_id": cat_id,
                         "category_name": category["name"],
-                        "category_type": "TRANSFER_IN",
+                        "category_type": display_type_in,
                         "total": incoming_total,
                         "count": incoming_count
                     })
@@ -1472,7 +1485,7 @@ async def get_analytics_summary(
                     enriched_breakdown.append({
                         "category_id": cat_id,
                         "category_name": category["name"],
-                        "category_type": "TRANSFER_OUT",
+                        "category_type": display_type_out,
                         "total": outgoing_total,
                         "count": outgoing_count
                     })
