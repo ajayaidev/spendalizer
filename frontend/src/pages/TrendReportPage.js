@@ -249,7 +249,7 @@ const TrendReportPage = () => {
           {chartData.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <TrendingUp className="w-16 h-16 mx-auto mb-4 opacity-30" />
-              <p>Select categories from the table below to view their trends</p>
+              <p>Select category groups or individual categories from the table below to view trends</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={400}>
@@ -259,14 +259,32 @@ const TrendReportPage = () => {
                 <YAxis tickFormatter={(value) => `₹${value.toLocaleString()}`} />
                 <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
                 <Legend />
+                {/* Render selected group trends */}
+                {Array.from(selectedGroups).map((groupKey, index) => {
+                  const groups = groupCategories();
+                  const group = groups.find(g => g.key === groupKey);
+                  return (
+                    <Line
+                      key={`group_${groupKey}`}
+                      type="monotone"
+                      dataKey={`group_${groupKey}`}
+                      stroke={COLORS[index % COLORS.length]}
+                      strokeWidth={3}
+                      name={group?.title || groupKey}
+                      strokeDasharray="5 5"
+                    />
+                  );
+                })}
+                {/* Render selected individual category trends */}
                 {Array.from(selectedCategories).map((catId, index) => {
                   const category = trendData.categories.find(c => c.id === catId);
+                  const colorIndex = (index + selectedGroups.size) % COLORS.length;
                   return (
                     <Line
                       key={catId}
                       type="monotone"
                       dataKey={catId}
-                      stroke={COLORS[index % COLORS.length]}
+                      stroke={COLORS[colorIndex]}
                       strokeWidth={2}
                       name={category?.name || 'Unknown'}
                     />
