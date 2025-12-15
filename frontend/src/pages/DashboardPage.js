@@ -337,11 +337,17 @@ const DashboardPage = () => {
                 {visibleLines.net && (
                   <Line type="monotone" dataKey="net" stroke="hsl(221, 83%, 53%)" strokeWidth={2} name="Net" />
                 )}
-                {visibleLines.transfer_in && (
-                  <Line type="monotone" dataKey="transfer_in" stroke="hsl(189, 85%, 44%)" strokeWidth={2} name="Transfer In" />
+                {visibleLines.transfer_internal_in && (
+                  <Line type="monotone" dataKey="transfer_internal_in" stroke="hsl(189, 85%, 44%)" strokeWidth={2} name="Internal IN" />
                 )}
-                {visibleLines.transfer_out && (
-                  <Line type="monotone" dataKey="transfer_out" stroke="hsl(271, 76%, 53%)" strokeWidth={2} name="Transfer Out" />
+                {visibleLines.transfer_internal_out && (
+                  <Line type="monotone" dataKey="transfer_internal_out" stroke="hsl(271, 76%, 53%)" strokeWidth={2} name="Internal OUT" />
+                )}
+                {visibleLines.transfer_external_in && (
+                  <Line type="monotone" dataKey="transfer_external_in" stroke="hsl(180, 62%, 45%)" strokeWidth={2} name="External IN" />
+                )}
+                {visibleLines.transfer_external_out && (
+                  <Line type="monotone" dataKey="transfer_external_out" stroke="hsl(25, 95%, 53%)" strokeWidth={2} name="External OUT" />
                 )}
               </LineChart>
             </ResponsiveContainer>
