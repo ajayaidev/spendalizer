@@ -84,9 +84,23 @@ const TransactionsPage = () => {
     try {
       await updateTransactionCategory(editingTxn.id, newCategory);
       toast.success('Category updated successfully!');
+      
+      // Store transaction info for rule creation prompt
+      const txn = editingTxn;
+      const selectedCategoryId = newCategory;
+      
       setEditingTxn(null);
       setNewCategory('_none');
-      loadData();
+      await loadData();
+      
+      // Prompt user to create a rule
+      setRuleTransaction({ ...txn, category_id: selectedCategoryId });
+      setRuleForm({ 
+        pattern: txn.description || '', 
+        match_type: 'CONTAINS', 
+        priority: 10 
+      });
+      setShowCreateRuleDialog(true);
     } catch (error) {
       toast.error('Failed to update category');
     }
