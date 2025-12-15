@@ -666,30 +666,84 @@ const TransactionsPage = () => {
                       />
                       <CommandList>
                         <CommandEmpty>No category found.</CommandEmpty>
-                        <CommandGroup>
-                          {categories
-                            .filter((cat) =>
-                              cat.name.toLowerCase().includes(bulkCategorySearch.toLowerCase())
-                            )
-                            .map((category) => (
-                              <CommandItem
-                                key={category.id}
-                                value={category.id}
-                                onSelect={() => {
-                                  setBulkCategory(category.id);
-                                  setBulkComboOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    bulkCategory === category.id ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {category.name}
-                              </CommandItem>
-                            ))}
-                        </CommandGroup>
+                        
+                        {/* Income Categories */}
+                        {categories.filter(c => c.type === 'INCOME' && c.name.toLowerCase().includes(bulkCategorySearch.toLowerCase())).length > 0 && (
+                          <CommandGroup heading="Income">
+                            {categories
+                              .filter(c => c.type === 'INCOME' && c.name.toLowerCase().includes(bulkCategorySearch.toLowerCase()))
+                              .map((category) => (
+                                <CommandItem
+                                  key={category.id}
+                                  value={category.id}
+                                  onSelect={() => {
+                                    setBulkCategory(category.id);
+                                    setBulkComboOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      bulkCategory === category.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {category.name}
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                        )}
+                        
+                        {/* Expense Categories */}
+                        {categories.filter(c => c.type === 'EXPENSE' && c.name.toLowerCase().includes(bulkCategorySearch.toLowerCase())).length > 0 && (
+                          <CommandGroup heading="Expense">
+                            {categories
+                              .filter(c => c.type === 'EXPENSE' && c.name.toLowerCase().includes(bulkCategorySearch.toLowerCase()))
+                              .map((category) => (
+                                <CommandItem
+                                  key={category.id}
+                                  value={category.id}
+                                  onSelect={() => {
+                                    setBulkCategory(category.id);
+                                    setBulkComboOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      bulkCategory === category.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {category.name}
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                        )}
+                        
+                        {/* Transfer Categories */}
+                        {categories.filter(c => c.type?.startsWith('TRANSFER') && c.name.toLowerCase().includes(bulkCategorySearch.toLowerCase())).length > 0 && (
+                          <CommandGroup heading="Transfers">
+                            {categories
+                              .filter(c => c.type?.startsWith('TRANSFER') && c.name.toLowerCase().includes(bulkCategorySearch.toLowerCase()))
+                              .map((category) => (
+                                <CommandItem
+                                  key={category.id}
+                                  value={category.id}
+                                  onSelect={() => {
+                                    setBulkCategory(category.id);
+                                    setBulkComboOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      bulkCategory === category.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {category.name} ({category.type.replace('TRANSFER_', '').replace('_', ' ')})
+                                </CommandItem>
+                              ))}
+                          </CommandGroup>
+                        )}
                       </CommandList>
                     </Command>
                   </PopoverContent>
