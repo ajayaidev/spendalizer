@@ -24,8 +24,10 @@ const AnalyticsPage = () => {
     income: true,
     expense: true,
     net: true,
-    transfer_in: false,
-    transfer_out: false
+    transfer_internal_in: false,
+    transfer_internal_out: false,
+    transfer_external_in: false,
+    transfer_external_out: false
   });
 
   useEffect(() => {
