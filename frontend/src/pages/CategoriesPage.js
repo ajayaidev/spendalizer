@@ -101,16 +101,16 @@ const CategoriesPage = () => {
     }
   };
 
-  // Group categories in specific order
+  // Group categories in specific order (always show all 7 groups)
   const groupedCategories = [
-    { key: 'INCOME', title: 'Income Categories', categories: categories.filter(c => c.type === 'INCOME') },
-    { key: 'EXPENSE', title: 'Expense Categories', categories: categories.filter(c => c.type === 'EXPENSE') },
-    { key: 'TRANSFER_EXTERNAL_OUT', title: 'External Transfer OUT (Investments, Loans)', categories: categories.filter(c => c.type === 'TRANSFER_EXTERNAL') },
-    { key: 'TRANSFER_EXTERNAL_IN', title: 'External Transfer IN (Returns)', categories: [] }, // Placeholder for symmetry
-    { key: 'TRANSFER_INTERNAL_OUT', title: 'Internal Transfer OUT (Bank-to-Bank)', categories: categories.filter(c => c.type === 'TRANSFER_INTERNAL') },
-    { key: 'TRANSFER_INTERNAL_IN', title: 'Internal Transfer IN (Bank-to-Bank)', categories: [] }, // Placeholder for symmetry
-    { key: 'TRANSFER', title: 'Transfer Categories (Legacy)', categories: categories.filter(c => c.type === 'TRANSFER') }
-  ].filter(group => group.categories.length > 0); // Only show groups with categories
+    { key: 'INCOME', title: '1. Income', categories: categories.filter(c => c.type === 'INCOME') },
+    { key: 'EXPENSE', title: '2. Expense', categories: categories.filter(c => c.type === 'EXPENSE') },
+    { key: 'TRANSFER_EXTERNAL_IN', title: '3. External Transfer IN', description: 'Incoming investments, returns', categories: [] },
+    { key: 'TRANSFER_EXTERNAL_OUT', title: '4. External Transfer OUT', description: 'Investments, loans given', categories: categories.filter(c => c.type === 'TRANSFER_EXTERNAL') },
+    { key: 'TRANSFER_INTERNAL_IN', title: '5. Internal Transfer IN', description: 'Bank-to-bank incoming', categories: [] },
+    { key: 'TRANSFER_INTERNAL_OUT', title: '6. Internal Transfer OUT', description: 'Bank-to-bank outgoing', categories: categories.filter(c => c.type === 'TRANSFER_INTERNAL') },
+    { key: 'TRANSFER', title: '7. Transfer (Legacy)', description: 'Older transfer categories', categories: categories.filter(c => c.type === 'TRANSFER') }
+  ];
 
   const parentCategories = categories.filter(c => !c.parent_category_id);
 
