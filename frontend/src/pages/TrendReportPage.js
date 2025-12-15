@@ -240,9 +240,9 @@ const TrendReportPage = () => {
         <CardHeader>
           <CardTitle>Category Trends</CardTitle>
           <CardDescription>
-            {selectedCategories.size === 0
-              ? 'Select categories from the table below to view trends'
-              : `Showing ${selectedCategories.size} categor${selectedCategories.size === 1 ? 'y' : 'ies'}`}
+            {selectedCategories.size === 0 && selectedGroups.size === 0
+              ? 'Select category groups or individual categories from the table below to view trends'
+              : `Showing ${selectedGroups.size} group${selectedGroups.size === 1 ? '' : 's'} and ${selectedCategories.size} categor${selectedCategories.size === 1 ? 'y' : 'ies'}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
