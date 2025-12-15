@@ -510,8 +510,14 @@ def parse_hdfc_bank_excel(file_content: bytes) -> List[Dict[str, Any]]:
 def parse_generic_excel(file_content: bytes, data_source: str) -> List[Dict[str, Any]]:
     """Parse generic Excel file"""
     try:
-        df = pd.read_excel(io.BytesIO(file_content))
-        logging.info(f"Successfully parsed Excel file with {len(df)} rows")
+        # Try openpyxl engine first (for .xlsx files)
+        try:
+            df = pd.read_excel(io.BytesIO(file_content), engine='openpyxl')
+            logging.info(f"Successfully parsed Excel file with openpyxl engine: {len(df)} rows")
+        except Exception:
+            # Fall back to xlrd for older .xls files
+            df = pd.read_excel(io.BytesIO(file_content), engine='xlrd')
+            logging.info(f"Successfully parsed Excel file with xlrd engine: {len(df)} rows")
     except Exception as e:
         logging.error(f"Failed to parse Excel file: {e}")
         raise ValueError(f"Could not parse Excel file: {str(e)}")
