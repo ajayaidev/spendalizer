@@ -35,6 +35,7 @@ const TrendReportPage = () => {
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState(new Set());
+  const [selectedGroups, setSelectedGroups] = useState(new Set());
   const [expandedGroups, setExpandedGroups] = useState(new Set());
 
   useEffect(() => {
