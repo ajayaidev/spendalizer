@@ -76,12 +76,22 @@ const AnalyticsPage = () => {
     (cat) => cat.category_type === 'INCOME'
   ) || [];
 
-  const transferInCategories = summary?.category_breakdown?.filter(
-    (cat) => cat.category_type === 'TRANSFER_IN'
+  // Internal Transfers (bank-to-bank, doesn't affect net worth)
+  const internalTransferInCategories = summary?.category_breakdown?.filter(
+    (cat) => cat.category_type === 'TRANSFER_INTERNAL_IN' || cat.category_type === 'TRANSFER_IN'
   ) || [];
 
-  const transferOutCategories = summary?.category_breakdown?.filter(
-    (cat) => cat.category_type === 'TRANSFER_OUT'
+  const internalTransferOutCategories = summary?.category_breakdown?.filter(
+    (cat) => cat.category_type === 'TRANSFER_INTERNAL_OUT' || cat.category_type === 'TRANSFER_OUT'
+  ) || [];
+
+  // External Transfers (investments, loans, affects net worth)
+  const externalTransferInCategories = summary?.category_breakdown?.filter(
+    (cat) => cat.category_type === 'TRANSFER_EXTERNAL_IN'
+  ) || [];
+
+  const externalTransferOutCategories = summary?.category_breakdown?.filter(
+    (cat) => cat.category_type === 'TRANSFER_EXTERNAL_OUT'
   ) || [];
 
   const uncategorizedData = summary?.category_breakdown?.find(
