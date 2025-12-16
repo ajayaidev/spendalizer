@@ -273,14 +273,19 @@ const DashboardPage = () => {
         </Card>
 
         {/* OUTFLOW Column */}
-        <Card className="border-l-4 border-l-red-500">
-          <CardHeader className="pb-4">
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30">
             <div className="flex items-center justify-between">
               <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+                  <CardDescription className="text-xs uppercase tracking-wide">Money Out</CardDescription>
+                </div>
                 <CardTitle className="text-2xl">Total Outflow</CardTitle>
-                <CardDescription>Money going out</CardDescription>
               </div>
-              <TrendingDown className="w-8 h-8 text-red-600" />
+              <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50">
+                <TrendingDown className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
