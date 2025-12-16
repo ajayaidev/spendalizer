@@ -279,13 +279,13 @@ const SettingsPage = () => {
               <div className="flex-1">
                 <h3 className="font-semibold text-destructive mb-1">Delete Data</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Selectively delete transactions, categories, rules, accounts, or import history. This action cannot be undone. Always backup first!
+                  Selectively delete data or perform a complete reset. Choose what to delete and start fresh with data from your source files.
                 </p>
                 <ul className="text-sm text-muted-foreground space-y-1 mb-4">
-                  <li>• All transactions will be deleted</li>
-                  <li>• Import history will be removed</li>
-                  <li>• Analytics data will be cleared</li>
-                  <li>• Categories and rules will be preserved</li>
+                  <li>• Transactions and import history</li>
+                  <li>• Custom categories (your own categories)</li>
+                  <li>• System categories (for complete database flush)</li>
+                  <li>• Categorization rules and accounts</li>
                 </ul>
               </div>
             </div>
