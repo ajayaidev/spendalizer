@@ -10,15 +10,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-pink-600 to-purple-700 text-white shadow-md hover:from-pink-700 hover:to-purple-800 hover:shadow-lg",
+          "bg-gradient-to-r from-violet-600 to-purple-800 text-white shadow-md hover:from-violet-700 hover:to-purple-900 hover:shadow-lg",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border-2 border-purple-600 text-purple-700 shadow-sm hover:bg-gradient-to-r hover:from-pink-600 hover:to-purple-700 hover:text-white hover:border-transparent",
+          "border-2 border-violet-600 text-violet-700 shadow-sm hover:bg-gradient-to-r hover:from-violet-600 hover:to-purple-800 hover:text-white hover:border-transparent",
         secondary:
-          "bg-gradient-to-r from-pink-200 to-purple-200 text-purple-800 shadow-sm hover:from-pink-300 hover:to-purple-300",
-        ghost: "hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 hover:text-purple-700",
-        link: "text-purple-600 underline-offset-4 hover:underline hover:text-pink-500",
+          "bg-gradient-to-r from-violet-200 to-purple-200 text-purple-900 shadow-sm hover:from-violet-300 hover:to-purple-300",
+        ghost: "hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-100 hover:text-purple-800",
+        link: "text-violet-700 underline-offset-4 hover:underline hover:text-purple-800",
       },
       size: {
         default: "h-9 px-4 py-2",
