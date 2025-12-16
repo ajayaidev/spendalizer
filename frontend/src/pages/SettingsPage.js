@@ -276,10 +276,9 @@ const SettingsPage = () => {
           <div className="p-4 rounded-lg border-2 border-destructive/20 bg-destructive/5">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-destructive mb-1">Delete All Transactions</h3>
+                <h3 className="font-semibold text-destructive mb-1">Delete Data</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Permanently delete all your transactions, import history, and related data. 
-                  This action cannot be undone.
+                  Selectively delete transactions, categories, rules, accounts, or import history. This action cannot be undone. Always backup first!
                 </p>
                 <ul className="text-sm text-muted-foreground space-y-1 mb-4">
                   <li>• All transactions will be deleted</li>
