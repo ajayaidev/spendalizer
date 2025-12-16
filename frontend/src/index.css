@@ -21,30 +21,31 @@ h1, h2, h3, h4, h5, h6 {
 
 @layer base {
     :root {
-        --background: 210 40% 98%;
-        --foreground: 222 47% 11%;
+        /* Purple & Pink Theme - Based on AI icon colors */
+        --background: 225 100% 97%;
+        --foreground: 270 50% 15%;
         --card: 0 0% 100%;
-        --card-foreground: 222 47% 11%;
+        --card-foreground: 270 50% 15%;
         --popover: 0 0% 100%;
-        --popover-foreground: 222 47% 11%;
-        --primary: 221 83% 53%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222 47% 11%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222 47% 11%;
+        --popover-foreground: 270 50% 15%;
+        --primary: 270 76% 53%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 330 100% 95%;
+        --secondary-foreground: 270 76% 40%;
+        --muted: 270 30% 96%;
+        --muted-foreground: 270 20% 45%;
+        --accent: 330 100% 71%;
+        --accent-foreground: 0 0% 100%;
         --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 221 83% 53%;
-        --chart-1: 221 83% 53%;
-        --chart-2: 142 76% 36%;
-        --chart-3: 35 92% 55%;
-        --chart-4: 262 83% 58%;
-        --chart-5: 346 87% 43%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 270 30% 90%;
+        --input: 270 30% 90%;
+        --ring: 270 76% 53%;
+        --chart-1: 270 76% 53%;
+        --chart-2: 330 100% 71%;
+        --chart-3: 290 70% 60%;
+        --chart-4: 310 80% 65%;
+        --chart-5: 250 70% 60%;
         --radius: 0.5rem;
     }
     .dark {
