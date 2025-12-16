@@ -213,9 +213,10 @@ class ModularBackendTester:
             print(f"   Created category ID: {created_category_id}")
             results.append(True)
             
-            # UPDATE category (if endpoint exists)
+            # UPDATE category - need to include type field
             update_data = {
-                "name": "Updated Modular Category"
+                "name": "Updated Modular Category",
+                "type": "EXPENSE"
             }
             
             success, response = self.run_test(
