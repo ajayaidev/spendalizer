@@ -297,6 +297,77 @@ class ModularBackendTester:
         
         return all(results)
 
+    def test_transactions_endpoints(self):
+        """Test transaction-related endpoints"""
+        results = []
+        
+        # Test get transactions
+        success, response = self.run_test(
+            "Get Transactions",
+            "GET",
+            "transactions",
+            200
+        )
+        
+        if success:
+            transactions = response.get('transactions', [])
+            total = response.get('total', 0)
+            print(f"   Found {len(transactions)} transactions (total: {total})")
+            results.append(True)
+        else:
+            results.append(False)
+        
+        # Test import history
+        success, response = self.run_test(
+            "Import History",
+            "GET",
+            "import-history",
+            200
+        )
+        
+        if success:
+            print(f"   Found {len(response)} import batches")
+            results.append(True)
+        else:
+            results.append(False)
+        
+        return all(results)
+
+    def test_rules_endpoints(self):
+        """Test rules endpoints"""
+        results = []
+        
+        # Test get rules
+        success, response = self.run_test(
+            "Get Rules",
+            "GET",
+            "rules",
+            200
+        )
+        
+        if success:
+            print(f"   Found {len(response)} rules")
+            results.append(True)
+            
+            # Test rules export
+            success, export_response = self.run_test(
+                "Export Rules",
+                "GET",
+                "rules/export",
+                200
+            )
+            
+            if success:
+                print(f"   Exported {len(export_response)} rules")
+                results.append(True)
+            else:
+                results.append(False)
+        else:
+            results.append(False)
+            results.append(False)
+        
+        return all(results)
+
     def test_auth_endpoints(self):
         """Test additional auth endpoints"""
         results = []
