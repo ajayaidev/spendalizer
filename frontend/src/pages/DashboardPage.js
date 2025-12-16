@@ -187,8 +187,8 @@ const DashboardPage = () => {
         </Card>
       )}
 
-      {/* Financial Flow Overview - Two Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Financial Flow Overview - Three Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* INFLOW Column */}
         <Card className="border-l-4 border-l-green-500">
           <CardHeader className="pb-4">
