@@ -28,14 +28,16 @@ const COLORS = [
 ];
 
 const TrendReportPage = () => {
+  // Default to "Last Month" date range
   const [dateRange, setDateRange] = useState({
-    from: startOfMonth(subMonths(new Date(), 11)),
-    to: endOfMonth(new Date())
+    from: startOfMonth(subMonths(new Date(), 1)),
+    to: endOfMonth(subMonths(new Date(), 1))
   });
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState(new Set());
-  const [selectedGroups, setSelectedGroups] = useState(new Set());
+  // Default to Income and Expenses groups selected
+  const [selectedGroups, setSelectedGroups] = useState(new Set(['INCOME', 'EXPENSE']));
   const [expandedGroups, setExpandedGroups] = useState(new Set());
 
   useEffect(() => {
