@@ -351,15 +351,7 @@ const DashboardPage = () => {
               : 'from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30'
           }`}>
             <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className={`w-2 h-2 rounded-full ${
-                    (summary?.net_savings || 0) >= 0 ? 'bg-blue-600' : 'bg-orange-600'
-                  } animate-pulse`}></div>
-                  <CardDescription className="text-xs uppercase tracking-wide">Balance</CardDescription>
-                </div>
-                <CardTitle className="text-2xl">Net Savings</CardTitle>
-              </div>
+              <CardTitle className="text-2xl">Net Savings</CardTitle>
               <div className={`p-2 rounded-lg ${
                 (summary?.net_savings || 0) >= 0 
                   ? 'bg-blue-100 dark:bg-blue-900/50' 
