@@ -180,10 +180,13 @@ const SettingsPage = () => {
                 </p>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• All transactions and import history</li>
-                  <li>• Custom categories and rules</li>
+                  <li>• All categories (system + custom) and rules</li>
                   <li>• Account information</li>
                   <li>• Backup file: SpendAlizer-{'{domain}'}-{'{timestamp}'}.zip</li>
                 </ul>
+                <p className="text-xs text-muted-foreground mt-2 italic">
+                  System categories are included to ensure complete data integrity and proper transaction references.
+                </p>
               </div>
             </div>
             <Button
