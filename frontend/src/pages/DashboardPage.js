@@ -188,10 +188,10 @@ const DashboardPage = () => {
       )}
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card data-testid="total-income-card">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card data-testid="total-inflow-card">
           <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Total Income</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wide">Total Inflow</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
@@ -203,9 +203,9 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        <Card data-testid="total-expense-card">
+        <Card data-testid="total-outflow-card">
           <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Total Expense</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wide">Total Outflow</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
@@ -229,6 +229,96 @@ const DashboardPage = () => {
                 ₹{summary?.net_savings?.toLocaleString() || '0'}
               </div>
               <PieChartIcon className="w-8 h-8 text-primary" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Inflow Breakdown - Minimized */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="bg-green-50 dark:bg-green-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Income</p>
+                <p className="text-xl font-bold text-green-600">
+                  ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                </p>
+              </div>
+              <TrendingUp className="w-6 h-6 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-cyan-50 dark:bg-cyan-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">External IN</p>
+                <p className="text-xl font-bold text-cyan-600">
+                  ₹{externalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                </p>
+              </div>
+              <TrendingUp className="w-6 h-6 text-cyan-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-teal-50 dark:bg-teal-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Internal IN</p>
+                <p className="text-xl font-bold text-teal-600">
+                  ₹{internalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                </p>
+              </div>
+              <TrendingUp className="w-6 h-6 text-teal-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Outflow Breakdown - Minimized */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Card className="bg-red-50 dark:bg-red-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Expenses</p>
+                <p className="text-xl font-bold text-red-600">
+                  ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                </p>
+              </div>
+              <TrendingDown className="w-6 h-6 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-orange-50 dark:bg-orange-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">External OUT</p>
+                <p className="text-xl font-bold text-orange-600">
+                  ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                </p>
+              </div>
+              <TrendingDown className="w-6 h-6 text-orange-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-purple-50 dark:bg-purple-950/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Internal OUT</p>
+                <p className="text-xl font-bold text-purple-600">
+                  ₹{internalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                </p>
+              </div>
+              <TrendingDown className="w-6 h-6 text-purple-600" />
             </div>
           </CardContent>
         </Card>
