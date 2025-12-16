@@ -298,7 +298,7 @@ const SettingsPage = () => {
               data-testid="delete-all-button"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete All Transactions
+              Delete Data
             </Button>
           </div>
         </CardContent>
