@@ -2116,15 +2116,29 @@ async def restore_database(file: UploadFile = File(...), user_id: str = Depends(
             "import_batches": 0
         }
         
-        # Restore categories (only user categories, system categories already exist with same IDs)
+        # Restore categories
+        # Both system and user categories are restored to ensure complete data integrity
+        # System categories from backup ensure transaction references remain valid
         if categories_data:
             for cat in categories_data:
-                if not cat.get("is_system"):
+                if cat.get("is_system"):
+                    # System category: check if it exists, update if found, insert if not
+                    existing = await db.categories.find_one({"id": cat["id"], "is_system": True})
+                    if existing:
+                        # Update existing system category with backup version
+                        await db.categories.update_one(
+                            {"id": cat["id"], "is_system": True},
+                            {"$set": {"name": cat["name"], "type": cat["type"]}}
+                        )
+                    else:
+                        # Insert missing system category
+                        await db.categories.insert_one(cat)
+                    restored_counts["categories"] += 1
+                else:
                     # User category: restore with same ID
                     cat["user_id"] = user_id
                     await db.categories.insert_one(cat)
                     restored_counts["categories"] += 1
-                # System categories are skipped - they already exist with same IDs
         
         # Restore transactions (no mapping needed - category IDs are consistent)
         if transactions_data:
