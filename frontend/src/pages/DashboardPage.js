@@ -190,10 +190,10 @@ const DashboardPage = () => {
       {/* Financial Flow Overview - Three Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* INFLOW Column */}
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30">
+        <Card>
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl">Total Inflow</CardTitle>
+              <CardTitle className="text-2xl text-green-600 dark:text-green-400">Total Inflow</CardTitle>
               <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50">
                 <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
