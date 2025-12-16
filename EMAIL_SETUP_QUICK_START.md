@@ -58,8 +58,8 @@ FRONTEND_URL="http://localhost:3000"
 
 The backend now **automatically detects** which environment you're using:
 
-1. **On Emergent Preview** (`https://money-insight-28.preview.emergentagent.com`):
-   - Email reset links will use: `https://money-insight-28.preview.emergentagent.com/reset-password?token=...`
+1. **On Emergent Preview** (`https://spendalizer.preview.emergentagent.com`):
+   - Email reset links will use: `https://spendalizer.preview.emergentagent.com/reset-password?token=...`
    - Works automatically via request origin detection
 
 2. **On Localhost** (`http://localhost:3000`):
@@ -74,7 +74,7 @@ The backend now **automatically detects** which environment you're using:
 
 ### On Emergent (Current Environment):
 
-1. Navigate to: https://money-insight-28.preview.emergentagent.com/forgot-password
+1. Navigate to: https://spendalizer.preview.emergentagent.com/forgot-password
 2. Enter a registered email address
 3. Check your email inbox for the reset link
 4. Click the link and reset your password

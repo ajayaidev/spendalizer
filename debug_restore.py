@@ -12,7 +12,7 @@ import zipfile
 from io import BytesIO
 
 def debug_categories_issue():
-    base_url = "https://money-insight-28.preview.emergentagent.com"
+    base_url = "https://spendalizer.preview.emergentagent.com"
     
     # Register a new user
     test_user_data = {

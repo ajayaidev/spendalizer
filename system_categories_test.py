@@ -13,7 +13,7 @@ import zipfile
 from io import BytesIO
 
 class SystemCategoriesBackupRestoreTest:
-    def __init__(self, base_url="https://money-insight-28.preview.emergentagent.com"):
+    def __init__(self, base_url="https://spendalizer.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
