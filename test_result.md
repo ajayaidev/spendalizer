@@ -363,3 +363,18 @@ agent_communication:
     message: "Trend Report UI changes implemented. Need testing to verify: 1) Last Month filter button visible 2) Default to Last Month date range 3) Income and Expenses groups pre-selected. Test credentials: testuser@example.com / Test12345!"
   - agent: "testing"
     message: "✅ TREND REPORT FILTER TESTING COMPLETE: Successfully verified all requested changes for the Trend Report page. RESULTS: 1) 'Last Month' button is visible and positioned first in the date filter row 2) Default date range correctly shows last month (Nov 01 - Nov 30, 2025) 3) Income and Expense groups are pre-selected by default (showing 2 groups selected) 4) Chart displays properly with appropriate empty state 5) All UI elements are functional and responsive. All requirements from the review request have been successfully implemented and tested. The feature is production-ready."
+
+  - task: "Delete Data - System Categories Option"
+    implemented: true
+    working: "pending"
+    file: "/app/frontend/src/pages/SettingsPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🎯 IMPLEMENTED: Enhanced Delete Data feature with system categories option. Changes: 1) Added 'delete_system_categories' option to frontend state 2) Added nested checkbox UI - 'Include System Categories' appears under 'Custom Categories' and is only enabled when Custom Categories is checked 3) Updated backend schema (DeleteAllTransactionsRequest) to include delete_system_categories field 4) Updated backend settings.py to delete system categories when requested 5) Updated UI description text. Testing needed: a) Verify new checkbox appears b) Checkbox disabled when Custom Categories unchecked c) Backend properly deletes system categories d) System categories reload on next app start."
+
+  - agent: "main"
+    message: "Delete Data enhancement implemented. New feature allows complete database flush including system categories. Test credentials: testuser@example.com / Test12345!"
