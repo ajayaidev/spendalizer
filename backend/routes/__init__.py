@@ -6,3 +6,13 @@ from routes.transactions import router as transactions_router
 from routes.rules import router as rules_router
 from routes.analytics import router as analytics_router
 from routes.settings import router as settings_router
+
+__all__ = [
+    'auth_router',
+    'accounts_router',
+    'categories_router',
+    'transactions_router',
+    'rules_router',
+    'analytics_router',
+    'settings_router'
+]
