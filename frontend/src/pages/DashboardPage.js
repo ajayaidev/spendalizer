@@ -193,13 +193,7 @@ const DashboardPage = () => {
         <Card className="overflow-hidden">
           <CardHeader className="pb-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30">
             <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse"></div>
-                  <CardDescription className="text-xs uppercase tracking-wide">Money In</CardDescription>
-                </div>
-                <CardTitle className="text-2xl">Total Inflow</CardTitle>
-              </div>
+              <CardTitle className="text-2xl">Total Inflow</CardTitle>
               <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50">
                 <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
