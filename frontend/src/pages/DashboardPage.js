@@ -356,16 +356,33 @@ const DashboardPage = () => {
         </Card>
 
         {/* NET SAVINGS Column */}
-        <Card className={`border-l-4 ${
-          (summary?.net_savings || 0) >= 0 ? 'border-l-blue-500' : 'border-l-red-500'
-        }`}>
-          <CardHeader className="pb-4">
+        <Card className="overflow-hidden">
+          <CardHeader className={`pb-4 bg-gradient-to-br ${
+            (summary?.net_savings || 0) >= 0 
+              ? 'from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30'
+              : 'from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30'
+          }`}>
             <div className="flex items-center justify-between">
               <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className={`w-2 h-2 rounded-full ${
+                    (summary?.net_savings || 0) >= 0 ? 'bg-blue-600' : 'bg-orange-600'
+                  } animate-pulse`}></div>
+                  <CardDescription className="text-xs uppercase tracking-wide">Balance</CardDescription>
+                </div>
                 <CardTitle className="text-2xl">Net Savings</CardTitle>
-                <CardDescription>Financial balance</CardDescription>
               </div>
-              <PieChartIcon className="w-8 h-8 text-primary" />
+              <div className={`p-2 rounded-lg ${
+                (summary?.net_savings || 0) >= 0 
+                  ? 'bg-blue-100 dark:bg-blue-900/50' 
+                  : 'bg-orange-100 dark:bg-orange-900/50'
+              }`}>
+                <PieChartIcon className={`w-6 h-6 ${
+                  (summary?.net_savings || 0) >= 0 
+                    ? 'text-blue-600 dark:text-blue-400' 
+                    : 'text-orange-600 dark:text-orange-400'
+                }`} />
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
