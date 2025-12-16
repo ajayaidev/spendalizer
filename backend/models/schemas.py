@@ -40,6 +40,7 @@ class DeleteAllTransactionsRequest(BaseModel):
     confirmation_text: str
     delete_transactions: bool = True
     delete_categories: bool = False
+    delete_system_categories: bool = False
     delete_rules: bool = False
     delete_accounts: bool = False
     delete_imports: bool = False
