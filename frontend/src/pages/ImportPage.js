@@ -96,8 +96,10 @@ const ImportPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Import Form */}
-        <Card className="lg:col-span-2" data-testid="import-form-card">
+        {/* Left Column - Form and Categorization Info */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Import Form */}
+          <Card data-testid="import-form-card">
           <CardHeader>
             <CardTitle>Upload Statement</CardTitle>
             <CardDescription>Select your account, data source, and file to import</CardDescription>
