@@ -1883,33 +1883,63 @@ async def get_import_history(user_id: str = Depends(get_current_user)):
     ).sort("imported_at", -1).limit(50).to_list(50)
     return batches
 
-# Delete All Transactions (Danger Zone)
+# Delete User Data (Selective - Danger Zone)
 @api_router.post("/transactions/delete-all")
 async def delete_all_transactions(
     request: DeleteAllTransactionsRequest,
     user_id: str = Depends(get_current_user)
 ):
-    # Verify confirmation text FIRST - regardless of transaction count
+    # Verify confirmation text FIRST
     if request.confirmation_text.strip().upper() != "DELETE ALL":
         raise HTTPException(status_code=400, detail="Confirmation text does not match. Please type 'DELETE ALL'")
     
-    # Count transactions before deletion
-    count = await db.transactions.count_documents({"user_id": user_id})
+    # Check if at least one option is selected
+    if not any([request.delete_transactions, request.delete_categories, request.delete_rules, 
+                request.delete_accounts, request.delete_imports]):
+        raise HTTPException(status_code=400, detail="Please select at least one data type to delete")
     
-    if count == 0:
-        return {"message": "No transactions to delete", "deleted_count": 0}
+    deletion_results = {
+        "transactions": 0,
+        "categories": 0,
+        "rules": 0,
+        "accounts": 0,
+        "import_batches": 0
+    }
     
-    # Delete all transactions for this user
-    result = await db.transactions.delete_many({"user_id": user_id})
+    # Delete selected data types
+    if request.delete_transactions:
+        result = await db.transactions.delete_many({"user_id": user_id})
+        deletion_results["transactions"] = result.deleted_count
+        logging.warning(f"User {user_id} deleted {result.deleted_count} transactions")
     
-    # Also delete import batches
-    await db.import_batches.delete_many({"user_id": user_id})
+    if request.delete_categories:
+        # Only delete user categories, not system categories
+        result = await db.categories.delete_many({"user_id": user_id})
+        deletion_results["categories"] = result.deleted_count
+        logging.warning(f"User {user_id} deleted {result.deleted_count} custom categories")
     
-    logging.warning(f"User {user_id} deleted all {result.deleted_count} transactions")
+    if request.delete_rules:
+        result = await db.category_rules.delete_many({"user_id": user_id})
+        deletion_results["rules"] = result.deleted_count
+        logging.warning(f"User {user_id} deleted {result.deleted_count} rules")
+    
+    if request.delete_accounts:
+        result = await db.accounts.delete_many({"user_id": user_id})
+        deletion_results["accounts"] = result.deleted_count
+        logging.warning(f"User {user_id} deleted {result.deleted_count} accounts")
+    
+    if request.delete_imports:
+        result = await db.import_batches.delete_many({"user_id": user_id})
+        deletion_results["import_batches"] = result.deleted_count
+        logging.warning(f"User {user_id} deleted {result.deleted_count} import batches")
+    
+    # Build response message
+    deleted_items = [f"{count} {name}" for name, count in deletion_results.items() if count > 0]
+    message = f"Successfully deleted: {', '.join(deleted_items)}"
     
     return {
-        "message": f"Successfully deleted all transactions",
-        "deleted_count": result.deleted_count
+        "message": message,
+        "deletion_results": deletion_results
     }
 
 # Debug endpoint to check data consistency
