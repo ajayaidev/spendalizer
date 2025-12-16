@@ -249,7 +249,6 @@ const SettingsPage = () => {
             <Button
               onClick={() => setRestoreDialogOpen(true)}
               variant="outline"
-              className="border-amber-300 hover:bg-amber-50"
               data-testid="restore-button"
             >
               <Upload className="w-4 h-4 mr-2" />
