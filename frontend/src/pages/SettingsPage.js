@@ -414,7 +414,6 @@ const SettingsPage = () => {
       <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
         if (!open) {
           setDeleteDialogOpen(false);
-          setStep(1);
           setConfirmationText('');
         }
       }}>
@@ -422,193 +421,61 @@ const SettingsPage = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="w-5 h-5" />
-              {step === 1 ? 'Confirm Deletion' : 'Final Confirmation'}
+              Final Confirmation
             </DialogTitle>
             <DialogDescription>
-              {step === 1 
-                ? 'This action cannot be undone. Are you absolutely sure?'
-                : 'Type DELETE ALL to confirm this permanent action'
-              }
+              Type DELETE ALL to confirm this permanent action
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
-            {step === 1 ? (
-              <>
-                <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm font-medium text-destructive mb-3">⚠️ Select data to delete:</p>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        id="delete-transactions"
-                        checked={deleteOptions.delete_transactions}
-                        onCheckedChange={(checked) => 
-                          setDeleteOptions({...deleteOptions, delete_transactions: checked})
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="delete-transactions" className="cursor-pointer font-medium">
-                          Transactions
-                        </Label>
-                        <p className="text-xs text-muted-foreground">All transaction records</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        id="delete-categories"
-                        checked={deleteOptions.delete_categories}
-                        onCheckedChange={(checked) => 
-                          setDeleteOptions({
-                            ...deleteOptions, 
-                            delete_categories: checked,
-                            // Uncheck system categories if categories is unchecked
-                            delete_system_categories: checked ? deleteOptions.delete_system_categories : false
-                          })
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="delete-categories" className="cursor-pointer font-medium">
-                          Custom Categories
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Your custom categories only</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-2 ml-6">
-                      <Checkbox
-                        id="delete-system-categories"
-                        checked={deleteOptions.delete_system_categories}
-                        disabled={!deleteOptions.delete_categories}
-                        onCheckedChange={(checked) => 
-                          setDeleteOptions({...deleteOptions, delete_system_categories: checked})
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label 
-                          htmlFor="delete-system-categories" 
-                          className={`cursor-pointer font-medium ${!deleteOptions.delete_categories ? 'text-muted-foreground' : 'text-destructive'}`}
-                        >
-                          + Include System Categories
-                        </Label>
-                        <p className="text-xs text-muted-foreground">
-                          ⚠️ Also delete built-in system categories (they will be reloaded on next app start)
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        id="delete-rules"
-                        checked={deleteOptions.delete_rules}
-                        onCheckedChange={(checked) => 
-                          setDeleteOptions({...deleteOptions, delete_rules: checked})
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="delete-rules" className="cursor-pointer font-medium">
-                          Categorization Rules
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Auto-categorization rules</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        id="delete-accounts"
-                        checked={deleteOptions.delete_accounts}
-                        onCheckedChange={(checked) => 
-                          setDeleteOptions({...deleteOptions, delete_accounts: checked})
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="delete-accounts" className="cursor-pointer font-medium">
-                          Accounts
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Bank accounts and credit cards</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-2">
-                      <Checkbox
-                        id="delete-imports"
-                        checked={deleteOptions.delete_imports}
-                        onCheckedChange={(checked) => 
-                          setDeleteOptions({...deleteOptions, delete_imports: checked})
-                        }
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="delete-imports" className="cursor-pointer font-medium">
-                          Import History
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Record of file imports</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-4 pt-3 border-t border-destructive/20">
-                    <p className="text-xs text-destructive font-medium">
-                      ⚠️ This action cannot be undone. Make sure you have a backup!
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setDeleteDialogOpen(false)}
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => setStep(2)}
-                    className="flex-1"
-                    data-testid="proceed-button"
-                    disabled={!Object.values(deleteOptions).some(val => val)}
-                  >
-                    I Understand, Proceed
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmation">
-                    Type <code className="px-2 py-1 rounded bg-muted font-mono text-sm">DELETE ALL</code> to confirm
-                  </Label>
-                  <Input
-                    id="confirmation"
-                    value={confirmationText}
-                    onChange={(e) => setConfirmationText(e.target.value)}
-                    placeholder="Type DELETE ALL"
-                    data-testid="confirmation-input"
-                    className="font-mono"
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setStep(1);
-                      setConfirmationText('');
-                    }}
-                    className="flex-1"
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeleteAll}
-                    disabled={confirmationText.trim().toUpperCase() !== 'DELETE ALL' || loading}
-                    className="flex-1"
-                    data-testid="final-delete-button"
-                  >
-                    {loading ? 'Deleting...' : 'Delete Selected Data'}
-                  </Button>
-                </div>
-              </>
-            )}
+            {/* Summary of what will be deleted */}
+            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+              <p className="text-sm font-medium text-destructive mb-2">⚠️ You are about to delete:</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                {deleteOptions.delete_transactions && <li>• All transactions</li>}
+                {deleteOptions.delete_imports && <li>• Import history</li>}
+                {deleteOptions.delete_categories && <li>• Custom categories</li>}
+                {deleteOptions.delete_system_categories && <li>• System categories (will reload on app start)</li>}
+                {deleteOptions.delete_rules && <li>• Categorization rules</li>}
+                {deleteOptions.delete_accounts && <li>• Accounts</li>}
+              </ul>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="confirmation">
+                Type <code className="px-2 py-1 rounded bg-muted font-mono text-sm">DELETE ALL</code> to confirm
+              </Label>
+              <Input
+                id="confirmation"
+                value={confirmationText}
+                onChange={(e) => setConfirmationText(e.target.value)}
+                placeholder="Type DELETE ALL"
+                data-testid="confirmation-input"
+                className="font-mono"
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDeleteDialogOpen(false);
+                  setConfirmationText('');
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteAll}
+                disabled={confirmationText.trim().toUpperCase() !== 'DELETE ALL' || loading}
+                className="flex-1"
+                data-testid="final-delete-button"
+              >
+                {loading ? 'Deleting...' : 'Delete Selected Data'}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
