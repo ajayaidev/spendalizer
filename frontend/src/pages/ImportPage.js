@@ -186,7 +186,7 @@ const ImportPage = () => {
               <CardTitle className="text-blue-900 dark:text-blue-100">How Categorization Works</CardTitle>
             </div>
             <CardDescription className="text-blue-700 dark:text-blue-300">
-              Understanding automatic transaction categorization
+              3-tier automatic categorization system
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -196,11 +196,27 @@ const ImportPage = () => {
                   <Sparkles className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm mb-1">1. Rule-Based Categorization (Priority)</p>
+                  <p className="font-medium text-sm mb-1">1. Rule-Based Categorization (First Priority)</p>
                   <p className="text-sm text-muted-foreground">
-                    Imported transactions are first matched against your <strong>categorization rules</strong>. 
+                    Imported transactions are <strong>first</strong> matched against your <strong>categorization rules</strong>. 
                     If a transaction description matches a rule pattern (contains, starts with, etc.), 
-                    it's automatically assigned that category.
+                    it's automatically assigned that category. This is the fastest and most accurate method.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  <div className="w-5 h-5 rounded bg-gradient-to-r from-pink-500 to-violet-500 flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">AI</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium text-sm mb-1">2. AI Categorization (Second Priority)</p>
+                  <p className="text-sm text-muted-foreground">
+                    If no rules match, the system uses <strong>AI (LLM - Llama3)</strong> to analyze the transaction 
+                    description, amount, and direction to intelligently suggest a category. 
+                    Requires local Ollama installation.
                   </p>
                 </div>
               </div>
@@ -210,11 +226,10 @@ const ImportPage = () => {
                   <User className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm mb-1">2. Manual Categorization</p>
+                  <p className="font-medium text-sm mb-1">3. Manual Categorization (Fallback)</p>
                   <p className="text-sm text-muted-foreground">
-                    Transactions that don't match any rules remain <strong>Uncategorized</strong>. 
-                    You can manually assign categories from the Transactions page. 
-                    You'll also be prompted to create a rule for future automation.
+                    If both rules and AI fail to categorize, transactions remain <strong>Uncategorized</strong>. 
+                    You can manually assign categories from the Transactions page and create rules for future automation.
                   </p>
                 </div>
               </div>
@@ -224,20 +239,26 @@ const ImportPage = () => {
                   <CheckCircle className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm mb-1">3. Build Your Rules Library</p>
+                  <p className="font-medium text-sm mb-1">4. Continuous Improvement</p>
                   <p className="text-sm text-muted-foreground">
-                    The more rules you create, the more transactions will be automatically categorized 
-                    in future imports. Go to <strong>Rules</strong> page to create or edit rules.
+                    The more rules you create, the better the auto-categorization becomes. 
+                    Rules are instant and take priority over AI, making your imports faster over time.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-blue-200 dark:border-blue-900">
+            <div className="pt-3 border-t border-blue-200 dark:border-blue-900 space-y-2">
               <p className="text-xs text-muted-foreground flex items-start gap-2">
                 <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <span>
-                  <strong>Tip:</strong> After your first import, review uncategorized transactions 
+                  <strong>Priority Order:</strong> Rules → AI → Manual. Rules are checked first for speed and accuracy.
+                </span>
+              </p>
+              <p className="text-xs text-muted-foreground flex items-start gap-2">
+                <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>
+                  <strong>Pro Tip:</strong> After your first import, review uncategorized transactions 
                   and create rules. Your next import will have much better auto-categorization!
                 </span>
               </p>
