@@ -27,6 +27,7 @@ const SettingsPage = () => {
   const [deleteOptions, setDeleteOptions] = useState({
     delete_transactions: true,
     delete_categories: false,
+    delete_system_categories: false,
     delete_rules: false,
     delete_accounts: false,
     delete_imports: true
