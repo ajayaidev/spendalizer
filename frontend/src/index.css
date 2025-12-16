@@ -85,3 +85,20 @@ h1, h2, h3, h4, h5, h6 {
         @apply bg-background text-foreground;
     }
 }
+
+@layer utilities {
+    .gradient-primary {
+        @apply bg-gradient-to-r from-pink-500 to-purple-600;
+    }
+    .gradient-primary-hover:hover {
+        @apply bg-gradient-to-r from-pink-600 to-purple-700;
+    }
+    .gradient-text {
+        @apply bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent;
+    }
+    .gradient-border {
+        @apply border-2 border-transparent bg-gradient-to-r from-pink-500 to-purple-600;
+        background-clip: padding-box, border-box;
+        background-origin: padding-box, border-box;
+    }
+}
