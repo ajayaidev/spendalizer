@@ -58,7 +58,7 @@ const DashboardLayout = () => {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b">
-            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-violet-600 to-purple-800 bg-clip-text text-transparent" data-testid="app-logo">SpendAlizer</h1>
+            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-fuchsia-600 to-violet-800 bg-clip-text text-transparent" data-testid="app-logo">SpendAlizer</h1>
             <p className="text-sm text-muted-foreground mt-1">Financial Insights</p>
           </div>
 
@@ -97,8 +97,8 @@ const DashboardLayout = () => {
                             className={({ isActive }) =>
                               `flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 text-sm ${
                                 isActive
-                                  ? 'bg-gradient-to-r from-violet-600 to-purple-800 text-white shadow-md'
-                                  : 'hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-100 text-foreground'
+                                  ? 'bg-gradient-to-r from-fuchsia-600 to-violet-800 text-white shadow-md'
+                                  : 'hover:bg-gradient-to-r hover:from-fuchsia-50 hover:to-violet-100 text-foreground'
                               }`
                             }
                           >
@@ -121,8 +121,8 @@ const DashboardLayout = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-3 rounded-md transition-all duration-200 ${
                       isActive
-                        ? 'bg-gradient-to-r from-violet-600 to-purple-800 text-white shadow-md'
-                        : 'hover:bg-gradient-to-r hover:from-violet-50 hover:to-purple-100 text-foreground'
+                        ? 'bg-gradient-to-r from-fuchsia-600 to-violet-800 text-white shadow-md'
+                        : 'hover:bg-gradient-to-r hover:from-fuchsia-50 hover:to-violet-100 text-foreground'
                     }`
                   }
                 >
@@ -136,7 +136,7 @@ const DashboardLayout = () => {
           {/* User Info */}
           <div className="p-4 border-t">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-violet-600 to-purple-800 flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-fuchsia-600 to-violet-800 flex items-center justify-center shadow-md">
                 <span className="text-sm font-semibold text-white">
                   {user?.name?.charAt(0).toUpperCase()}
                 </span>
