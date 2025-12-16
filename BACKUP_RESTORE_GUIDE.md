@@ -80,6 +80,27 @@ This is by design for security:
 - Pre-restore backups are saved to `/tmp/spendalizer_backups/` (in case you need to rollback)
 - All user_ids are automatically updated during restore for security
 
+### 📊 System Categories Handling
+
+**Why System Categories are Included:**
+- All transactions reference category UUIDs
+- If system categories are missing or different, transactions won't display properly
+- System categories might be updated between backup and restore
+- Ensures complete data portability
+
+**During Restore:**
+- System categories from backup are restored/updated to match backup state
+- Ensures your transaction category references remain valid
+- If system category exists: updates name and type from backup
+- If system category is missing: inserts it from backup
+- On next server restart: `system_categories.json` syncs to latest version
+
+**Example Scenario:**
+1. You backup data (includes "Investment - WINTWEALTH" as TRANSFER_EXTERNAL_OUT)
+2. System categories are updated in a new version
+3. You restore backup → your transactions still reference correct categories
+4. Server restart → system categories sync to latest definitions
+
 ## Step-by-Step: Moving Data from Preview to Local
 
 1. **On Preview Environment:**
