@@ -298,7 +298,7 @@ const DashboardPage = () => {
 
             {/* Breakdown */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-950/20">
+              <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-12 rounded-full bg-red-600"></div>
                   <div>
@@ -307,7 +307,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-red-700">
+                  <p className="font-bold text-red-700 dark:text-red-400">
                     ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -316,7 +316,7 @@ const DashboardPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20">
+              <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-12 rounded-full bg-orange-600"></div>
                   <div>
@@ -325,7 +325,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-orange-700">
+                  <p className="font-bold text-orange-700 dark:text-orange-400">
                     ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -334,7 +334,7 @@ const DashboardPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20">
+              <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-12 rounded-full bg-purple-600"></div>
                   <div>
@@ -343,7 +343,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-purple-700">
+                  <p className="font-bold text-purple-700 dark:text-purple-400">
                     ₹{internalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground">
