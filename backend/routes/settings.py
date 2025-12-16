@@ -65,8 +65,19 @@ async def delete_all_transactions(
         deletion_results["import_batches"] = result.deleted_count
         logging.warning(f"User {user_id} deleted {result.deleted_count} import batches")
     
-    deleted_items = [f"{count} {name}" for name, count in deletion_results.items() if count > 0]
-    message = f"Successfully deleted: {', '.join(deleted_items)}"
+    # Build user-friendly message
+    deleted_items = []
+    for name, count in deletion_results.items():
+        if count > 0:
+            # Convert snake_case to readable format
+            readable_name = name.replace("_", " ")
+            deleted_items.append(f"{count} {readable_name}")
+    
+    message = f"Successfully deleted: {', '.join(deleted_items)}" if deleted_items else "No data was deleted"
+    
+    # Add note about system categories reload
+    if deletion_results.get("system_categories", 0) > 0:
+        message += " (System categories will be reloaded on next app start)"
     
     return {"message": message, "deletion_results": deletion_results}
 
