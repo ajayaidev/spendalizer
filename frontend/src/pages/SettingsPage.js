@@ -37,18 +37,34 @@ const SettingsPage = () => {
       return;
     }
 
+    // Check if at least one option is selected
+    if (!Object.values(deleteOptions).some(val => val)) {
+      toast.error('Please select at least one data type to delete');
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await deleteAllTransactions({ confirmation_text: confirmationText });
-      toast.success(`Successfully deleted ${response.data.deleted_count} transactions`);
+      const response = await deleteAllTransactions({ 
+        confirmation_text: confirmationText,
+        ...deleteOptions
+      });
+      toast.success(response.data.message);
       setDeleteDialogOpen(false);
       setConfirmationText('');
+      setDeleteOptions({
+        delete_transactions: true,
+        delete_categories: false,
+        delete_rules: false,
+        delete_accounts: false,
+        delete_imports: true
+      });
       setStep(1);
       
       // Redirect to dashboard after deletion
       setTimeout(() => navigate('/'), 1500);
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to delete transactions');
+      toast.error(error.response?.data?.detail || 'Failed to delete data');
     } finally {
       setLoading(false);
     }
