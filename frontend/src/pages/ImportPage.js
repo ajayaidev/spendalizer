@@ -267,9 +267,10 @@ const ImportPage = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
 
-        {/* Import History */}
-        <Card data-testid="import-history-card">
+        {/* Right Column - Import History */}
+        <Card data-testid="import-history-card" className="lg:row-span-2">
           <CardHeader>
             <CardTitle>Recent Imports</CardTitle>
             <CardDescription>Your import history</CardDescription>
