@@ -344,29 +344,60 @@ const DashboardPage = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Net Savings Card */}
-      <Card className="mb-8 border-2 border-primary">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground uppercase tracking-wide mb-2">Net Savings</p>
+        {/* NET SAVINGS Column */}
+        <Card className={`border-l-4 ${
+          (summary?.net_savings || 0) >= 0 ? 'border-l-blue-500' : 'border-l-red-500'
+        }`}>
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl">Net Savings</CardTitle>
+                <CardDescription>Financial balance</CardDescription>
+              </div>
+              <PieChartIcon className="w-8 h-8 text-primary" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Main Total */}
+            <div className="pb-4 border-b">
               <div className={`text-4xl font-bold ${
                 (summary?.net_savings || 0) >= 0 ? 'text-green-600' : 'text-red-600'
               }`}>
                 ₹{summary?.net_savings?.toLocaleString() || '0'}
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                {(summary?.net_savings || 0) >= 0 ? 'Surplus' : 'Deficit'} • {summary?.total_income && summary?.net_savings 
-                  ? `${((summary.net_savings / summary.total_income) * 100).toFixed(1)}% savings rate`
-                  : '0% savings rate'}
-              </p>
             </div>
-            <PieChartIcon className="w-12 h-12 text-primary" />
-          </div>
-        </CardContent>
-      </Card>
+
+            {/* Insights */}
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-muted">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Status</p>
+                <p className="font-bold text-lg">
+                  {(summary?.net_savings || 0) >= 0 ? '✓ Surplus' : '⚠ Deficit'}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-muted">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Savings Rate</p>
+                <p className="font-bold text-lg">
+                  {summary?.total_income && summary?.net_savings 
+                    ? `${((summary.net_savings / summary.total_income) * 100).toFixed(1)}%`
+                    : '0%'}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-muted">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Efficiency</p>
+                <p className="font-bold text-lg">
+                  {summary?.total_income && summary?.total_expense
+                    ? `${((summary.total_expense / summary.total_income) * 100).toFixed(0)}% spent`
+                    : '0% spent'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Top Income and Expense Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
