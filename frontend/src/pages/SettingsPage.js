@@ -472,7 +472,7 @@ const SettingsPage = () => {
                     className="flex-1"
                     data-testid="final-delete-button"
                   >
-                    {loading ? 'Deleting...' : 'Delete All Transactions'}
+                    {loading ? 'Deleting...' : 'Delete Selected Data'}
                   </Button>
                 </div>
               </>
