@@ -61,7 +61,6 @@ const SettingsPage = () => {
         delete_accounts: false,
         delete_imports: true
       });
-      setStep(1);
       
       // Redirect to dashboard after deletion
       setTimeout(() => navigate('/'), 1500);
