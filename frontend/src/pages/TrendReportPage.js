@@ -70,6 +70,12 @@ const TrendReportPage = () => {
   const handleQuickDateFilter = (option) => {
     const today = new Date();
     switch (option) {
+      case 'last_month':
+        setDateRange({ 
+          from: startOfMonth(subMonths(today, 1)), 
+          to: endOfMonth(subMonths(today, 1)) 
+        });
+        break;
       case 'last_3_months':
         setDateRange({ from: subMonths(today, 3), to: today });
         break;
