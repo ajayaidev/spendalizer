@@ -9,12 +9,15 @@ The backup and restore feature allows you to export all your financial data and 
 - **Location:** Settings page → Data Management → Download Backup
 - **What's Included:**
   - All transactions
-  - Custom categories (user-created)
+  - **All categories** (both system and user-created)
   - Categorization rules
   - Account information
   - Import history
 - **File Format:** ZIP file named `SpendAlizer-{domain}-{yyyymmdd-hhmmss}.zip`
-- **Important:** Only YOUR data is included (filtered by your user account)
+- **Important:** 
+  - Only YOUR user data is included (filtered by your user account)
+  - System categories are included to ensure transaction references remain valid
+  - This creates a completely self-contained, portable backup
 
 ### Restore (Import)
 - **Location:** Settings page → Data Management → Restore from Backup
