@@ -344,14 +344,14 @@ const DashboardPage = () => {
         </Card>
 
         {/* NET SAVINGS Column */}
-        <Card className="overflow-hidden">
-          <CardHeader className={`pb-4 bg-gradient-to-br ${
-            (summary?.net_savings || 0) >= 0 
-              ? 'from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30'
-              : 'from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30'
-          }`}>
+        <Card>
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl">Net Savings</CardTitle>
+              <CardTitle className={`text-2xl ${
+                (summary?.net_savings || 0) >= 0 
+                  ? 'text-blue-600 dark:text-blue-400' 
+                  : 'text-orange-600 dark:text-orange-400'
+              }`}>Net Savings</CardTitle>
               <div className={`p-2 rounded-lg ${
                 (summary?.net_savings || 0) >= 0 
                   ? 'bg-blue-100 dark:bg-blue-900/50' 
