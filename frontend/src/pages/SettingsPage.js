@@ -354,14 +354,41 @@ const SettingsPage = () => {
                         id="delete-categories"
                         checked={deleteOptions.delete_categories}
                         onCheckedChange={(checked) => 
-                          setDeleteOptions({...deleteOptions, delete_categories: checked})
+                          setDeleteOptions({
+                            ...deleteOptions, 
+                            delete_categories: checked,
+                            // Uncheck system categories if categories is unchecked
+                            delete_system_categories: checked ? deleteOptions.delete_system_categories : false
+                          })
                         }
                       />
                       <div className="flex-1">
                         <Label htmlFor="delete-categories" className="cursor-pointer font-medium">
                           Custom Categories
                         </Label>
-                        <p className="text-xs text-muted-foreground">Your custom categories (system categories preserved)</p>
+                        <p className="text-xs text-muted-foreground">Your custom categories only</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2 ml-6">
+                      <Checkbox
+                        id="delete-system-categories"
+                        checked={deleteOptions.delete_system_categories}
+                        disabled={!deleteOptions.delete_categories}
+                        onCheckedChange={(checked) => 
+                          setDeleteOptions({...deleteOptions, delete_system_categories: checked})
+                        }
+                      />
+                      <div className="flex-1">
+                        <Label 
+                          htmlFor="delete-system-categories" 
+                          className={`cursor-pointer font-medium ${!deleteOptions.delete_categories ? 'text-muted-foreground' : 'text-destructive'}`}
+                        >
+                          + Include System Categories
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          ⚠️ Also delete built-in system categories (they will be reloaded on next app start)
+                        </p>
                       </div>
                     </div>
                     
