@@ -68,13 +68,13 @@ const DashboardPage = () => {
     return <div className="flex items-center justify-center min-h-screen">Loading dashboard...</div>;
   }
 
-  const expenseCategories = summary?.category_breakdown?.filter(
-    (cat) => cat.category_type === 'EXPENSE'
-  ) || [];
+  const expenseCategories = summary?.category_breakdown
+    ?.filter((cat) => cat.category_type === 'EXPENSE')
+    .sort((a, b) => b.total - a.total) || [];
 
-  const incomeCategories = summary?.category_breakdown?.filter(
-    (cat) => cat.category_type === 'INCOME'
-  ) || [];
+  const incomeCategories = summary?.category_breakdown
+    ?.filter((cat) => cat.category_type === 'INCOME')
+    .sort((a, b) => b.total - a.total) || [];
 
   // Internal Transfers (bank-to-bank, doesn't affect net worth)
   const internalTransferInCategories = summary?.category_breakdown?.filter(
