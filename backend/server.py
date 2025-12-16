@@ -109,6 +109,11 @@ class ResetPasswordRequest(BaseModel):
 
 class DeleteAllTransactionsRequest(BaseModel):
     confirmation_text: str
+    delete_transactions: bool = True
+    delete_categories: bool = False
+    delete_rules: bool = False
+    delete_accounts: bool = False
+    delete_imports: bool = False
 
 class Account(BaseModel):
     model_config = ConfigDict(extra="ignore")
