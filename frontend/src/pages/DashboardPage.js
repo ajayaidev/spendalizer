@@ -267,10 +267,10 @@ const DashboardPage = () => {
         </Card>
 
         {/* OUTFLOW Column */}
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-4 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30">
+        <Card>
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl">Total Outflow</CardTitle>
+              <CardTitle className="text-2xl text-red-600 dark:text-red-400">Total Outflow</CardTitle>
               <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50">
                 <TrendingDown className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
