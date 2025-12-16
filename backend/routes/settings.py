@@ -29,8 +29,8 @@ async def delete_all_transactions(
         raise HTTPException(status_code=400, detail="Please select at least one data type to delete")
     
     deletion_results = {
-        "transactions": 0, "categories": 0, "rules": 0,
-        "accounts": 0, "import_batches": 0
+        "transactions": 0, "custom_categories": 0, "system_categories": 0,
+        "rules": 0, "accounts": 0, "import_batches": 0
     }
     
     if request.delete_transactions:
@@ -39,9 +39,16 @@ async def delete_all_transactions(
         logging.warning(f"User {user_id} deleted {result.deleted_count} transactions")
     
     if request.delete_categories:
+        # Delete custom categories (user-created)
         result = await db.categories.delete_many({"user_id": user_id})
-        deletion_results["categories"] = result.deleted_count
+        deletion_results["custom_categories"] = result.deleted_count
         logging.warning(f"User {user_id} deleted {result.deleted_count} custom categories")
+        
+        # Also delete system categories if requested (for complete reset)
+        if request.delete_system_categories:
+            result = await db.categories.delete_many({"is_system": True})
+            deletion_results["system_categories"] = result.deleted_count
+            logging.warning(f"User {user_id} deleted {result.deleted_count} system categories (complete reset)")
     
     if request.delete_rules:
         result = await db.category_rules.delete_many({"user_id": user_id})
