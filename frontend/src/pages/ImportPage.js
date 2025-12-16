@@ -178,6 +178,73 @@ const ImportPage = () => {
           </CardContent>
         </Card>
 
+        {/* How Categorization Works */}
+        <Card className="lg:col-span-2 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Info className="w-5 h-5 text-blue-600" />
+              <CardTitle className="text-blue-900 dark:text-blue-100">How Categorization Works</CardTitle>
+            </div>
+            <CardDescription className="text-blue-700 dark:text-blue-300">
+              Understanding automatic transaction categorization
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm mb-1">1. Rule-Based Categorization (Priority)</p>
+                  <p className="text-sm text-muted-foreground">
+                    Imported transactions are first matched against your <strong>categorization rules</strong>. 
+                    If a transaction description matches a rule pattern (contains, starts with, etc.), 
+                    it's automatically assigned that category.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  <User className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm mb-1">2. Manual Categorization</p>
+                  <p className="text-sm text-muted-foreground">
+                    Transactions that don't match any rules remain <strong>Uncategorized</strong>. 
+                    You can manually assign categories from the Transactions page. 
+                    You'll also be prompted to create a rule for future automation.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm mb-1">3. Build Your Rules Library</p>
+                  <p className="text-sm text-muted-foreground">
+                    The more rules you create, the more transactions will be automatically categorized 
+                    in future imports. Go to <strong>Rules</strong> page to create or edit rules.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-blue-200 dark:border-blue-900">
+              <p className="text-xs text-muted-foreground flex items-start gap-2">
+                <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>
+                  <strong>Tip:</strong> After your first import, review uncategorized transactions 
+                  and create rules. Your next import will have much better auto-categorization!
+                </span>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Import History */}
         <Card data-testid="import-history-card">
           <CardHeader>
