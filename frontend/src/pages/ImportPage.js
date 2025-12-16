@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Upload, FileText, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, Clock, Info, Sparkles, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
