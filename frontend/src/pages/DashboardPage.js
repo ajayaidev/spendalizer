@@ -505,8 +505,11 @@ const DashboardPage = () => {
         </Card>
       )}
 
-      {/* Analytics Cards Layout - 2 columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    </div>
+  );
+};
+
+export default DashboardPage;
                 {/* Income Card */}
                 <Card className="border-green-200">
                   <CardHeader className="pb-3">
