@@ -187,142 +187,186 @@ const DashboardPage = () => {
         </Card>
       )}
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card data-testid="total-inflow-card">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Total Inflow</CardDescription>
-          </CardHeader>
-          <CardContent>
+      {/* Financial Flow Overview - Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* INFLOW Column */}
+        <Card className="border-l-4 border-l-green-500">
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <div className="text-3xl font-bold text-green-600">
-                ₹{summary?.total_income?.toLocaleString() || '0'}
+              <div>
+                <CardTitle className="text-2xl">Total Inflow</CardTitle>
+                <CardDescription>Money coming in</CardDescription>
               </div>
               <TrendingUp className="w-8 h-8 text-green-600" />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card data-testid="total-outflow-card">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Total Outflow</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-3xl font-bold text-red-600">
-                ₹{summary?.total_expense?.toLocaleString() || '0'}
+          <CardContent className="space-y-4">
+            {/* Main Total */}
+            <div className="pb-4 border-b">
+              <div className="text-4xl font-bold text-green-600">
+                ₹{summary?.total_income?.toLocaleString() || '0'}
               </div>
-              <TrendingDown className="w-8 h-8 text-red-600" />
+            </div>
+
+            {/* Breakdown */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-green-50 dark:bg-green-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-12 rounded-full bg-green-600"></div>
+                  <div>
+                    <p className="font-medium text-sm">Income</p>
+                    <p className="text-xs text-muted-foreground">Salary, business, etc.</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-green-700">
+                    ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((incomeCategories.reduce((sum, cat) => sum + cat.total, 0) / (summary?.total_income || 1)) * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-cyan-50 dark:bg-cyan-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-12 rounded-full bg-cyan-600"></div>
+                  <div>
+                    <p className="font-medium text-sm">External IN</p>
+                    <p className="text-xs text-muted-foreground">Refunds, returns</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-cyan-700">
+                    ₹{externalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((externalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0) / (summary?.total_income || 1)) * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-teal-50 dark:bg-teal-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-12 rounded-full bg-teal-600"></div>
+                  <div>
+                    <p className="font-medium text-sm">Internal IN</p>
+                    <p className="text-xs text-muted-foreground">Transfers between accounts</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-teal-700">
+                    ₹{internalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((internalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0) / (summary?.total_income || 1)) * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card data-testid="net-savings-card">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Net Savings</CardDescription>
-          </CardHeader>
-          <CardContent>
+        {/* OUTFLOW Column */}
+        <Card className="border-l-4 border-l-red-500">
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <div className={`text-3xl font-bold ${
+              <div>
+                <CardTitle className="text-2xl">Total Outflow</CardTitle>
+                <CardDescription>Money going out</CardDescription>
+              </div>
+              <TrendingDown className="w-8 h-8 text-red-600" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Main Total */}
+            <div className="pb-4 border-b">
+              <div className="text-4xl font-bold text-red-600">
+                ₹{summary?.total_expense?.toLocaleString() || '0'}
+              </div>
+            </div>
+
+            {/* Breakdown */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-12 rounded-full bg-red-600"></div>
+                  <div>
+                    <p className="font-medium text-sm">Expenses</p>
+                    <p className="text-xs text-muted-foreground">Food, bills, shopping</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-red-700">
+                    ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((expenseCategories.reduce((sum, cat) => sum + cat.total, 0) / (summary?.total_expense || 1)) * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-12 rounded-full bg-orange-600"></div>
+                  <div>
+                    <p className="font-medium text-sm">External OUT</p>
+                    <p className="text-xs text-muted-foreground">Investments, loans</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-orange-700">
+                    ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0) / (summary?.total_expense || 1)) * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-purple-50 dark:bg-purple-950/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-12 rounded-full bg-purple-600"></div>
+                  <div>
+                    <p className="font-medium text-sm">Internal OUT</p>
+                    <p className="text-xs text-muted-foreground">Transfers between accounts</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-purple-700">
+                    ₹{internalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {((internalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0) / (summary?.total_expense || 1)) * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Net Savings Card */}
+      <Card className="mb-8 border-2 border-primary">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground uppercase tracking-wide mb-2">Net Savings</p>
+              <div className={`text-4xl font-bold ${
                 (summary?.net_savings || 0) >= 0 ? 'text-green-600' : 'text-red-600'
               }`}>
                 ₹{summary?.net_savings?.toLocaleString() || '0'}
               </div>
-              <PieChartIcon className="w-8 h-8 text-primary" />
+              <p className="text-sm text-muted-foreground mt-2">
+                {(summary?.net_savings || 0) >= 0 ? 'Surplus' : 'Deficit'} • {summary?.total_income && summary?.net_savings 
+                  ? `${((summary.net_savings / summary.total_income) * 100).toFixed(1)}% savings rate`
+                  : '0% savings rate'}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Inflow Breakdown - Minimized */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="bg-green-50 dark:bg-green-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Income</p>
-                <p className="text-xl font-bold text-green-600">
-                  ₹{incomeCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                </p>
-              </div>
-              <TrendingUp className="w-6 h-6 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-cyan-50 dark:bg-cyan-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">External IN</p>
-                <p className="text-xl font-bold text-cyan-600">
-                  ₹{externalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                </p>
-              </div>
-              <TrendingUp className="w-6 h-6 text-cyan-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-teal-50 dark:bg-teal-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Internal IN</p>
-                <p className="text-xl font-bold text-teal-600">
-                  ₹{internalTransferInCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                </p>
-              </div>
-              <TrendingUp className="w-6 h-6 text-teal-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Outflow Breakdown - Minimized */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card className="bg-red-50 dark:bg-red-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Expenses</p>
-                <p className="text-xl font-bold text-red-600">
-                  ₹{expenseCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                </p>
-              </div>
-              <TrendingDown className="w-6 h-6 text-red-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-orange-50 dark:bg-orange-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">External OUT</p>
-                <p className="text-xl font-bold text-orange-600">
-                  ₹{externalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                </p>
-              </div>
-              <TrendingDown className="w-6 h-6 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-purple-50 dark:bg-purple-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Internal OUT</p>
-                <p className="text-xl font-bold text-purple-600">
-                  ₹{internalTransferOutCategories.reduce((sum, cat) => sum + cat.total, 0).toLocaleString()}
-                </p>
-              </div>
-              <TrendingDown className="w-6 h-6 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <PieChartIcon className="w-12 h-12 text-primary" />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Top Income and Expense Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
