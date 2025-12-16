@@ -97,8 +97,8 @@ const DashboardLayout = () => {
                             className={({ isActive }) =>
                               `flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 text-sm ${
                                 isActive
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'hover:bg-secondary text-foreground'
+                                  ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md'
+                                  : 'hover:bg-gradient-to-r hover:from-pink-50 hover:to-purple-50 text-foreground'
                               }`
                             }
                           >
