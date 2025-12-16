@@ -49,30 +49,31 @@ h1, h2, h3, h4, h5, h6 {
         --radius: 0.5rem;
     }
     .dark {
-        --background: 222 47% 11%;
-        --foreground: 210 40% 98%;
-        --card: 222 47% 11%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222 47% 11%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217 91% 60%;
-        --primary-foreground: 222 47% 11%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 224.3 76.3% 48%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
+        /* Purple & Pink Theme Dark Mode */
+        --background: 270 50% 8%;
+        --foreground: 270 20% 95%;
+        --card: 270 40% 12%;
+        --card-foreground: 270 20% 95%;
+        --popover: 270 40% 12%;
+        --popover-foreground: 270 20% 95%;
+        --primary: 270 76% 60%;
+        --primary-foreground: 270 50% 8%;
+        --secondary: 330 50% 20%;
+        --secondary-foreground: 330 100% 80%;
+        --muted: 270 30% 18%;
+        --muted-foreground: 270 20% 65%;
+        --accent: 330 100% 65%;
+        --accent-foreground: 270 50% 8%;
+        --destructive: 0 62.8% 45%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 270 30% 20%;
+        --input: 270 30% 20%;
+        --ring: 270 76% 60%;
+        --chart-1: 270 76% 60%;
+        --chart-2: 330 100% 65%;
+        --chart-3: 290 70% 55%;
+        --chart-4: 310 80% 60%;
+        --chart-5: 250 70% 55%;
     }
 }
 
