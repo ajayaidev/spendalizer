@@ -21,6 +21,15 @@ const SettingsPage = () => {
   const [backupLoading, setBackupLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
   const restoreFileInputRef = useRef(null);
+  
+  // Selective deletion state
+  const [deleteOptions, setDeleteOptions] = useState({
+    delete_transactions: true,
+    delete_categories: false,
+    delete_rules: false,
+    delete_accounts: false,
+    delete_imports: true
+  });
 
   const handleDeleteAll = async () => {
     if (confirmationText.trim().toUpperCase() !== 'DELETE ALL') {
