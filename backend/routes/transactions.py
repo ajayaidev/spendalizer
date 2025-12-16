@@ -352,3 +352,14 @@ async def get_import_history(user_id: str = Depends(get_current_user)):
         {"_id": 0}
     ).sort("imported_at", -1).limit(50).to_list(50)
     return batches
+
+
+# Alias for frontend compatibility
+@router.get("/imports")
+async def get_imports(user_id: str = Depends(get_current_user)):
+    """Alias endpoint for /import-history (frontend uses this route)."""
+    batches = await db.import_batches.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("imported_at", -1).limit(50).to_list(50)
+    return batches
