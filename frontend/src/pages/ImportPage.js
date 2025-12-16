@@ -180,8 +180,8 @@ const ImportPage = () => {
           </CardContent>
         </Card>
 
-        {/* How Categorization Works */}
-        <Card className="lg:col-span-2 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
+          {/* How Categorization Works */}
+          <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Info className="w-5 h-5 text-blue-600" />
