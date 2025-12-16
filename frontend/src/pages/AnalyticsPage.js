@@ -191,7 +191,7 @@ const AnalyticsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card data-testid="total-income-card">
           <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Total Income</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wide">Total Inflows</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
@@ -205,7 +205,7 @@ const AnalyticsPage = () => {
 
         <Card data-testid="total-expense-card">
           <CardHeader className="pb-3">
-            <CardDescription className="text-xs uppercase tracking-wide">Total Expense</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wide">Total Outflows</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
