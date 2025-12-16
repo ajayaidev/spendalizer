@@ -200,6 +200,13 @@ const TrendReportPage = () => {
           <Button
             variant="outline"
             size="sm"
+            onClick={() => handleQuickDateFilter('last_month')}
+          >
+            Last Month
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => handleQuickDateFilter('last_3_months')}
           >
             Last 3 Months
