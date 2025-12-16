@@ -445,6 +445,12 @@ class ModularBackendTester:
         print("\n📋 ANALYTICS TESTS")
         test_results.append(("Analytics Endpoints", self.test_analytics_endpoints()))
         
+        print("\n📋 TRANSACTIONS TESTS")
+        test_results.append(("Transactions Endpoints", self.test_transactions_endpoints()))
+        
+        print("\n📋 RULES TESTS")
+        test_results.append(("Rules Endpoints", self.test_rules_endpoints()))
+        
         return test_results
 
 def main():
