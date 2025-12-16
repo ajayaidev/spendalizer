@@ -331,13 +331,94 @@ const SettingsPage = () => {
             {step === 1 ? (
               <>
                 <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm font-medium text-destructive mb-2">⚠️ Warning:</p>
-                  <ul className="text-sm space-y-1">
-                    <li>• All your transactions will be permanently deleted</li>
-                    <li>• Import history will be removed</li>
-                    <li>• This cannot be undone</li>
-                    <li>• Analytics will be reset to zero</li>
-                  </ul>
+                  <p className="text-sm font-medium text-destructive mb-3">⚠️ Select data to delete:</p>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="delete-transactions"
+                        checked={deleteOptions.delete_transactions}
+                        onCheckedChange={(checked) => 
+                          setDeleteOptions({...deleteOptions, delete_transactions: checked})
+                        }
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="delete-transactions" className="cursor-pointer font-medium">
+                          Transactions
+                        </Label>
+                        <p className="text-xs text-muted-foreground">All transaction records</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="delete-categories"
+                        checked={deleteOptions.delete_categories}
+                        onCheckedChange={(checked) => 
+                          setDeleteOptions({...deleteOptions, delete_categories: checked})
+                        }
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="delete-categories" className="cursor-pointer font-medium">
+                          Custom Categories
+                        </Label>
+                        <p className="text-xs text-muted-foreground">Your custom categories (system categories preserved)</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="delete-rules"
+                        checked={deleteOptions.delete_rules}
+                        onCheckedChange={(checked) => 
+                          setDeleteOptions({...deleteOptions, delete_rules: checked})
+                        }
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="delete-rules" className="cursor-pointer font-medium">
+                          Categorization Rules
+                        </Label>
+                        <p className="text-xs text-muted-foreground">Auto-categorization rules</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="delete-accounts"
+                        checked={deleteOptions.delete_accounts}
+                        onCheckedChange={(checked) => 
+                          setDeleteOptions({...deleteOptions, delete_accounts: checked})
+                        }
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="delete-accounts" className="cursor-pointer font-medium">
+                          Accounts
+                        </Label>
+                        <p className="text-xs text-muted-foreground">Bank accounts and credit cards</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <Checkbox
+                        id="delete-imports"
+                        checked={deleteOptions.delete_imports}
+                        onCheckedChange={(checked) => 
+                          setDeleteOptions({...deleteOptions, delete_imports: checked})
+                        }
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="delete-imports" className="cursor-pointer font-medium">
+                          Import History
+                        </Label>
+                        <p className="text-xs text-muted-foreground">Record of file imports</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t border-destructive/20">
+                    <p className="text-xs text-destructive font-medium">
+                      ⚠️ This action cannot be undone. Make sure you have a backup!
+                    </p>
+                  </div>
                 </div>
                 <div className="flex gap-3">
                   <Button
@@ -352,6 +433,7 @@ const SettingsPage = () => {
                     onClick={() => setStep(2)}
                     className="flex-1"
                     data-testid="proceed-button"
+                    disabled={!Object.values(deleteOptions).some(val => val)}
                   >
                     I Understand, Proceed
                   </Button>
