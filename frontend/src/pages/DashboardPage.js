@@ -377,14 +377,14 @@ const DashboardPage = () => {
 
             {/* Insights */}
             <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-muted">
+              <div className="p-3">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Status</p>
                 <p className="font-bold text-lg">
                   {(summary?.net_savings || 0) >= 0 ? '✓ Surplus' : '⚠ Deficit'}
                 </p>
               </div>
 
-              <div className="p-3 rounded-lg bg-muted">
+              <div className="p-3">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Savings Rate</p>
                 <p className="font-bold text-lg">
                   {summary?.total_income && summary?.net_savings 
@@ -393,7 +393,7 @@ const DashboardPage = () => {
                 </p>
               </div>
 
-              <div className="p-3 rounded-lg bg-muted">
+              <div className="p-3">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Efficiency</p>
                 <p className="font-bold text-lg">
                   {summary?.total_income && summary?.total_expense
