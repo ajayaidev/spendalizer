@@ -136,8 +136,8 @@ const DashboardLayout = () => {
           {/* User Info */}
           <div className="p-4 border-t">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center shadow-md">
+                <span className="text-sm font-semibold text-white">
                   {user?.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
