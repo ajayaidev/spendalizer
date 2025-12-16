@@ -395,7 +395,6 @@ const SettingsPage = () => {
                   return;
                 }
                 setDeleteDialogOpen(true);
-                setStep(2); // Skip step 1 since checkboxes are on page
                 setConfirmationText('');
               }}
               disabled={!Object.values(deleteOptions).some(val => val)}
