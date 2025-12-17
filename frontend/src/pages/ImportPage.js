@@ -70,6 +70,82 @@ const ImportPage = () => {
     }
   };
 
+  // Start progress simulation
+  const startProgressSimulation = () => {
+    let currentStep = 0;
+    let stepProgress = 0;
+    
+    setImportProgress({
+      isActive: true,
+      currentStep: 1,
+      progress: 0,
+      stepName: IMPORT_STEPS[0].name
+    });
+
+    // Calculate total duration and progress per tick
+    const totalSteps = IMPORT_STEPS.length;
+    const tickInterval = 100; // Update every 100ms
+    
+    progressIntervalRef.current = setInterval(() => {
+      stepProgress += 5; // Increment within step
+      
+      if (stepProgress >= 100 && currentStep < totalSteps - 1) {
+        // Move to next step
+        currentStep++;
+        stepProgress = 0;
+      }
+      
+      // Calculate overall progress (0-95%, leave 5% for completion)
+      const overallProgress = Math.min(
+        ((currentStep * 100 + stepProgress) / (totalSteps * 100)) * 95,
+        95
+      );
+      
+      setImportProgress({
+        isActive: true,
+        currentStep: currentStep + 1,
+        progress: overallProgress,
+        stepName: IMPORT_STEPS[currentStep]?.name || 'Processing...'
+      });
+    }, tickInterval);
+  };
+
+  // Stop progress simulation
+  const stopProgressSimulation = (success = true) => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    
+    if (success) {
+      // Complete the progress bar
+      setImportProgress({
+        isActive: true,
+        currentStep: IMPORT_STEPS.length,
+        progress: 100,
+        stepName: 'Complete!'
+      });
+      
+      // Reset after a short delay
+      setTimeout(() => {
+        setImportProgress({
+          isActive: false,
+          currentStep: 0,
+          progress: 0,
+          stepName: ''
+        });
+      }, 1500);
+    } else {
+      // Reset immediately on failure
+      setImportProgress({
+        isActive: false,
+        currentStep: 0,
+        progress: 0,
+        stepName: ''
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file || !selectedAccount || !selectedDataSource) {
@@ -78,6 +154,8 @@ const ImportPage = () => {
     }
 
     setUploading(true);
+    startProgressSimulation();
+    
     const formData = new FormData();
     formData.append('file', file);
     formData.append('account_id', selectedAccount);
@@ -85,12 +163,14 @@ const ImportPage = () => {
 
     try {
       const response = await importFile(formData);
+      stopProgressSimulation(true);
       toast.success(`Import successful! ${response.data.success_count} transactions imported.`);
       setFile(null);
       setSelectedAccount('');
       setSelectedDataSource('');
       loadData();
     } catch (error) {
+      stopProgressSimulation(false);
       toast.error(error.response?.data?.detail || 'Import failed');
     } finally {
       setUploading(false);
