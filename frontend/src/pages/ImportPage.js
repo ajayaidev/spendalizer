@@ -270,13 +270,39 @@ const ImportPage = () => {
                 </div>
               </div>
 
+              {/* Progress Indicator */}
+              {importProgress.isActive && (
+                <div className="space-y-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                      <span className="font-medium text-primary">{importProgress.stepName}</span>
+                    </div>
+                    <span className="text-muted-foreground">
+                      Step {importProgress.currentStep} of {IMPORT_STEPS.length}
+                    </span>
+                  </div>
+                  <Progress value={importProgress.progress} className="h-2" />
+                  <p className="text-xs text-muted-foreground text-center">
+                    {Math.round(importProgress.progress)}% complete
+                  </p>
+                </div>
+              )}
+
               <Button
                 type="submit"
                 className="w-full"
                 disabled={uploading || !file || !selectedAccount || !selectedDataSource}
                 data-testid="import-submit-button"
               >
-                {uploading ? 'Importing...' : 'Import Transactions'}
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Importing...
+                  </>
+                ) : (
+                  'Import Transactions'
+                )}
               </Button>
             </form>
           </CardContent>
