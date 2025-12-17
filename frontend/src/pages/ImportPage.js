@@ -1,12 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAccounts, getDataSources, importFile, getImportHistory } from '../lib/api';
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Upload, FileText, CheckCircle, XCircle, Clock, Info, Sparkles, User } from 'lucide-react';
+import { Progress } from '../components/ui/progress';
+import { Upload, FileText, CheckCircle, XCircle, Clock, Info, Sparkles, User, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+
+// Import progress steps
+const IMPORT_STEPS = [
+  { id: 1, name: 'Uploading file', duration: 1000 },
+  { id: 2, name: 'Parsing file content', duration: 1500 },
+  { id: 3, name: 'Validating transactions', duration: 1000 },
+  { id: 4, name: 'Checking for duplicates', duration: 2000 },
+  { id: 5, name: 'Applying categorization rules', duration: 2500 },
+  { id: 6, name: 'AI categorization (if needed)', duration: 3000 },
+  { id: 7, name: 'Saving transactions', duration: 2000 },
+  { id: 8, name: 'Finalizing import', duration: 1000 },
+];
 
 const ImportPage = () => {
   const [accounts, setAccounts] = useState([]);
@@ -16,6 +29,15 @@ const ImportPage = () => {
   const [selectedDataSource, setSelectedDataSource] = useState('');
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  
+  // Progress tracking state
+  const [importProgress, setImportProgress] = useState({
+    isActive: false,
+    currentStep: 0,
+    progress: 0,
+    stepName: ''
+  });
+  const progressIntervalRef = useRef(null);
 
   useEffect(() => {
     loadData();
