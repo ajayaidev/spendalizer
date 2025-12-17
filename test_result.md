@@ -403,12 +403,15 @@ agent_communication:
 
   - task: "Import Progress Indicator Feature"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/pages/ImportPage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "🎯 NEW TESTING REQUEST: Import Progress Indicator feature needs comprehensive testing. Feature includes: 1) IMPORT_STEPS constant with 8 steps 2) Progress component with percentage display 3) Current step name display 4) Step counter (Step X of 8) 5) Spinner icon in button during upload 6) Progress bar that fills during import. Need to test login, navigation to Import page, account/data source selection, file upload UI, and progress indicator behavior during import process."
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL ISSUES FOUND: Import Progress Indicator feature has significant implementation gaps. TESTING RESULTS: ✅ Login successful with testuser@example.com ✅ Import page loads correctly with all UI sections (Upload Statement, Recent Imports, Categorization Info) ✅ Data source selection working (6 options available) ✅ Import button present and functional ❌ CRITICAL: No accounts available for selection (0 account options) ❌ CRITICAL: IMPORT_STEPS constant not found in page source (0/8 steps detected) ❌ CRITICAL: Progress components missing (Loader2, Progress, Step counter not found in DOM) ❌ File upload area text 'Click to upload' not found (may use different text) ✅ Basic progress bar and spinner animation classes present. MAJOR ISSUE: The core progress indicator functionality appears to be missing from the rendered page, suggesting the IMPORT_STEPS constant and progress simulation logic may not be properly integrated or the feature is not fully implemented. Need main agent to verify IMPORT_STEPS implementation and progress indicator rendering."
