@@ -41,6 +41,13 @@ const ImportPage = () => {
 
   useEffect(() => {
     loadData();
+    
+    // Cleanup interval on unmount
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
   }, []);
 
   const loadData = async () => {
