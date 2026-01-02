@@ -147,13 +147,19 @@ Return only valid JSON, no other text."""
 
 
 async def categorize_transaction(user_id: str, description: str, amount: float, direction: str, transaction_type: str, account_id: Optional[str] = None) -> Dict[str, Any]:
-    """Main categorization function - tries rules first, then LLM."""
-    # First try rules
+    """Main categorization function - tries smart patterns, rules, then LLM."""
+    
+    # First try smart pattern matching for common transaction types
+    smart_result = await categorize_with_smart_patterns(description, direction, transaction_type)
+    if smart_result:
+        return smart_result
+    
+    # Then try user-defined rules
     rule_result = await categorize_with_rules(user_id, description, account_id)
     if rule_result:
         return rule_result
     
-    # Then try LLM
+    # Finally try LLM
     llm_result = await categorize_with_llm(
         description,
         amount,
@@ -169,6 +175,68 @@ async def categorize_transaction(user_id: str, description: str, amount: float, 
         "categorisation_source": "UNCATEGORISED",
         "confidence_score": None
     }
+
+
+async def categorize_with_smart_patterns(description: str, direction: str, transaction_type: str) -> Optional[Dict[str, Any]]:
+    """
+    Auto-categorize common transaction patterns using system categories.
+    
+    This catches well-known patterns before rules or LLM processing.
+    """
+    desc_lower = description.lower()
+    
+    # Credit Card Payment patterns (CREDIT on CC statement = payment received)
+    cc_payment_patterns = [
+        "credit card payment",
+        "cc payment",
+        "card payment",
+        "bill payment",
+        "payment received",
+        "net banking",
+        "neft",
+        "imps",
+        "upi"
+    ]
+    
+    # If this is a CREDIT transaction on a credit card, check for payment patterns
+    if direction == "CREDIT" and transaction_type == "CREDIT_CARD":
+        for pattern in cc_payment_patterns:
+            if pattern in desc_lower:
+                # Use the system "Credit Card Bill Payment" category
+                # ID: 4c9b8d7a-6e4f-4b9a-2c3d-2e9f8a7b8c9d
+                return {
+                    "category_id": "4c9b8d7a-6e4f-4b9a-2c3d-2e9f8a7b8c9d",
+                    "categorisation_source": "RULE",  # System auto-rule
+                    "confidence_score": 1.0
+                }
+    
+    # Refund patterns (CREDIT on any account with refund keywords)
+    refund_patterns = ["refund", "reversal", "cashback", "reimbursement"]
+    if direction == "CREDIT":
+        for pattern in refund_patterns:
+            if pattern in desc_lower:
+                # Use "Refunds/Reimbursements" category
+                # ID: d5221882-05a4-4540-aa04-64f595253d16
+                return {
+                    "category_id": "d5221882-05a4-4540-aa04-64f595253d16",
+                    "categorisation_source": "RULE",
+                    "confidence_score": 0.9
+                }
+    
+    # ATM/Cash Withdrawal patterns
+    atm_patterns = ["atm", "cash withdrawal", "cash wdl"]
+    if direction == "DEBIT":
+        for pattern in atm_patterns:
+            if pattern in desc_lower:
+                # Use "Cash Withdrawal" category
+                # ID: a8f3e5c7-2b9d-4a1e-8f6c-9d2b7e4a3f1c
+                return {
+                    "category_id": "a8f3e5c7-2b9d-4a1e-8f6c-9d2b7e4a3f1c",
+                    "categorisation_source": "RULE",
+                    "confidence_score": 0.95
+                }
+    
+    return None
 
 
 async def check_duplicate(user_id: str, account_id: str, date: str, amount: float, description: str) -> bool:
