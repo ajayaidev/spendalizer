@@ -99,6 +99,7 @@ async def import_transactions(
                 account_id=account_id,
                 import_batch_id=batch.id,
                 date=parsed_txn["date"],
+                time=parsed_txn.get("time"),  # Time field for sorting within same day
                 description=parsed_txn["description"],
                 amount=parsed_txn["amount"],
                 direction=TransactionDirection(parsed_txn["direction"]),
