@@ -26,8 +26,43 @@ async def get_analytics_summary(
     
     transactions = await db.transactions.find(query, {"_id": 0}).to_list(10000)
     
-    total_income = sum(txn["amount"] for txn in transactions if txn["direction"] == "CREDIT")
-    total_expense = sum(txn["amount"] for txn in transactions if txn["direction"] == "DEBIT")
+    # Get all categories to determine their types
+    all_categories = await db.categories.find(
+        {"$or": [{"is_system": True}, {"user_id": user_id}]},
+        {"_id": 0}
+    ).to_list(1000)
+    category_map = {cat["id"]: cat for cat in all_categories}
+    
+    # Calculate income/expense excluding TRANSFER categories
+    total_income = 0
+    total_expense = 0
+    total_transfer_in = 0
+    total_transfer_out = 0
+    
+    for txn in transactions:
+        amount = txn["amount"]
+        direction = txn["direction"]
+        cat_id = txn.get("category_id")
+        
+        # Check if this is a TRANSFER category
+        cat_type = None
+        if cat_id and cat_id in category_map:
+            cat_type = category_map[cat_id].get("type", "")
+        
+        is_transfer = cat_type and "TRANSFER" in cat_type
+        
+        if is_transfer:
+            # Don't count transfers as income/expense
+            if "IN" in cat_type or direction == "CREDIT":
+                total_transfer_in += amount
+            else:
+                total_transfer_out += amount
+        else:
+            # Regular income/expense based on direction
+            if direction == "CREDIT":
+                total_income += amount
+            else:
+                total_expense += amount
     
     category_breakdown = {}
     uncategorized_total = 0
