@@ -309,9 +309,8 @@ metadata:
 
 test_plan:
   current_focus: 
-    - "Import Progress Indicator Feature - Authentication issues blocking testing"
-  stuck_tasks: 
-    - "Import Progress Indicator Feature - Authentication system preventing access to test the feature"
+    - "HDFC Credit Card Import - New parser implemented and needs testing"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
