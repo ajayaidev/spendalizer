@@ -5,6 +5,135 @@ from typing import List, Dict, Any
 import pandas as pd
 
 
+def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
+    """
+    Parse HDFC Credit Card Excel/XLS statement.
+    
+    Format details:
+    - Header row is at row 16 (index 16)
+    - Column 0: Transaction type (Domestic/International)
+    - Column 9: Date & Time (format: DD/MM/YYYY / HH:MM)
+    - Column 12: Description
+    - Column 18: REWARDS points
+    - Column 20: AMT (Amount with comma separators like 3,750.00)
+    - Column 23: Debit/Credit indicator (empty for debits, 'Cr' for credits)
+    """
+    try:
+        # Try openpyxl first (handles xlsx and some xls files)
+        df = pd.read_excel(io.BytesIO(file_content), engine='openpyxl')
+        logging.info(f"HDFC CC: Parsed with openpyxl, shape: {df.shape}")
+    except Exception as e:
+        logging.warning(f"openpyxl failed, trying xlrd: {e}")
+        try:
+            df = pd.read_excel(io.BytesIO(file_content), engine='xlrd')
+            logging.info(f"HDFC CC: Parsed with xlrd, shape: {df.shape}")
+        except Exception as e2:
+            # Try HTML parser (some HDFC files are HTML disguised as XLS)
+            try:
+                dfs = pd.read_html(io.BytesIO(file_content))
+                if dfs:
+                    df = dfs[0]
+                    logging.info(f"HDFC CC: Parsed as HTML, shape: {df.shape}")
+                else:
+                    raise ValueError("No tables found in HTML")
+            except Exception as e3:
+                logging.error(f"All parsers failed: {e3}")
+                raise ValueError(f"Could not parse HDFC CC file: {str(e3)}")
+    
+    transactions = []
+    
+    # Find the header row by looking for "Date" or "AMT" pattern
+    header_row_idx = None
+    for idx in range(min(25, len(df))):
+        row_values = [str(v).lower() for v in df.iloc[idx].values if pd.notna(v)]
+        row_str = ' '.join(row_values)
+        if 'date' in row_str and ('amt' in row_str or 'amount' in row_str or 'debit' in row_str):
+            header_row_idx = idx
+            logging.info(f"HDFC CC: Found header at row {idx}")
+            break
+    
+    if header_row_idx is None:
+        # Default to row 16 based on known HDFC CC format
+        header_row_idx = 16
+        logging.info("HDFC CC: Using default header row 16")
+    
+    # Process transactions starting after header
+    for idx in range(header_row_idx + 1, len(df)):
+        try:
+            row = df.iloc[idx]
+            
+            # Extract date from column 9 (Date & Time)
+            date_time_val = row.iloc[9] if len(row) > 9 else None
+            if pd.isna(date_time_val):
+                continue
+            
+            date_str = str(date_time_val).strip()
+            # Parse date in DD/MM/YYYY format (with optional time)
+            try:
+                if '/' in date_str:
+                    date_part = date_str.split('/')[0:3]
+                    if len(date_part) >= 3:
+                        # Handle "DD/MM/YYYY / HH:MM" format
+                        date_part_str = '/'.join(date_part[:3]).split()[0]
+                        txn_date = pd.to_datetime(date_part_str, format='%d/%m/%Y', dayfirst=True).strftime("%Y-%m-%d")
+                    else:
+                        txn_date = pd.to_datetime(date_str, dayfirst=True).strftime("%Y-%m-%d")
+                else:
+                    txn_date = pd.to_datetime(date_str, dayfirst=True).strftime("%Y-%m-%d")
+            except Exception as date_err:
+                logging.debug(f"HDFC CC: Skipping row {idx}, date parse error: {date_err}")
+                continue
+            
+            # Extract description from column 12
+            desc_val = row.iloc[12] if len(row) > 12 else None
+            if pd.isna(desc_val):
+                continue
+            description = str(desc_val).strip()
+            
+            # Extract amount from column 20 (AMT)
+            amt_val = row.iloc[20] if len(row) > 20 else None
+            if pd.isna(amt_val):
+                continue
+            
+            # Parse amount (handles comma-separated values like "3,750.00")
+            amt_str = str(amt_val).replace(",", "").replace("INR", "").replace("₹", "").strip()
+            try:
+                amount = abs(float(amt_str))
+            except ValueError:
+                continue
+            
+            if amount <= 0:
+                continue
+            
+            # Extract debit/credit indicator from column 23
+            dr_cr_val = row.iloc[23] if len(row) > 23 else None
+            dr_cr = str(dr_cr_val).strip().lower() if pd.notna(dr_cr_val) else ""
+            
+            # For credit cards:
+            # - Empty or "Dr" = DEBIT (purchase/expense)
+            # - "Cr" = CREDIT (payment/refund received)
+            direction = "CREDIT" if dr_cr == "cr" else "DEBIT"
+            
+            # Build raw metadata
+            raw_dict = row.to_dict()
+            clean_metadata = {str(k): (v if pd.notna(v) else None) for k, v in raw_dict.items()}
+            
+            transactions.append({
+                "date": txn_date,
+                "description": description,
+                "amount": amount,
+                "direction": direction,
+                "raw_metadata": clean_metadata
+            })
+            
+        except Exception as row_err:
+            logging.debug(f"HDFC CC: Error parsing row {idx}: {row_err}")
+            continue
+    
+    logging.info(f"HDFC CC: Parsed {len(transactions)} transactions")
+    return transactions
+
+
 def parse_hdfc_bank_excel(file_content: bytes) -> List[Dict[str, Any]]:
     """Parse HDFC Bank Excel file."""
     try:
