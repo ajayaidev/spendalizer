@@ -402,7 +402,14 @@ def parse_sbi_csv(file_content: bytes) -> List[Dict[str, Any]]:
 
 
 def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, Any]]:
-    """Parse generic CSV file."""
+    """
+    Parse generic CSV file with enhanced amount/direction handling.
+    
+    Handles multiple formats:
+    1. Separate Debit/Credit columns
+    2. Single Amount column with sign (positive=debit, negative=credit)
+    3. Amount column with Dr/Cr indicator column
+    """
     encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'iso-8859-1', 'cp1252', 'windows-1252']
     df = None
     
@@ -418,34 +425,85 @@ def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, A
     
     transactions = []
     
+    # Find date column
     date_col = next((col for col in df.columns if any(word in col.lower() for word in ["date", "txn", "transaction"])), None)
-    desc_col = next((col for col in df.columns if any(word in col.lower() for word in ["narration", "description", "particulars", "details"])), None)
+    
+    # Find description column
+    desc_col = next((col for col in df.columns if any(word in col.lower() for word in ["narration", "description", "particulars", "details", "memo"])), None)
     
     if not date_col or not desc_col:
+        logging.warning(f"Generic CSV: Missing date ({date_col}) or description ({desc_col}) column")
         return transactions
+    
+    # Find amount-related columns
+    withdrawal_col = next((col for col in df.columns if any(word in col.lower() for word in ["withdrawal", "debit"])), None)
+    deposit_col = next((col for col in df.columns if any(word in col.lower() for word in ["deposit", "credit"])), None)
+    amount_col = next((col for col in df.columns if any(word in col.lower() for word in ["amount", "amt", "value", "sum"])), None)
+    
+    # Find Dr/Cr indicator column
+    dr_cr_col = next((col for col in df.columns if any(word in col.lower() for word in ["dr/cr", "drcr", "type", "indicator"])), None)
+    
+    logging.info(f"Generic CSV: date={date_col}, desc={desc_col}, withdrawal={withdrawal_col}, deposit={deposit_col}, amount={amount_col}, dr_cr={dr_cr_col}")
     
     for _, row in df.iterrows():
         try:
             clean_metadata = {k: (v if pd.notna(v) else None) for k, v in row.to_dict().items()}
             
+            # Parse date
+            try:
+                txn_date = pd.to_datetime(row[date_col], dayfirst=True).strftime("%Y-%m-%d")
+            except:
+                continue
+            
             txn = {
-                "date": pd.to_datetime(row[date_col]).strftime("%Y-%m-%d"),
+                "date": txn_date,
                 "description": str(row[desc_col]).strip(),
                 "amount": 0.0,
                 "direction": "DEBIT",
                 "raw_metadata": clean_metadata
             }
             
-            for col in df.columns:
-                col_lower = col.lower()
-                if "withdrawal" in col_lower or "debit" in col_lower:
-                    if pd.notna(row[col]):
-                        txn["amount"] = abs(float(str(row[col]).replace(",", "").replace("INR", "").strip()))
+            # Method 1: Separate Debit/Credit columns
+            if withdrawal_col and pd.notna(row.get(withdrawal_col)):
+                amt_str = str(row[withdrawal_col]).replace(",", "").replace("INR", "").replace("₹", "").strip()
+                try:
+                    amt = float(amt_str)
+                    if amt != 0:
+                        txn["amount"] = abs(amt)
                         txn["direction"] = "DEBIT"
-                elif "deposit" in col_lower or "credit" in col_lower:
-                    if pd.notna(row[col]):
-                        txn["amount"] = abs(float(str(row[col]).replace(",", "").replace("INR", "").strip()))
+                except ValueError:
+                    pass
+            
+            if deposit_col and pd.notna(row.get(deposit_col)):
+                amt_str = str(row[deposit_col]).replace(",", "").replace("INR", "").replace("₹", "").strip()
+                try:
+                    amt = float(amt_str)
+                    if amt != 0:
+                        txn["amount"] = abs(amt)
                         txn["direction"] = "CREDIT"
+                except ValueError:
+                    pass
+            
+            # Method 2: Single Amount column (use sign or Dr/Cr indicator)
+            if txn["amount"] == 0 and amount_col and pd.notna(row.get(amount_col)):
+                amt_str = str(row[amount_col]).replace(",", "").replace("INR", "").replace("₹", "").strip()
+                try:
+                    amt = float(amt_str)
+                    txn["amount"] = abs(amt)
+                    
+                    # Check for Dr/Cr indicator column
+                    if dr_cr_col and pd.notna(row.get(dr_cr_col)):
+                        indicator = str(row[dr_cr_col]).strip().lower()
+                        if indicator in ["cr", "credit", "c", "+"]:
+                            txn["direction"] = "CREDIT"
+                        else:
+                            txn["direction"] = "DEBIT"
+                    else:
+                        # Use sign: positive = debit (expense), negative = credit (income/refund)
+                        txn["direction"] = "CREDIT" if amt < 0 else "DEBIT"
+                        
+                except ValueError:
+                    pass
             
             if txn["amount"] > 0:
                 transactions.append(txn)
@@ -453,4 +511,6 @@ def parse_generic_csv(file_content: bytes, data_source: str) -> List[Dict[str, A
             logging.error(f"Error parsing row: {e}")
             continue
     
+    logging.info(f"Generic CSV: Parsed {len(transactions)} transactions")
     return transactions
+
