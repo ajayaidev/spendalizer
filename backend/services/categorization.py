@@ -182,10 +182,16 @@ async def categorize_with_smart_patterns(description: str, direction: str, trans
     Auto-categorize common transaction patterns using system categories.
     
     This catches well-known patterns before rules or LLM processing.
+    
+    Category IDs:
+    - Credit Card Bill Payment (TRANSFER_INTERNAL_OUT): 4c9b8d7a-6e4f-4b9a-2c3d-2e9f8a7b8c9d
+      Used for: Bank statement showing CC payment going OUT
+    - Credit Card Payment Received (TRANSFER_INTERNAL_IN): 7d8e9f0a-1b2c-3d4e-5f6a-7b8c9d0e1f2a
+      Used for: CC statement showing payment coming IN
     """
     desc_lower = description.lower()
     
-    # Credit Card Payment patterns (CREDIT on CC statement = payment received)
+    # Credit Card Payment patterns
     cc_payment_patterns = [
         "credit card payment",
         "cc payment",
@@ -198,15 +204,25 @@ async def categorize_with_smart_patterns(description: str, direction: str, trans
         "upi"
     ]
     
-    # If this is a CREDIT transaction on a credit card, check for payment patterns
+    # CC Statement: CREDIT transaction = payment received (TRANSFER_INTERNAL_IN)
     if direction == "CREDIT" and transaction_type == "CREDIT_CARD":
         for pattern in cc_payment_patterns:
             if pattern in desc_lower:
-                # Use the system "Credit Card Bill Payment" category
-                # ID: 4c9b8d7a-6e4f-4b9a-2c3d-2e9f8a7b8c9d
+                # Use "Credit Card Payment Received" (TRANSFER_INTERNAL_IN)
+                return {
+                    "category_id": "7d8e9f0a-1b2c-3d4e-5f6a-7b8c9d0e1f2a",
+                    "categorisation_source": "RULE",
+                    "confidence_score": 1.0
+                }
+    
+    # Bank Statement: DEBIT transaction with CC payment keywords = paying CC bill (TRANSFER_INTERNAL_OUT)
+    if direction == "DEBIT" and transaction_type == "BANK":
+        for pattern in cc_payment_patterns:
+            if pattern in desc_lower:
+                # Use "Credit Card Bill Payment" (TRANSFER_INTERNAL_OUT)
                 return {
                     "category_id": "4c9b8d7a-6e4f-4b9a-2c3d-2e9f8a7b8c9d",
-                    "categorisation_source": "RULE",  # System auto-rule
+                    "categorisation_source": "RULE",
                     "confidence_score": 1.0
                 }
     
@@ -216,7 +232,6 @@ async def categorize_with_smart_patterns(description: str, direction: str, trans
         for pattern in refund_patterns:
             if pattern in desc_lower:
                 # Use "Refunds/Reimbursements" category
-                # ID: d5221882-05a4-4540-aa04-64f595253d16
                 return {
                     "category_id": "d5221882-05a4-4540-aa04-64f595253d16",
                     "categorisation_source": "RULE",
