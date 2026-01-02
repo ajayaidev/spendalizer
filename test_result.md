@@ -309,10 +309,9 @@ metadata:
 
 test_plan:
   current_focus: 
-    - "Import Progress Indicator Feature - Critical issues found, needs main agent attention"
+    - "Import Progress Indicator Feature - Authentication issues blocking testing"
   stuck_tasks: 
-    - "CSV Import functionality - missing sample CSV file preventing full import testing"
-    - "Import Progress Indicator Feature - IMPORT_STEPS and progress components not rendering"
+    - "Import Progress Indicator Feature - Authentication system preventing access to test the feature"
   test_all: false
   test_priority: "high_first"
 
