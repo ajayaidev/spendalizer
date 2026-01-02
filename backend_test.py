@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 
 class SpendAlizerAPITester:
-    def __init__(self, base_url="https://spendalizer.preview.emergentagent.com"):
+    def __init__(self, base_url="https://budget-buddy-3836.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
