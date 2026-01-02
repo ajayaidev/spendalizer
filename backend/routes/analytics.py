@@ -160,6 +160,8 @@ async def get_analytics_summary(
         "total_income": round(total_income, 2),
         "total_expense": round(total_expense, 2),
         "net_savings": round(total_income - total_expense, 2),
+        "total_transfer_in": round(total_transfer_in, 2),
+        "total_transfer_out": round(total_transfer_out, 2),
         "transaction_count": len(transactions),
         "category_breakdown": sorted(enriched_breakdown, key=lambda x: x["total"], reverse=True)
     }
