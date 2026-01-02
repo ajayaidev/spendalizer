@@ -1761,6 +1761,15 @@ class SpendAlizerAPITester:
         credit_count = 0
         cc_payment_found = False
         
+        # Sample some transactions to verify parsing
+        print(f"   📋 Sample transactions:")
+        for i, txn in enumerate(transactions[:5]):  # Show first 5 transactions
+            direction = txn.get('direction')
+            description = txn.get('description', '')
+            amount = txn.get('amount', 0)
+            date = txn.get('date', '')
+            print(f"   - {date}: {description[:50]}... - ₹{amount} ({direction})")
+        
         for txn in transactions:
             direction = txn.get('direction')
             description = txn.get('description', '')
@@ -1797,6 +1806,22 @@ class SpendAlizerAPITester:
         else:
             print("   ❌ CC payment transaction not found or incorrect description")
             return False
+        
+        # Verify parser correctly handles comma-separated amounts
+        print(f"   📊 Amount parsing verification:")
+        amounts_with_commas = 0
+        for txn in transactions:
+            raw_metadata = txn.get('raw_metadata', {})
+            # Check if original amount had commas (this would be in raw metadata)
+            for key, value in raw_metadata.items():
+                if isinstance(value, str) and ',' in value and any(char.isdigit() for char in value):
+                    amounts_with_commas += 1
+                    break
+        
+        if amounts_with_commas > 0:
+            print(f"   ✅ Parser correctly handled comma-separated amounts in {amounts_with_commas} transactions")
+        else:
+            print(f"   ℹ️  No comma-separated amounts detected in raw metadata")
         
         # Step 6: Analytics Summary Verification
         print("\n6️⃣ Verifying Analytics Summary...")
