@@ -79,11 +79,7 @@ async def get_analytics_summary(
             uncategorized_total += txn["amount"]
             uncategorized_count += 1
     
-    all_categories = await db.categories.find(
-        {"$or": [{"is_system": True}, {"user_id": user_id}]},
-        {"_id": 0}
-    ).to_list(1000)
-    category_map = {cat["id"]: cat for cat in all_categories}
+    # category_map already loaded above
     
     enriched_breakdown = []
     for cat_id, data in category_breakdown.items():
