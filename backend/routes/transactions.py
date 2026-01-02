@@ -171,7 +171,8 @@ async def get_transactions(
         query["date"] = query.get("date", {})
         query["date"]["$lte"] = end_date
     
-    transactions = await db.transactions.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
+    # Sort by date (descending) and then by time (descending) for proper chronological order
+    transactions = await db.transactions.find(query, {"_id": 0}).sort([("date", -1), ("time", -1)]).skip(skip).limit(limit).to_list(limit)
     total = await db.transactions.count_documents(query)
     
     for txn in transactions:
