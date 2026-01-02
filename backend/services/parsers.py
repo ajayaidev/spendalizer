@@ -139,6 +139,7 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
             
             transactions.append({
                 "date": txn_date,
+                "time": txn_time,  # HH:MM:SS format or None
                 "description": description,
                 "amount": amount,
                 "direction": direction,
