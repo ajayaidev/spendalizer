@@ -91,7 +91,8 @@ class Transaction(BaseModel):
     user_id: str
     account_id: str
     import_batch_id: Optional[str] = None
-    date: str
+    date: str  # Format: YYYY-MM-DD
+    time: Optional[str] = None  # Format: HH:MM:SS (24-hour) - for sorting within same day
     description: str
     amount: float
     direction: TransactionDirection
