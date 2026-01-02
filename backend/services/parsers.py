@@ -62,26 +62,45 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
         try:
             row = df.iloc[idx]
             
-            # Extract date from column 9 (Date & Time)
+            # Extract date and time from column 9 (Date & Time)
+            # Format: "DD/MM/YYYY / HH:MM" e.g., "16/11/2025 / 14:30"
             date_time_val = row.iloc[9] if len(row) > 9 else None
             if pd.isna(date_time_val):
                 continue
             
             date_str = str(date_time_val).strip()
-            # Parse date in DD/MM/YYYY format (with optional time)
+            txn_date = None
+            txn_time = None
+            
             try:
                 if '/' in date_str:
-                    date_part = date_str.split('/')[0:3]
-                    if len(date_part) >= 3:
-                        # Handle "DD/MM/YYYY / HH:MM" format
-                        date_part_str = '/'.join(date_part[:3]).split()[0]
-                        txn_date = pd.to_datetime(date_part_str, format='%d/%m/%Y', dayfirst=True).strftime("%Y-%m-%d")
-                    else:
-                        txn_date = pd.to_datetime(date_str, dayfirst=True).strftime("%Y-%m-%d")
+                    # Split by space to separate date and time parts
+                    parts = date_str.split()
+                    # Date part: DD/MM/YYYY
+                    date_part_str = parts[0] if parts else date_str
+                    
+                    # Parse date
+                    txn_date = pd.to_datetime(date_part_str, format='%d/%m/%Y', dayfirst=True).strftime("%Y-%m-%d")
+                    
+                    # Extract time if available (format: "/ HH:MM")
+                    if len(parts) >= 3:
+                        time_part = parts[2] if parts[1] == '/' else parts[-1]
+                        # Validate time format HH:MM
+                        if ':' in time_part:
+                            time_parts = time_part.split(':')
+                            if len(time_parts) >= 2:
+                                hour = int(time_parts[0])
+                                minute = int(time_parts[1])
+                                if 0 <= hour <= 23 and 0 <= minute <= 59:
+                                    txn_time = f"{hour:02d}:{minute:02d}:00"
                 else:
                     txn_date = pd.to_datetime(date_str, dayfirst=True).strftime("%Y-%m-%d")
+                    
             except Exception as date_err:
                 logging.debug(f"HDFC CC: Skipping row {idx}, date parse error: {date_err}")
+                continue
+            
+            if not txn_date:
                 continue
             
             # Extract description from column 12
