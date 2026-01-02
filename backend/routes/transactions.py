@@ -14,7 +14,7 @@ from models.enums import TransactionDirection, AccountType, CategorisationSource
 from services.categorization import categorize_transaction, categorize_with_llm, check_duplicate
 from services.parsers import (
     parse_hdfc_bank_excel, parse_hdfc_bank_csv, parse_sbi_csv,
-    parse_generic_excel, parse_generic_csv
+    parse_generic_excel, parse_generic_csv, parse_hdfc_cc_excel
 )
 
 router = APIRouter(tags=["transactions"])
@@ -29,6 +29,7 @@ async def get_data_sources():
         {"id": "HDFC_CC", "name": "HDFC Credit Card", "type": "CREDIT_CARD"},
         {"id": "SBI_CC", "name": "SBI Credit Card", "type": "CREDIT_CARD"},
         {"id": "SCB_CC", "name": "Standard Chartered Credit Card", "type": "CREDIT_CARD"},
+        {"id": "GENERIC_CSV", "name": "Generic CSV/Excel", "type": "BANK"},
     ]
 
 
@@ -51,17 +52,27 @@ async def import_transactions(
         file_ext = file.filename.lower().split('.')[-1]
         is_excel = file_ext in ['xls', 'xlsx']
         
+        logging.info(f"Import: Processing {file.filename} for data_source={data_source}, is_excel={is_excel}")
+        
         if data_source == "HDFC_BANK":
             if is_excel:
                 parsed_txns = parse_hdfc_bank_excel(file_content)
             else:
                 parsed_txns = parse_hdfc_bank_csv(file_content)
+        elif data_source == "HDFC_CC":
+            # HDFC Credit Card - use dedicated parser
+            if is_excel:
+                parsed_txns = parse_hdfc_cc_excel(file_content)
+            else:
+                # For CSV, use generic parser with credit card awareness
+                parsed_txns = parse_generic_csv(file_content, data_source)
         elif data_source in ["SBI_BANK", "SBI_CC"]:
             if is_excel:
                 parsed_txns = parse_generic_excel(file_content, data_source)
             else:
                 parsed_txns = parse_sbi_csv(file_content)
         else:
+            # Generic parser for other sources
             if is_excel:
                 parsed_txns = parse_generic_excel(file_content, data_source)
             else:
