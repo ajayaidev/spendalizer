@@ -434,7 +434,14 @@ const TransactionsPage = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{format(new Date(txn.date), 'MMM dd, yyyy')}</span>
+                      <span>
+                        {format(new Date(txn.date), 'MMM dd, yyyy')}
+                        {txn.time && txn.time !== '00:00:00' && (
+                          <span className="ml-1 text-xs">
+                            {txn.time.substring(0, 5)}
+                          </span>
+                        )}
+                      </span>
                       <span>•</span>
                       <span>{getAccountName(txn.account_id)}</span>
                     </div>
