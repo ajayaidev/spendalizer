@@ -1601,6 +1601,241 @@ class SpendAlizerAPITester:
         print("   ✅ All error cases handled correctly")
         return True
 
+    def test_hdfc_cc_import_functionality(self):
+        """Test HDFC Credit Card import functionality as per review request"""
+        print("\n🔍 TESTING HDFC CREDIT CARD IMPORT FUNCTIONALITY")
+        print("=" * 60)
+        
+        # Step 1: Login with test credentials
+        print("\n1️⃣ Testing login with importtest@example.com...")
+        login_data = {
+            "email": "importtest@example.com",
+            "password": "Test12345!"
+        }
+        
+        success, response = self.run_test(
+            "Login with Import Test Credentials",
+            "POST",
+            "auth/login",
+            200,
+            data=login_data
+        )
+        
+        if not success:
+            print("❌ Login failed, trying to register user first...")
+            register_data = {
+                "email": "importtest@example.com",
+                "name": "Import Test User",
+                "password": "Test12345!"
+            }
+            
+            success, response = self.run_test(
+                "Register Import Test User",
+                "POST",
+                "auth/register",
+                200,
+                data=register_data
+            )
+            
+            if not success:
+                print("❌ Failed to register test user")
+                return False
+        
+        if 'token' in response:
+            self.token = response['token']
+            self.user_id = response['user']['id']
+            print(f"   ✅ Authenticated as: {response['user']['email']}")
+        else:
+            print("❌ No token received")
+            return False
+        
+        # Step 2: Test Data Sources API - Verify HDFC_CC is listed
+        print("\n2️⃣ Testing Data Sources API...")
+        success, data_sources = self.run_test(
+            "Get Data Sources",
+            "GET",
+            "data-sources",
+            200
+        )
+        
+        if not success:
+            print("❌ Failed to get data sources")
+            return False
+        
+        hdfc_cc_source = None
+        for source in data_sources:
+            if source['id'] == 'HDFC_CC':
+                hdfc_cc_source = source
+                break
+        
+        if hdfc_cc_source:
+            print(f"   ✅ HDFC_CC data source found: {hdfc_cc_source}")
+            if hdfc_cc_source.get('type') == 'CREDIT_CARD':
+                print("   ✅ HDFC_CC has correct type: CREDIT_CARD")
+            else:
+                print(f"   ❌ HDFC_CC has wrong type: {hdfc_cc_source.get('type')}")
+                return False
+        else:
+            print("   ❌ HDFC_CC data source not found")
+            return False
+        
+        # Step 3: Create Credit Card Account (if not exists)
+        print("\n3️⃣ Creating Credit Card Account...")
+        account_data = {
+            "name": "Test HDFC Credit Card",
+            "account_type": "CREDIT_CARD",
+            "institution": "HDFC Bank",
+            "last_four": "1234"
+        }
+        
+        success, account_response = self.run_test(
+            "Create Credit Card Account",
+            "POST",
+            "accounts",
+            200,
+            data=account_data
+        )
+        
+        if success and 'id' in account_response:
+            cc_account_id = account_response['id']
+            print(f"   ✅ Created credit card account: {cc_account_id}")
+        else:
+            print("   ❌ Failed to create credit card account")
+            return False
+        
+        # Step 4: Import HDFC CC Statement
+        print("\n4️⃣ Importing HDFC CC Statement from /tmp/hdfc_cc.xls...")
+        
+        try:
+            with open('/tmp/hdfc_cc.xls', 'rb') as f:
+                files = {'file': ('hdfc_cc.xls', f, 'application/vnd.ms-excel')}
+                data = {
+                    'account_id': cc_account_id,
+                    'data_source': 'HDFC_CC'
+                }
+                
+                success, import_response = self.run_test(
+                    "Import HDFC CC Statement",
+                    "POST",
+                    "import",
+                    200,
+                    data=data,
+                    files=files
+                )
+                
+                if success:
+                    success_count = import_response.get('success_count', 0)
+                    total_rows = import_response.get('total_rows', 0)
+                    print(f"   ✅ Import successful: {success_count}/{total_rows} transactions imported")
+                    
+                    if success_count == 36:
+                        print("   ✅ Expected 36 transactions imported successfully")
+                    else:
+                        print(f"   ⚠️  Expected 36 transactions, got {success_count}")
+                else:
+                    print("   ❌ Import failed")
+                    return False
+                    
+        except Exception as e:
+            print(f"   ❌ Error during import: {e}")
+            return False
+        
+        # Step 5: Verify Transaction Direction - CRITICAL CHECK
+        print("\n5️⃣ Verifying Transaction Directions (CRITICAL CHECK)...")
+        
+        success, txn_response = self.run_test(
+            "Get All Imported Transactions",
+            "GET",
+            f"transactions?account_id={cc_account_id}&limit=100",
+            200
+        )
+        
+        if not success:
+            print("   ❌ Failed to get transactions")
+            return False
+        
+        transactions = txn_response.get('transactions', [])
+        print(f"   Found {len(transactions)} transactions")
+        
+        debit_count = 0
+        credit_count = 0
+        cc_payment_found = False
+        
+        for txn in transactions:
+            direction = txn.get('direction')
+            description = txn.get('description', '')
+            amount = txn.get('amount', 0)
+            
+            if direction == 'DEBIT':
+                debit_count += 1
+            elif direction == 'CREDIT':
+                credit_count += 1
+                # Check for CC payment
+                if 'CREDIT CARD PAYMENT' in description.upper() and 'NET BANKING' in description.upper():
+                    cc_payment_found = True
+                    print(f"   ✅ Found CC payment: {description} - ₹{amount}")
+        
+        print(f"   Transaction direction summary:")
+        print(f"   - DEBIT transactions: {debit_count}")
+        print(f"   - CREDIT transactions: {credit_count}")
+        
+        # Verify expected counts
+        if debit_count == 35:
+            print("   ✅ Expected 35 DEBIT transactions (purchases)")
+        else:
+            print(f"   ❌ Expected 35 DEBIT transactions, got {debit_count}")
+            return False
+        
+        if credit_count == 1:
+            print("   ✅ Expected 1 CREDIT transaction (CC payment)")
+        else:
+            print(f"   ❌ Expected 1 CREDIT transaction, got {credit_count}")
+            return False
+        
+        if cc_payment_found:
+            print("   ✅ CC payment transaction found with correct description")
+        else:
+            print("   ❌ CC payment transaction not found or incorrect description")
+            return False
+        
+        # Step 6: Analytics Summary Verification
+        print("\n6️⃣ Verifying Analytics Summary...")
+        
+        success, analytics_response = self.run_test(
+            "Get Analytics Summary",
+            "GET",
+            "analytics/summary",
+            200
+        )
+        
+        if not success:
+            print("   ❌ Failed to get analytics summary")
+            return False
+        
+        total_income = analytics_response.get('total_income', 0)
+        total_expense = analytics_response.get('total_expense', 0)
+        
+        print(f"   Analytics Summary:")
+        print(f"   - Total Income: ₹{total_income}")
+        print(f"   - Total Expense: ₹{total_expense}")
+        
+        # Verify expected amounts (approximately)
+        expected_income = 205947  # CC payment amount
+        expected_expense = 41258.15  # Sum of purchases
+        
+        if abs(total_income - expected_income) < 100:  # Allow small variance
+            print(f"   ✅ Total income matches expected: ~₹{expected_income}")
+        else:
+            print(f"   ⚠️  Total income variance: expected ~₹{expected_income}, got ₹{total_income}")
+        
+        if abs(total_expense - expected_expense) < 100:  # Allow small variance
+            print(f"   ✅ Total expense matches expected: ~₹{expected_expense}")
+        else:
+            print(f"   ⚠️  Total expense variance: expected ~₹{expected_expense}, got ₹{total_expense}")
+        
+        print("\n✅ HDFC CREDIT CARD IMPORT FUNCTIONALITY TEST COMPLETED")
+        return True
+
     def cleanup_test_data(self):
         """Clean up test data"""
         if self.test_rule_id:
