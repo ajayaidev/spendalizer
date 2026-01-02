@@ -126,6 +126,12 @@
     "is_system": true
   },
   {
+    "id": "7d8e9f0a-1b2c-3d4e-5f6a-7b8c9d0e1f2a",
+    "name": "Credit Card Payment Received",
+    "type": "TRANSFER_INTERNAL_IN",
+    "is_system": true
+  },
+  {
     "id": "3d8c9e6b-5f3a-4c8b-1d2e-3f8a9b7c8d9e",
     "name": "Wallet Transfer",
     "type": "TRANSFER_INTERNAL_OUT",
