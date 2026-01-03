@@ -136,18 +136,19 @@ const DashboardLayout = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-background" data-testid="dashboard-layout">
       {/* Mobile Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 md:hidden bg-card border-b">
-        <div className="flex items-center justify-between p-4">
+      <div className="fixed top-0 left-0 right-0 z-50 md:hidden bg-card border-b shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3">
           <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-fuchsia-600 to-violet-800 bg-clip-text text-transparent">
             SpendAlizer
           </h1>
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             data-testid="mobile-menu-button"
+            className="h-10 w-10"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
       </div>
