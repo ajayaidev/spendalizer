@@ -9,14 +9,9 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
     """
     Parse HDFC Credit Card Excel/XLS statement.
     
-    Format details:
-    - Header row is at row 16 (index 16)
-    - Column 0: Transaction type (Domestic/International)
-    - Column 9: Date & Time (format: DD/MM/YYYY / HH:MM)
-    - Column 12: Description
-    - Column 18: REWARDS points
-    - Column 20: AMT (Amount with comma separators like 3,750.00)
-    - Column 23: Debit/Credit indicator (empty for debits, 'Cr' for credits)
+    Handles multiple HDFC CC statement formats by dynamically detecting:
+    - Header row position
+    - Column positions for Date, Description, Amount, Debit/Credit indicator
     """
     try:
         # Try openpyxl first (handles xlsx and some xls files)
@@ -42,33 +37,92 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
     
     transactions = []
     
-    # Find the header row by looking for "Date" or "AMT" pattern
+    # Find the header row by looking for key column headers
     header_row_idx = None
-    for idx in range(min(25, len(df))):
-        row_values = [str(v).lower() for v in df.iloc[idx].values if pd.notna(v)]
-        row_str = ' '.join(row_values)
-        if 'date' in row_str and ('amt' in row_str or 'amount' in row_str or 'debit' in row_str):
+    date_col = None
+    desc_col = None
+    amt_col = None
+    dr_cr_col = None
+    
+    for idx in range(min(35, len(df))):
+        row = df.iloc[idx]
+        row_values = {i: str(v).strip().lower() for i, v in enumerate(row) if pd.notna(v)}
+        row_str = ' '.join(row_values.values())
+        
+        # Look for header row with transaction-related columns
+        if ('transaction type' in row_str or 'domestic' in row_str) and ('date' in row_str or 'amt' in row_str):
             header_row_idx = idx
-            logging.info(f"HDFC CC: Found header at row {idx}")
+            
+            # Map column positions dynamically
+            for col_idx, val in row_values.items():
+                val_lower = val.lower()
+                if 'date' in val_lower and 'time' in val_lower:
+                    date_col = col_idx
+                elif val_lower == 'date':
+                    date_col = col_idx
+                elif 'description' in val_lower:
+                    desc_col = col_idx
+                elif val_lower == 'amt' or val_lower == 'amount':
+                    amt_col = col_idx
+                elif 'debit' in val_lower and 'credit' in val_lower:
+                    dr_cr_col = col_idx
+            
+            logging.info(f"HDFC CC: Found header at row {idx}, date_col={date_col}, desc_col={desc_col}, amt_col={amt_col}, dr_cr_col={dr_cr_col}")
             break
     
     if header_row_idx is None:
-        # Default to row 16 based on known HDFC CC format
-        header_row_idx = 16
-        logging.info("HDFC CC: Using default header row 16")
+        logging.warning("HDFC CC: Could not find header row, trying fallback detection")
+        # Fallback: try to find first row with "Domestic" or "International"
+        for idx in range(min(35, len(df))):
+            row = df.iloc[idx]
+            row_str = ' '.join([str(v).lower() for v in row if pd.notna(v)])
+            if 'domestic' in row_str or 'international' in row_str:
+                header_row_idx = idx - 1  # Header is one row before data
+                break
+        
+        if header_row_idx is None:
+            header_row_idx = 16  # Ultimate fallback
+    
+    # If columns weren't found, try to detect them from the data
+    if date_col is None or desc_col is None or amt_col is None:
+        logging.info("HDFC CC: Columns not found in header, detecting from data...")
+        first_data_row = df.iloc[header_row_idx + 1] if header_row_idx + 1 < len(df) else None
+        
+        if first_data_row is not None:
+            for col_idx, val in enumerate(first_data_row):
+                if pd.notna(val):
+                    val_str = str(val).strip()
+                    # Detect date column (DD/MM/YYYY pattern)
+                    if date_col is None and '/' in val_str and len(val_str) >= 10:
+                        parts = val_str.split('/')
+                        if len(parts) >= 3 and parts[0].isdigit():
+                            date_col = col_idx
+                    # Detect description (long text with letters)
+                    elif desc_col is None and len(val_str) > 20 and any(c.isalpha() for c in val_str):
+                        desc_col = col_idx
+                    # Detect amount (numeric with optional comma)
+                    elif amt_col is None and val_str.replace(',', '').replace('.', '').isdigit():
+                        if float(val_str.replace(',', '')) > 0:
+                            amt_col = col_idx
+        
+        logging.info(f"HDFC CC: Detected columns - date={date_col}, desc={desc_col}, amt={amt_col}")
     
     # Process transactions starting after header
     for idx in range(header_row_idx + 1, len(df)):
         try:
             row = df.iloc[idx]
             
-            # Extract date and time from column 9 (Date & Time)
-            # Format: "DD/MM/YYYY / HH:MM" e.g., "16/11/2025 / 14:30"
-            date_time_val = row.iloc[9] if len(row) > 9 else None
-            if pd.isna(date_time_val):
+            # Skip empty rows or summary rows
+            row_values = [v for v in row if pd.notna(v)]
+            if len(row_values) < 3:
                 continue
             
-            date_str = str(date_time_val).strip()
+            # Extract date
+            date_val = row.iloc[date_col] if date_col is not None and date_col < len(row) else None
+            if pd.isna(date_val):
+                continue
+            
+            date_str = str(date_val).strip()
             txn_date = None
             txn_time = None
             
@@ -76,26 +130,26 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
                 if '/' in date_str:
                     # Split by space to separate date and time parts
                     parts = date_str.split()
-                    # Date part: DD/MM/YYYY
-                    date_part_str = parts[0] if parts else date_str
+                    date_part_str = parts[0].strip()
                     
-                    # Parse date
+                    # Parse date (DD/MM/YYYY)
                     txn_date = pd.to_datetime(date_part_str, format='%d/%m/%Y', dayfirst=True).strftime("%Y-%m-%d")
                     
-                    # Extract time if available (format: "/ HH:MM")
-                    if len(parts) >= 3:
-                        time_part = parts[2] if parts[1] == '/' else parts[-1]
-                        # Validate time format HH:MM
-                        if ':' in time_part:
+                    # Extract time if available (format: "/ HH:MM" or just "HH:MM")
+                    for part in parts[1:]:
+                        if ':' in part and part.replace(':', '').replace('/', '').strip().isdigit():
+                            time_part = part.replace('/', '').strip()
                             time_parts = time_part.split(':')
                             if len(time_parts) >= 2:
-                                hour = int(time_parts[0])
-                                minute = int(time_parts[1])
-                                if 0 <= hour <= 23 and 0 <= minute <= 59:
-                                    txn_time = f"{hour:02d}:{minute:02d}:00"
+                                try:
+                                    hour = int(time_parts[0])
+                                    minute = int(time_parts[1])
+                                    if 0 <= hour <= 23 and 0 <= minute <= 59:
+                                        txn_time = f"{hour:02d}:{minute:02d}:00"
+                                except ValueError:
+                                    pass
                 else:
                     txn_date = pd.to_datetime(date_str, dayfirst=True).strftime("%Y-%m-%d")
-                    
             except Exception as date_err:
                 logging.debug(f"HDFC CC: Skipping row {idx}, date parse error: {date_err}")
                 continue
@@ -103,18 +157,19 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
             if not txn_date:
                 continue
             
-            # Extract description from column 12
-            desc_val = row.iloc[12] if len(row) > 12 else None
+            # Extract description
+            desc_val = row.iloc[desc_col] if desc_col is not None and desc_col < len(row) else None
             if pd.isna(desc_val):
                 continue
             description = str(desc_val).strip()
+            if len(description) < 3:
+                continue
             
-            # Extract amount from column 20 (AMT)
-            amt_val = row.iloc[20] if len(row) > 20 else None
+            # Extract amount
+            amt_val = row.iloc[amt_col] if amt_col is not None and amt_col < len(row) else None
             if pd.isna(amt_val):
                 continue
             
-            # Parse amount (handles comma-separated values like "3,750.00")
             amt_str = str(amt_val).replace(",", "").replace("INR", "").replace("₹", "").strip()
             try:
                 amount = abs(float(amt_str))
@@ -124,9 +179,11 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
             if amount <= 0:
                 continue
             
-            # Extract debit/credit indicator from column 23
-            dr_cr_val = row.iloc[23] if len(row) > 23 else None
-            dr_cr = str(dr_cr_val).strip().lower() if pd.notna(dr_cr_val) else ""
+            # Extract debit/credit indicator
+            dr_cr = ""
+            if dr_cr_col is not None and dr_cr_col < len(row):
+                dr_cr_val = row.iloc[dr_cr_col]
+                dr_cr = str(dr_cr_val).strip().lower() if pd.notna(dr_cr_val) else ""
             
             # For credit cards:
             # - Empty or "Dr" = DEBIT (purchase/expense)
@@ -139,7 +196,7 @@ def parse_hdfc_cc_excel(file_content: bytes) -> List[Dict[str, Any]]:
             
             transactions.append({
                 "date": txn_date,
-                "time": txn_time,  # HH:MM:SS format or None
+                "time": txn_time,
                 "description": description,
                 "amount": amount,
                 "direction": direction,
